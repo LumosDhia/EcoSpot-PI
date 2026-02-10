@@ -1,0 +1,99 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Blog - EcoSpot{% endblock %}
+
+{% block breadcrumb %}
+    <!-- Header (Environs breadcrumb) -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">Blog & News</h3>
+            <p class="fs-5 text-white mb-4">Discover our articles on the environment and nature.</p>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
+                <li class="breadcrumb-item active text-white">Blog</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .article-excerpt { font-size: 1rem; line-height: 1.5; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Blog (Environs) -->
+    <div class="container-fluid blog py-5">
+        <div class="container py-5">
+            <div class="text-center mx-auto pb-5" style="max-width: 800px;">
+                <h5 class="text-uppercase text-primary">Latest news</h5>
+                <h1 class="mb-4">EcoSpot blog articles</h1>
+            </div>
+
+            {# Search & Sort #}
+            <div class="card mb-5">
+                <div class="card-body">
+                    <form method="get" action="{{ path('blog_index') }}" class="row g-2 align-items-end" novalidate="novalidate">
+                        <input type="hidden" name="sort" value="{{ sort }}">
+                        <div class="col-md-5">
+                            <label for="q" class="form-label">Search by title</label>
+                            <input type="text" name="q" id="q" class="form-control" value="{{ search }}" placeholder="Article title...">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label d-block">Sort by date</label>
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('blog_index', { q: search, sort: 'DESC' }) }}" class="btn {{ sort == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
+                                <a href="{{ path('blog_index', { q: search, sort: 'ASC' }) }}" class="btn {{ sort == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                {% for article in articles %}
+                    <div class="col-lg-6 col-xl-3">
+                        <div class="blog-item">
+                            <div class="blog-img">
+                                {% if article.image %}
+                                    <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100" alt="{{ article.title }}">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title }}" loading="lazy">
+                                {% endif %}
+                                <div class="blog-info">
+                                    <span><i class="fa fa-clock"></i> {{ (article.publishedAt ?? article.createdAt)|date('d M Y') }}</span>
+                                    <div class="d-flex">
+                                        <span class="me-3">{{ article.comments|length }} <i class="fa fa-comment"></i></span>
+                                    </div>
+                                </div>
+                                <div class="search-icon">
+                                    <a href="{{ path('blog_show', { id: article.id }) }}" class="my-auto"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a>
+                                </div>
+                            </div>
+                            <div class="text-dark border p-4">
+                                <h4 class="mb-4">{{ article.title }}</h4>
+                                {% if article.writer %}
+                                    <p class="text-muted small mb-2">Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>
+                                {% endif %}
+                                {% set excerptText = article.content|striptags|decode_html_entities %}
+                                <p class="mb-4 article-excerpt">{{ excerptText|length > 120 ? excerptText|slice(0, 120) ~ '...' : excerptText }}</p>
+                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { id: article.id }) }}">Read more</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <div class="text-center py-5 text-muted">
+                            <p class="fs-5">No articles found.</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

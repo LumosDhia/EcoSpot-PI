@@ -1,0 +1,110 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Repository;
+
+use App\Entity\Article;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
+
+/**
+ * @extends ServiceEntityRepository<Article>
+ */
+class ArticleRepository extends ServiceEntityRepository
+{
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Article::class);
+    }
+
+    /**
+     * Published articles only (for public blog). Order by publishedAt.
+     * @return Article[]
+     */
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC'): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->andWhere('a.publishedAt IS NOT NULL')
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC');
+
+        if ($search !== null && $search !== '') {
+            $qb->andWhere('a.title LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    public function findOnePublishedById(int $id): ?Article
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->andWhere('a.id = :id')
+            ->andWhere('a.publishedAt IS NOT NULL')
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('id', $id)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
+     * All articles for admin/NGO (drafts, scheduled, published). Order by createdAt.
+     * @return Article[]
+     */
+    public function findAllForAdmin(string $order = 'DESC'): array
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Articles written by admin (or no writer). For admin's own list: full edit/publish/delete.
+     * @return Article[]
+     */
+    public function findAdminOwnArticles(\App\Entity\User $admin, string $order = 'DESC'): array
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->andWhere('a.writer = :admin OR a.writer IS NULL')
+            ->setParameter('admin', $admin)
+            ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Articles written by NGO users. Admin can only delete or return for revision (no edit/publish).
+     * @return Article[]
+     */
+    public function findNgoArticlesForAdmin(string $order = 'DESC'): array
+    {
+        $all = $this->findAllForAdmin($order);
+        return array_values(array_filter($all, fn (Article $a): bool => $a->isWrittenByNgo()));
+    }
+
+    public function save(Article $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Article $entity, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($entity);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+}

@@ -1,0 +1,89 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}{{ article.title }} - EcoSpot Blog{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .article-content.prose { font-size: 1.0625rem; line-height: 1.7; }
+        .article-content.prose img { max-width: 100%; height: auto; border-radius: 0.25rem; }
+        .article-content.prose ul, .article-content.prose ol { padding-left: 1.5rem; margin-bottom: 1rem; }
+        .article-content.prose p { margin-bottom: 1rem; }
+        .article-content.prose h2 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; }
+        .article-content.prose table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        .article-content.prose table td, .article-content.prose table th { border: 1px solid #dee2e6; padding: 0.5rem; }
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">{{ article.title }}</h3>
+            <p class="fs-5 text-white mb-4">Published {{ (article.publishedAt ?? article.createdAt)|date('d/m/Y H:i') }}</p>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Blog</a></li>
+                <li class="breadcrumb-item active text-white">Article</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <article class="blog-item mb-5">
+                        {% if article.image %}
+                            <div class="blog-img mb-4">
+                                <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100 rounded" alt="{{ article.title }}">
+                            </div>
+                        {% endif %}
+                        <div class="text-dark border p-4 p-md-5">
+                            <h1 class="mb-4">{{ article.title }}</h1>
+                            <p class="text-muted small mb-4">
+                                <i class="fa fa-clock me-2"></i>{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : article.createdAt|date('d/m/Y H:i') }}
+                                {% if article.writer %}
+                                    <span class="ms-3"><i class="fas fa-user-edit me-1"></i>Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</span>
+                                {% endif %}
+                            </p>
+                            <div class="article-content prose">{{ article.content|raw }}</div>
+                        </div>
+                    </article>
+
+                    <section class="border p-4 p-md-5 mb-5">
+                        <h4 class="mb-4 text-primary">Comments ({{ comments|length }})</h4>
+                        {% for comment in comments %}
+                            <div class="border-bottom pb-3 mb-3 {% if not loop.last %}{% else %}border-0 mb-0{% endif %}">
+                                <strong class="text-primary">{{ comment.author }}</strong>
+                                <span class="text-muted small"> — {{ comment.createdAt|date('d/m/Y H:i') }}</span>
+                                <p class="mb-0 mt-1">{{ comment.content|nl2br }}</p>
+                            </div>
+                        {% else %}
+                            <p class="text-muted mb-0">No comments yet. Be the first to comment!</p>
+                        {% endfor %}
+                    </section>
+
+                    <section class="border p-4 p-md-5">
+                        <h4 class="mb-4 text-primary">Leave a comment</h4>
+                        {% if app.user %}
+                            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+                            <div class="mb-3">
+                                {{ form_row(form.content) }}
+                            </div>
+                            <button type="submit" class="btn-hover-bg btn btn-primary text-white py-2 px-4">Submit</button>
+                            {{ form_end(form) }}
+                            <p class="text-muted small mt-2 mb-0">Comment will appear as {{ app.user.firstname }} {{ app.user.lastname }}.</p>
+                        {% else %}
+                            <p class="text-muted mb-0">You must <a href="{{ path('app_login', { _target_path: app.request.requestUri }) }}">sign in</a> to leave a comment.</p>
+                        {% endif %}
+                    </section>
+
+                    <p class="mt-4">
+                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i>Back to blog</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

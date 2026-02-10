@@ -1,0 +1,63 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}{{ article.title }} - Admin EcoSpot{% endblock %}
+{% block page_title %}Article: {{ article.title }}{% endblock %}
+
+{% block body %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-2">Id</dt>
+                <dd class="col-sm-10">{{ article.id }}</dd>
+                <dt class="col-sm-2">Title</dt>
+                <dd class="col-sm-10">{{ article.title }}</dd>
+                <dt class="col-sm-2">Content</dt>
+                <dd class="col-sm-10">{{ article.content|nl2br }}</dd>
+                <dt class="col-sm-2">Image</dt>
+                <dd class="col-sm-10">{{ article.image ?? '—' }}</dd>
+                <dt class="col-sm-2">Created at</dt>
+                <dd class="col-sm-10">{{ article.createdAt|date('d/m/Y H:i') }}</dd>
+            </dl>
+        </div>
+    </div>
+    {% if article.adminRevisionNote %}
+        <div class="alert alert-info mb-3">
+            <strong>Admin revision note (for NGO):</strong><br>{{ article.adminRevisionNote|nl2br }}
+        </div>
+    {% endif %}
+    <div class="d-flex gap-2">
+        {% if is_ngo_article %}
+            <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Back to list</a>
+            {% if article.publicationStatus == 'published' %}
+                <a href="{{ path('admin_blog_article_return_revision', { id: article.id }) }}" class="btn btn-warning">Return for revision</a>
+            {% endif %}
+            <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this NGO article?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
+            </form>
+        {% else %}
+            <a href="{{ path('admin_blog_article_edit', { id: article.id }) }}" class="btn btn-primary">Edit</a>
+            <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Back to list</a>
+            <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this article?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
+            </form>
+        {% endif %}
+    </div>
+    {% if article.comments|length > 0 %}
+        <div class="card mt-4">
+            <div class="card-header">Comments ({{ article.comments|length }})</div>
+            <ul class="list-group list-group-flush">
+                {% for comment in article.comments %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ comment.author }}</strong> — {{ comment.createdAt|date('d/m/Y H:i') }}
+                            <p class="mb-0 mt-1">{{ comment.content }}</p>
+                        </div>
+                        <a href="{{ path('admin_blog_comment_show', { id: comment.id }) }}" class="btn btn-outline-secondary btn-sm">View</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}

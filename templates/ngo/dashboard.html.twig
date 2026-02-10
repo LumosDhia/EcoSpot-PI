@@ -1,0 +1,42 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}NGO Dashboard - EcoSpot{% endblock %}
+{% block page_title %}NGO Dashboard{% endblock %}
+
+{% block body %}
+    <div class="row g-4">
+        <div class="col-md-4">
+            <a href="{{ path('ngo_article_new') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Create article</h5>
+                        <p class="card-text small text-muted">Publish a new blog article</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('ngo_comments_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-comments fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Comments</h5>
+                        <p class="card-text small text-muted">View and flag comments</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('ngo_event_new') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-calendar-plus fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Create event</h5>
+                        <p class="card-text small text-muted">Add a new event</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,126 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Articles - Admin EcoSpot{% endblock %}
+{% block page_title %}Blog articles{% endblock %}
+
+{% block body %}
+    {# Admin's own articles: full control (create, edit, publish, delete) #}
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>My articles</span>
+            <a href="{{ path('admin_blog_article_new') }}" class="btn btn-primary btn-sm">New article</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Id</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Published</th>
+                            <th width="220">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in admin_articles %}
+                            <tr>
+                                <td>{{ article.id }}</td>
+                                <td>{{ article.title }}</td>
+                                <td>
+                                    {% set status = article.publicationStatus %}
+                                    {% if status == 'draft' %}<span class="badge bg-secondary">Draft</span>
+                                    {% elseif status == 'scheduled' %}<span class="badge bg-info">Scheduled</span>
+                                    {% else %}<span class="badge bg-success">Published</span>{% endif %}
+                                </td>
+                                <td>{{ article.createdAt|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    {% if status is defined and status == 'scheduled' and article.publishedAt %}
+                                        <span class="text-info">Scheduled for {{ article.publishedAt|date('d/m/Y H:i') }}</span>
+                                    {% elseif article.publishedAt %}
+                                        {{ article.publishedAt|date('d/m/Y H:i') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-secondary btn-sm">View</a>
+                                    <a href="{{ path('admin_blog_article_edit', { id: article.id }) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                    {% if article.publicationStatus == 'draft' %}
+                                        <form method="post" action="{{ path('admin_blog_article_publish', { id: article.id }) }}" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('publish' ~ article.id) }}">
+                                            <button type="submit" class="btn btn-success btn-sm">Publish</button>
+                                        </form>
+                                    {% endif %}
+                                    <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this article?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No articles. Create one with "New article".</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {# NGO articles: view, delete, or return for revision only (no edit/publish) #}
+    <div class="card">
+        <div class="card-header">
+            <span>NGO articles</span>
+            <small class="text-muted">You can only view, delete, or return for revision. No editing or publishing.</small>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Id</th>
+                            <th>Title</th>
+                            <th>Writer</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th width="220">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in ngo_articles %}
+                            <tr>
+                                <td>{{ article.id }}</td>
+                                <td>{{ article.title }}</td>
+                                <td>{{ article.writer ? article.writer.firstname ~ ' ' ~ article.writer.lastname : '—' }}</td>
+                                <td>
+                                    {% set status = article.publicationStatus %}
+                                    {% if status == 'draft' %}<span class="badge bg-secondary">Draft</span>
+                                    {% elseif status == 'scheduled' %}<span class="badge bg-info">Scheduled</span>
+                                    {% else %}<span class="badge bg-success">Published</span>{% endif %}
+                                </td>
+                                <td>{{ article.createdAt|date('d/m/Y H:i') }}</td>
+                                <td>
+                                    <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-secondary btn-sm">View</a>
+                                    {% if article.publicationStatus == 'published' %}
+                                        <a href="{{ path('admin_blog_article_return_revision', { id: article.id }) }}" class="btn btn-warning btn-sm">Return for revision</a>
+                                    {% endif %}
+                                    <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this NGO article?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">No NGO articles.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

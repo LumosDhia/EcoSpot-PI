@@ -1,0 +1,47 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Comments - EcoSpot{% endblock %}
+{% block page_title %}Comments{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header">Comments (flag inappropriate ones for the administrator)</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Author</th>
+                            <th>Content</th>
+                            <th>Article</th>
+                            <th>Date</th>
+                            <th>Flagged</th>
+                            <th width="100">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comment in comments %}
+                            <tr class="{{ comment.flagged ? 'table-warning' : '' }}">
+                                <td>{{ comment.author }}</td>
+                                <td>{{ comment.content|slice(0, 50) }}{% if comment.content|length > 50 %}...{% endif %}</td>
+                                <td>{{ comment.article.title }}</td>
+                                <td>{{ comment.createdAt|date('d/m/Y H:i') }}</td>
+                                <td>{% if comment.flagged %}<span class="badge bg-warning">Flagged</span>{% else %}—{% endif %}</td>
+                                <td>
+                                    {% if not comment.flagged %}
+                                        <form method="post" action="{{ path('ngo_comment_flag', { id: comment.id }) }}" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('flag' ~ comment.id) }}">
+                                            <button type="submit" class="btn btn-warning btn-sm">Flag</button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="6" class="text-center text-muted py-4">No comments yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}New article - Admin EcoSpot{% endblock %}
+{% block page_title %}New article{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
+            <div class="mb-3">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title) }}
+                {{ form_errors(form.title) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.content) }}
+                {{ form_widget(form.content) }}
+                {{ form_errors(form.content) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.imageFile) }}
+                {{ form_widget(form.imageFile) }}
+                {{ form_errors(form.imageFile) }}
+                <small class="text-muted">Upload a thumbnail or hero image (JPEG, PNG, GIF, WebP).</small>
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.image) }}
+                {{ form_widget(form.image) }}
+                {{ form_errors(form.image) }}
+                <small class="text-muted">Or paste an image URL if you prefer.</small>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    {{ form_label(form.publishMode) }}
+                    {{ form_widget(form.publishMode) }}
+                    {{ form_errors(form.publishMode) }}
+                </div>
+                <div class="col-md-6 js-scheduled-wrap" style="display: none;">
+                    {{ form_label(form.scheduledAt) }}
+                    {{ form_widget(form.scheduledAt) }}
+                    {{ form_errors(form.scheduledAt) }}
+                </div>
+            </div>
+            <div class="d-flex gap-2 js-article-form">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+
+    <script src="https://cdn.tiny.cloud/1/gjqfg77yk8o4mrwj66nk2auuw1ruj96uzsm32cxfp6quajrb/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var wrap = document.querySelector('.js-scheduled-wrap');
+        var select = document.querySelector('#article_publishMode');
+        function toggleScheduled() {
+          wrap.style.display = select && select.value === 'schedule' ? 'block' : 'none';
+        }
+        if (select) {
+          select.addEventListener('change', toggleScheduled);
+          toggleScheduled();
+        }
+
+        tinymce.init({
+          selector: '.article-content-editor',
+          height: 400,
+          plugins: 'lists link image code table',
+          toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | link image | code',
+          content_style: 'body { font-family: Roboto, sans-serif; font-size: 14px; }',
+          images_upload_url: '{{ url('blog_editor_upload_image') }}',
+          images_upload_credentials: true,
+          automatic_uploads: true,
+          images_reuse_filename: true,
+        });
+
+        document.querySelector('.js-article-form')?.closest('form')?.addEventListener('submit', function() {
+          if (window.tinymce) {
+            window.tinymce.triggerSave();
+          }
+        });
+      });
+    </script>
+{% endblock %}
