@@ -1,0 +1,90 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Admin Dashboard - EcoSpot{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    <p class="text-muted mb-4">Manage content, users, and community tickets.</p>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_pending_tickets') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Pending tickets</h5>
+                        <p class="card-text small text-muted">Review, publish, refuse or send back tickets</p>
+                        {% if pending_tickets_count is defined and pending_tickets_count > 0 %}<span class="badge bg-warning text-dark">{{ pending_tickets_count }}</span>{% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_completions_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-check-double fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Completions</h5>
+                        <p class="card-text small text-muted">Mark ticket completions as achieved</p>
+                        {% if pending_completions_count is defined and pending_completions_count > 0 %}<span class="badge bg-info">{{ pending_completions_count }}</span>{% endif %}
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_blog_article_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Articles</h5>
+                        <p class="card-text small text-muted">Manage blog articles (all authors)</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_blog_comment_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-comments fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Comments</h5>
+                        <p class="card-text small text-muted">View and manage blog comments</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_events_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Events</h5>
+                        <p class="card-text small text-muted">Create and manage events</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_users_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Users</h5>
+                        <p class="card-text small text-muted">Create users and manage roles</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-lg-4">
+            <a href="{{ path('admin_sponsors_index') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-hand-holding-heart fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Sponsors</h5>
+                        <p class="card-text small text-muted">Manage sponsors</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endblock %}

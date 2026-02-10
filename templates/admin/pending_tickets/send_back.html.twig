@@ -1,0 +1,28 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Send ticket back - EcoSpot Admin{% endblock %}
+{% block page_title %}Send ticket back to user{% endblock %}
+
+{% block body %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ ticket.title }}</h5>
+            <p class="card-text text-muted">{{ ticket.description|slice(0, 200) }}{% if ticket.description|length > 200 %}...{% endif %}</p>
+            <p class="small mb-0">By {{ ticket.user.firstname }} {{ ticket.user.lastname }} ({{ ticket.user.email }})</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{{ path('admin_pending_ticket_send_back', { id: ticket.id }) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-sendback-' ~ ticket.id) }}">
+                <div class="mb-3">
+                    <label for="note" class="form-label">Note for the user <span class="text-danger">*</span></label>
+                    <textarea name="note" id="note" class="form-control" rows="4" required placeholder="Explain what they should modify..."></textarea>
+                    <div class="form-text">The user will see this note and can edit the ticket and resubmit.</div>
+                </div>
+                <button type="submit" class="btn btn-warning">Send back</button>
+                <a href="{{ path('admin_pending_tickets') }}" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

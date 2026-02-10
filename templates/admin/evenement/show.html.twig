@@ -1,0 +1,59 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}{{ event.nom }} - Admin EcoSpot{% endblock %}
+{% block page_title %}Event: {{ event.nom }}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {% if event.image %}
+                <div class="mb-3">
+                    <img src="{{ asset(event.image) }}" alt="{{ event.nom }}" class="img-fluid rounded" style="max-height: 200px; object-fit: cover;">
+                </div>
+            {% endif %}
+            <dl class="row">
+                <dt class="col-sm-2">Name</dt>
+                <dd class="col-sm-10">{{ event.nom }}</dd>
+
+                <dt class="col-sm-2">Description</dt>
+                <dd class="col-sm-10">{{ event.description|nl2br }}</dd>
+
+                <dt class="col-sm-2">Location</dt>
+                <dd class="col-sm-10">{{ event.lieu }}</dd>
+
+                <dt class="col-sm-2">Capacity</dt>
+                <dd class="col-sm-10">{{ event.capacite }}</dd>
+
+                <dt class="col-sm-2">Start date</dt>
+                <dd class="col-sm-10">{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</dd>
+
+                <dt class="col-sm-2">End date</dt>
+                <dd class="col-sm-10">{{ event.dateFin ? event.dateFin|date('d/m/Y H:i') : '—' }}</dd>
+
+                {% if event.latitude is not null or event.longitude is not null %}
+                    <dt class="col-sm-2">Coordinates</dt>
+                    <dd class="col-sm-10">{{ event.latitude }}, {{ event.longitude }}</dd>
+                {% endif %}
+
+                {% if event.sponsors|length > 0 %}
+                    <dt class="col-sm-2">Sponsors</dt>
+                    <dd class="col-sm-10">
+                        <ul class="list-unstyled mb-0">
+                            {% for sponsor in event.sponsors %}
+                                <li><a href="{{ path('admin_sponsors_show', { id: sponsor.id }) }}">{{ sponsor.nom }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                {% endif %}
+            </dl>
+            <div class="d-flex gap-2">
+                <a href="{{ path('admin_events_edit', { id: event.id }) }}" class="btn btn-primary">Edit</a>
+                <a href="{{ path('admin_events_index') }}" class="btn btn-outline-secondary">Back to list</a>
+                <form method="post" action="{{ path('admin_events_delete', { id: event.id }) }}" class="d-inline" onsubmit="return confirm('Delete this event?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

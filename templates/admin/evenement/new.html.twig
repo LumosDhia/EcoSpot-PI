@@ -1,0 +1,170 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}New event - Admin EcoSpot{% endblock %}
+{% block page_title %}New event{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <style>
+        #event-map { height: 380px; width: 100%; border-radius: 8px; margin-top: 8px; border: 1px solid #dee2e6; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        {{ form_label(form.nom) }}
+                        {{ form_widget(form.nom) }}
+                        {{ form_errors(form.nom) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.description) }}
+                        {{ form_widget(form.description) }}
+                        {{ form_errors(form.description) }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.dateDebut) }}
+                            {{ form_widget(form.dateDebut) }}
+                            {{ form_errors(form.dateDebut) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.dateFin) }}
+                            {{ form_widget(form.dateFin) }}
+                            {{ form_errors(form.dateFin) }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.lieu) }}
+                            {{ form_widget(form.lieu) }}
+                            {{ form_errors(form.lieu) }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            {{ form_label(form.capacite) }}
+                            {{ form_widget(form.capacite) }}
+                            {{ form_errors(form.capacite) }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precise location (click on map)</label>
+                        <div id="event-map"></div>
+                        <p class="small text-muted mt-1 mb-2">Click on the map to set the marker; the location name will be filled above.</p>
+                        {{ form_widget(form.latitude) }}
+                        {{ form_widget(form.longitude) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.imageFile) }}
+                        {{ form_widget(form.imageFile) }}
+                        {{ form_errors(form.imageFile) }}
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        {{ form_label(form.sponsors) }}
+                        <p class="small text-muted mb-2">Select which sponsors are linked to this event. Full list below.</p>
+                        <div class="border rounded p-3 bg-light" style="max-height: 420px; overflow-y: auto;">
+                            {% for child in form.sponsors %}
+                                <div class="form-check mb-2">
+                                    {{ form_widget(child, { attr: { class: 'form-check-input' } }) }}
+                                    {{ form_label(child, null, { label_attr: { class: 'form-check-label' } }) }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted small mb-0">No sponsors yet. <a href="{{ path('admin_sponsors_new') }}">Create a sponsor</a> first.</p>
+                            {% endfor %}
+                        </div>
+                        {{ form_errors(form.sponsors) }}
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ path('admin_events_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var latInput = document.getElementById('evenement_latitude');
+            var lngInput = document.getElementById('evenement_longitude');
+            var lieuInput = document.getElementById('evenement_lieu');
+            var defaultLat = latInput && latInput.value ? parseFloat(latInput.value) : 48.8566;
+            var defaultLng = lngInput && lngInput.value ? parseFloat(lngInput.value) : 2.3522;
+            var hasCoords = latInput && lngInput && latInput.value && lngInput.value;
+            var zoomLevel = hasCoords ? 15 : 6;
+
+            var map = L.map('event-map').setView([defaultLat, defaultLng], zoomLevel);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            var marker = null;
+
+            function updateInputs(lat, lng) {
+                if (latInput) latInput.value = lat.toFixed(6);
+                if (lngInput) lngInput.value = lng.toFixed(6);
+            }
+
+            function fetchLocationName(lat, lng) {
+                if (!lieuInput) return;
+                lieuInput.placeholder = 'Fetching address...';
+                lieuInput.disabled = true;
+                fetch('https://nominatim.openstreetmap.org/reverse?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng) + '&format=json', {
+                    headers: { 'Accept': 'application/json', 'User-Agent': 'EcoSpot-EventAdmin/1.0' }
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data && data.display_name) {
+                        lieuInput.value = data.display_name;
+                    }
+                    lieuInput.placeholder = 'Location name (or click on map)';
+                })
+                .catch(function () {
+                    lieuInput.placeholder = 'Location name (or type manually)';
+                })
+                .finally(function () {
+                    lieuInput.disabled = false;
+                });
+            }
+
+            function onLocationChange(lat, lng) {
+                updateInputs(lat, lng);
+                fetchLocationName(lat, lng);
+            }
+
+            if (hasCoords) {
+                marker = L.marker([defaultLat, defaultLng], { draggable: true }).addTo(map);
+                marker.on('dragend', function () {
+                    var pos = marker.getLatLng();
+                    onLocationChange(pos.lat, pos.lng);
+                });
+            }
+
+            map.on('click', function (e) {
+                var lat = e.latlng.lat;
+                var lng = e.latlng.lng;
+                if (marker) {
+                    marker.setLatLng(e.latlng);
+                } else {
+                    marker = L.marker(e.latlng, { draggable: true }).addTo(map);
+                    marker.on('dragend', function () {
+                        var pos = marker.getLatLng();
+                        onLocationChange(pos.lat, pos.lng);
+                    });
+                }
+                onLocationChange(lat, lng);
+            });
+        });
+    </script>
+{% endblock %}

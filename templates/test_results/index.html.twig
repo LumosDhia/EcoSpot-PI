@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test results - EcoSpot</title>
+    <link href="{{ asset('environs/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f1f5f9; padding: 1.5rem; }
+        .card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,.08); border-radius: 8px; }
+        .badge-pass { background: #198754; }
+        .badge-fail { background: #dc3545; }
+        .badge-error { background: #fd7e14; }
+        pre { background: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 6px; font-size: 0.85rem; overflow-x: auto; max-height: 400px; }
+        .test-pass td { background: rgba(25, 135, 84, 0.08); }
+        .test-fail td, .test-error td { background: rgba(220, 53, 69, 0.08); }
+        .failure-msg { font-size: 0.8rem; color: #b91c1c; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <h1 class="mb-4"><i class="fas fa-vial text-primary me-2"></i>PHPUnit test results</h1>
+
+        {% set success = results.exit_code == 0 and results.failures == 0 and results.errors == 0 %}
+        <div class="card mb-4">
+            <div class="card-body {{ success ? 'border-start border-5 border-success' : 'border-start border-5 border-danger' }}">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="h5 mb-2">
+                            {% if success %}
+                                <i class="fas fa-check-circle text-success me-2"></i>All tests passed
+                            {% else %}
+                                <i class="fas fa-times-circle text-danger me-2"></i>Some tests failed
+                            {% endif %}
+                        </h2>
+                        <p class="text-muted mb-0">
+                            <strong>{{ results.tests }}</strong> tests,
+                            <strong>{{ results.assertions }}</strong> assertions,
+                            <strong>{{ results.failures }}</strong> failures,
+                            <strong>{{ results.errors }}</strong> errors
+                            — <strong>{{ results.time|number_format(2) }}s</strong>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-2 mt-md-0">
+                        <a href="{{ path('test_results') }}" class="btn btn-primary"><i class="fas fa-sync-alt me-1"></i> Run again</a>
+                        <a href="{{ path('blog_index') }}" class="btn btn-outline-secondary">Blog</a>
+                        <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Admin</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% for suite in results.suites %}
+            <div class="card mb-4">
+                <div class="card-header bg-white fw-bold">{{ suite.name }}</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 3rem;">Status</th>
+                                    <th>Test</th>
+                                    <th>Class</th>
+                                    <th style="width: 6rem;">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for case in suite.cases %}
+                                    <tr class="test-{{ case.status }}">
+                                        <td>
+                                            {% if case.status == 'pass' %}
+                                                <span class="badge badge-pass"><i class="fas fa-check"></i></span>
+                                            {% elseif case.status == 'fail' %}
+                                                <span class="badge badge-fail"><i class="fas fa-times"></i></span>
+                                            {% else %}
+                                                <span class="badge badge-error"><i class="fas fa-exclamation-triangle"></i></span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ case.name }}</td>
+                                        <td><code class="small">{{ case.class }}</code></td>
+                                        <td>{{ case.time|number_format(3) }}s</td>
+                                    </tr>
+                                    {% if case.message %}
+                                        <tr class="test-{{ case.status }}">
+                                            <td></td>
+                                            <td colspan="3"><div class="failure-msg">{{ case.message }}</div></td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+        {% if results.output %}
+            <div class="card">
+                <div class="card-header bg-white fw-bold">Raw PHPUnit output</div>
+                <div class="card-body p-0">
+                    <pre class="mb-0">{{ results.output }}</pre>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

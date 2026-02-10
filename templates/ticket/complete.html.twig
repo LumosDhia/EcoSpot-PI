@@ -1,0 +1,32 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}I completed this ticket - EcoSpot{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="h5 mb-0">I completed this ticket</h1>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted">Submit proof that you completed this task. An administrator will review and can mark it as achieved.</p>
+                        <div class="mb-3 p-2 bg-light rounded">
+                            <strong>{{ ticket.title }}</strong><br>
+                            <small class="text-muted">{{ ticket.location }}</small>
+                        </div>
+                        {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
+                        {{ form_row(form.message) }}
+                        {{ form_row(form.image) }}
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">Submit completion</button>
+                            <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

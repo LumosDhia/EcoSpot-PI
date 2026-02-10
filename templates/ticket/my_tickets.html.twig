@@ -1,0 +1,71 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}My tickets - EcoSpot{% endblock %}
+{% block page_title %}My tickets{% endblock %}
+
+{% block body %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="text-muted mb-0">Create and manage your tickets. Pending tickets are reviewed by the administration.</p>
+        <a href="{{ path('ticket_create') }}" class="btn btn-primary">New ticket</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body py-2">
+            <form method="get" class="row g-2 align-items-end">
+                <div class="col-auto">
+                    <label for="status" class="form-label mb-0">Status</label>
+                </div>
+                <div class="col-md-3">
+                    <select name="status" id="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                        <option value="">All statuses</option>
+                        {% for s in statuses %}
+                            <option value="{{ s.value }}" {{ currentStatus == s ? 'selected' : '' }}>{{ s.getLabel() }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if tickets is empty %}
+        <div class="alert alert-info">You have no tickets yet. <a href="{{ path('ticket_create') }}">Create one</a>.</div>
+    {% else %}
+        <div class="row">
+            {% for ticket in tickets %}
+                <div class="col-md-6 mb-3">
+                    <div class="card h-100 position-relative">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-1">
+                            <span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel() }}</span>
+                            <span class="badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel() }}</span>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ ticket.title }}</h5>
+                            <p class="card-text small text-muted">
+                                <i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel() }}
+                                &middot; <i class="bi bi-geo-alt"></i> {{ ticket.location }}
+                            </p>
+                            <p class="card-text">{{ ticket.description|length > 120 ? ticket.description|slice(0, 120) ~ '...' : ticket.description }}</p>
+                            {% if ticket.adminNotes and ticket.status.value == 'SENT_BACK' %}
+                                <div class="alert alert-light border small py-2">
+                                    <strong>Admin note:</strong> {{ ticket.adminNotes }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-1">
+                            <small class="text-muted">Created {{ ticket.createdAt|date('d/m/Y H:i') }}</small>
+                            <div>
+                                <a href="{{ path('ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                                {% if ticket.status.value == 'SENT_BACK' %}
+                                    <a href="{{ path('ticket_edit', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">Edit and resubmit</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if ticket.status.value == 'PUBLISHED' and not ticket.completionSubmittedAt and not ticket.achievedAt %}
+                            <a href="{{ path('public_ticket_complete', { id: ticket.id }) }}" class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; line-height: 1;" title="I completed this – submit proof"><i class="fas fa-check"></i></a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

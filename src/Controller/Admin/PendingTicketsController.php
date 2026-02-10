@@ -1,0 +1,117 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Controller\Admin;
+
+use App\Entity\Ticket;
+use App\Enum\TicketStatus;
+use App\Repository\TicketRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[Route('/admin/pending-tickets')]
+#[IsGranted('ROLE_ADMIN')]
+class PendingTicketsController extends AbstractController
+{
+    public function __construct(
+        private readonly TicketRepository $ticketRepository
+    ) {
+    }
+
+    #[Route('', name: 'admin_pending_tickets', methods: ['GET'])]
+    public function index(): Response
+    {
+        $tickets = $this->ticketRepository->findPendingForAdmin();
+
+        return $this->render('admin/pending_tickets/index.html.twig', [
+            'tickets' => $tickets,
+        ]);
+    }
+
+    #[Route('/{id}/publish', name: 'admin_pending_ticket_publish', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function publish(Request $request, Ticket $ticket): Response
+    {
+        if (!$this->isStatusPendingOrSentBack($ticket)) {
+            $this->addFlash('error', 'This ticket is not pending.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        if (!$this->isCsrfTokenValid('pending-ticket-publish-' . $ticket->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid security token.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        $ticket->setStatus(TicketStatus::PUBLISHED);
+        $ticket->setAdminNotes(null);
+        $this->ticketRepository->save($ticket);
+        $this->addFlash('success', 'Ticket published. It is now visible to everyone.');
+
+        return $this->redirectToRoute('admin_pending_tickets');
+    }
+
+    #[Route('/{id}/refuse', name: 'admin_pending_ticket_refuse', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function refuse(Request $request, Ticket $ticket): Response
+    {
+        if (!$this->isStatusPendingOrSentBack($ticket)) {
+            $this->addFlash('error', 'This ticket is not pending.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('pending-ticket-refuse-' . $ticket->getId(), (string) $request->request->get('_token'))) {
+                $this->addFlash('error', 'Invalid security token.');
+                return $this->redirectToRoute('admin_pending_tickets');
+            }
+            $note = $request->request->get('note', '');
+            $ticket->setAdminNotes($note !== '' ? $note : null);
+            $ticket->setStatus(TicketStatus::REFUSED);
+            $this->ticketRepository->save($ticket);
+            $this->addFlash('success', 'Ticket refused.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        return $this->render('admin/pending_tickets/refuse.html.twig', [
+            'ticket' => $ticket,
+        ]);
+    }
+
+    #[Route('/{id}/send-back', name: 'admin_pending_ticket_send_back', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    public function sendBack(Request $request, Ticket $ticket): Response
+    {
+        if (!$this->isStatusPendingOrSentBack($ticket)) {
+            $this->addFlash('error', 'This ticket is not pending.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        if ($request->isMethod('POST')) {
+            if (!$this->isCsrfTokenValid('pending-ticket-sendback-' . $ticket->getId(), (string) $request->request->get('_token'))) {
+                $this->addFlash('error', 'Invalid security token.');
+                return $this->redirectToRoute('admin_pending_tickets');
+            }
+            $note = $request->request->get('note', '');
+            if ($note === '') {
+                $this->addFlash('error', 'Please provide a note for the user.');
+                return $this->render('admin/pending_tickets/send_back.html.twig', ['ticket' => $ticket]);
+            }
+            $ticket->setAdminNotes($note);
+            $ticket->setStatus(TicketStatus::SENT_BACK);
+            $this->ticketRepository->save($ticket);
+            $this->addFlash('success', 'Ticket sent back to the user with your note.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        return $this->render('admin/pending_tickets/send_back.html.twig', [
+            'ticket' => $ticket,
+        ]);
+    }
+
+    private function isStatusPendingOrSentBack(Ticket $ticket): bool
+    {
+        $s = $ticket->getStatus();
+        return $s === TicketStatus::PENDING || $s === TicketStatus::SENT_BACK;
+    }
+}

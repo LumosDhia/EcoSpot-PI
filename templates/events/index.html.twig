@@ -1,0 +1,141 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Events - EcoSpot{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">Events</h3>
+            <p class="fs-5 text-white mb-4">Discover environmental events and activities.</p>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
+                <li class="breadcrumb-item active text-white">Events</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid blog py-5">
+        <div class="container py-5">
+            <div class="text-center mx-auto pb-4" style="max-width: 800px;">
+                <h5 class="text-uppercase text-primary">Upcoming & past</h5>
+                <h1 class="mb-4">EcoSpot Events</h1>
+            </div>
+
+            <div class="card mb-5">
+                <div class="card-body">
+                    <form method="get" action="{{ path('events_index') }}" class="row g-2 align-items-end" id="events-search-form">
+                        <div class="col-md-9">
+                            <label for="events-search" class="form-label">Search events</label>
+                            <input type="text" name="q" id="events-search" class="form-control" value="{{ search }}" placeholder="Search by name, description or location (matches from start)...">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row g-4" id="events-list">
+                {% for event in events %}
+                    <div class="col-lg-6 col-xl-4">
+                        <div class="blog-item">
+                            <div class="blog-img">
+                                {% if event.image %}
+                                    <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom }}" loading="lazy" style="height: 220px; object-fit: cover;">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800" class="img-fluid w-100" alt="{{ event.nom }}" style="height: 220px; object-fit: cover;" loading="lazy">
+                                {% endif %}
+                                <div class="blog-info">
+                                    <span><i class="fa fa-calendar"></i> {{ event.dateDebut ? event.dateDebut|date('d M Y') : '—' }}</span>
+                                    <span class="ms-2"><i class="fa fa-map-marker-alt"></i> {{ event.lieu }}</span>
+                                </div>
+                                <div class="search-icon">
+                                    <a href="{{ path('events_show', { id: event.id }) }}" class="my-auto" title="View event"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a>
+                                </div>
+                            </div>
+                            <div class="text-dark border p-4">
+                                <h4 class="mb-3">{{ event.nom }}</h4>
+                                <p class="mb-3">{{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}</p>
+                                <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
+                                    <span><i class="fa fa-users me-1"></i> {{ event.capacite }} capacity</span>
+                                    {% if event.sponsors|length > 0 %}
+                                        <span><i class="fa fa-hand-holding-heart me-1"></i> {{ event.sponsors|length }} sponsor(s)</span>
+                                    {% endif %}
+                                </div>
+                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('events_show', { id: event.id }) }}">View event</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <div class="text-center py-5 text-muted">
+                            <p class="fs-5">{% if search %}No events match "{{ search }}".{% else %}No events yet. Check back later.{% endif %}</p>
+                            {% if search %}
+                                <a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">Clear search</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        const searchInput = document.getElementById('events-search');
+        const listEl = document.getElementById('events-list');
+        const searchUrl = '{{ path('events_search') }}';
+        const defaultImg = 'https://images.unsplash.com/photo-1511497584788-876760111969?w=800';
+
+        function imageSrc(path) {
+            if (!path) return defaultImg;
+            return path.startsWith('/') ? path : '/' + path;
+        }
+
+        function renderEvents(events, searchTerm) {
+            if (events.length === 0) {
+                const msg = searchTerm
+                    ? `No events match "${searchTerm}".`
+                    : 'No events yet. Check back later.';
+                const clearLink = searchTerm
+                    ? '<a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">Clear search</a>'
+                    : '';
+                listEl.innerHTML = '<div class="col-12"><div class="text-center py-5 text-muted"><p class="fs-5">' + msg + '</p>' + clearLink + '</div></div>';
+                return;
+            }
+            listEl.innerHTML = events.map(function(e) {
+                const img = '<img src="' + imageSrc(e.image) + '" class="img-fluid w-100" alt="' + (e.nom || '').replace(/"/g, '&quot;') + '" loading="lazy" style="height: 220px; object-fit: cover;">';
+                const sponsors = e.sponsorsCount > 0 ? '<span><i class="fa fa-hand-holding-heart me-1"></i> ' + e.sponsorsCount + ' sponsor(s)</span>' : '';
+                return '<div class="col-lg-6 col-xl-4"><div class="blog-item"><div class="blog-img">' + img +
+                    '<div class="blog-info"><span><i class="fa fa-calendar"></i> ' + (e.dateDebut || '—') + '</span><span class="ms-2"><i class="fa fa-map-marker-alt"></i> ' + (e.lieu || '') + '</span></div>' +
+                    '<div class="search-icon"><a href="' + e.showUrl + '" class="my-auto" title="View event"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a></div></div>' +
+                    '<div class="text-dark border p-4"><h4 class="mb-3">' + (e.nom || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</h4>' +
+                    '<p class="mb-3">' + (e.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>' +
+                    '<div class="d-flex flex-wrap gap-2 small text-muted mb-3"><span><i class="fa fa-users me-1"></i> ' + (e.capacite ?? '') + ' capacity</span>' + sponsors + '</div>' +
+                    '<a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="' + e.showUrl + '">View event</a></div></div></div>';
+            }).join('');
+        }
+
+        let debounceTimer;
+        function doSearch() {
+            const q = searchInput.value.trim();
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(function() {
+                const url = searchUrl + (q ? '?q=' + encodeURIComponent(q) : '');
+                fetch(url, { headers: { 'Accept': 'application/json' } })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        renderEvents(data.events || [], q);
+                    })
+                    .catch(function() {
+                        renderEvents([], q);
+                    });
+            }, 200);
+        }
+
+        searchInput.addEventListener('input', doSearch);
+    })();
+    </script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}{{ event.nom }} - EcoSpot{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-4 mb-4">{{ event.nom }}</h3>
+            <p class="fs-5 text-white mb-4">{{ event.dateDebut ? event.dateDebut|date('l d F Y \\a\\t H:i') : '—' }} · {{ event.lieu }}</p>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('events_index') }}" class="text-white">Events</a></li>
+                <li class="breadcrumb-item active text-white">{{ event.nom|length > 30 ? event.nom|slice(0, 30) ~ '…' : event.nom }}</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid blog py-5">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-8">
+                    {% if event.image %}
+                        <img src="{{ asset(event.image) }}" class="img-fluid rounded mb-4 w-100" alt="{{ event.nom }}" style="max-height: 400px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4 p-lg-5">
+                            <h2 class="h4 mb-4">About this event</h2>
+                            <div class="mb-4">{{ event.description|nl2br }}</div>
+                            <dl class="row mb-0">
+                                <dt class="col-sm-3 text-muted">Start</dt>
+                                <dd class="col-sm-9">{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</dd>
+                                <dt class="col-sm-3 text-muted">End</dt>
+                                <dd class="col-sm-9">{{ event.dateFin ? event.dateFin|date('d/m/Y H:i') : '—' }}</dd>
+                                <dt class="col-sm-3 text-muted">Location</dt>
+                                <dd class="col-sm-9">{{ event.lieu }}</dd>
+                                <dt class="col-sm-3 text-muted">Capacity</dt>
+                                <dd class="col-sm-9">{{ event.capacite }} people</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-transparent border-0 py-3">
+                            <h3 class="h5 mb-0">Sponsors</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if event.sponsors|length > 0 %}
+                                <ul class="list-unstyled mb-0">
+                                    {% for sponsor in event.sponsors %}
+                                        <li class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                            {% if sponsor.image %}
+                                                <img src="{{ asset(sponsor.image) }}" alt="{{ sponsor.nom }}" class="rounded me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                                            {% else %}
+                                                <div class="rounded me-3 d-flex align-items-center justify-content-center bg-light text-primary" style="width: 48px; height: 48px; font-weight: 600;">{{ sponsor.nom|slice(0, 1)|upper }}</div>
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ sponsor.nom }}</strong>
+                                                {% if sponsor.secteur %}
+                                                    <br><span class="small text-muted">{{ sponsor.secteur }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted mb-0">No sponsors for this event.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <a href="{{ path('events_index') }}" class="btn btn-outline-primary">← Back to events</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

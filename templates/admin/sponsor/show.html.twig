@@ -1,0 +1,48 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}{{ sponsor.nom }} - Admin EcoSpot{% endblock %}
+{% block page_title %}Sponsor: {{ sponsor.nom }}{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {% if sponsor.image %}
+                <div class="mb-3">
+                    <img src="{{ asset(sponsor.image) }}" alt="{{ sponsor.nom }}" class="img-fluid rounded" style="max-height: 120px; object-fit: contain;">
+                </div>
+            {% endif %}
+            <dl class="row">
+                <dt class="col-sm-2">Name</dt>
+                <dd class="col-sm-10">{{ sponsor.nom }}</dd>
+
+                <dt class="col-sm-2">Description</dt>
+                <dd class="col-sm-10">{{ sponsor.description|nl2br }}</dd>
+
+                <dt class="col-sm-2">Sector</dt>
+                <dd class="col-sm-10">{{ sponsor.secteur }}</dd>
+
+                <dt class="col-sm-2">Location</dt>
+                <dd class="col-sm-10">{{ sponsor.localisation }}</dd>
+
+                {% if sponsor.evenements|length > 0 %}
+                    <dt class="col-sm-2">Events</dt>
+                    <dd class="col-sm-10">
+                        <ul class="list-unstyled mb-0">
+                            {% for event in sponsor.evenements %}
+                                <li><a href="{{ path('admin_events_show', { id: event.id }) }}">{{ event.nom }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </dd>
+                {% endif %}
+            </dl>
+            <div class="d-flex gap-2">
+                <a href="{{ path('admin_sponsors_edit', { id: sponsor.id }) }}" class="btn btn-primary">Edit</a>
+                <a href="{{ path('admin_sponsors_index') }}" class="btn btn-outline-secondary">Back to list</a>
+                <form method="post" action="{{ path('admin_sponsors_delete', { id: sponsor.id }) }}" class="d-inline" onsubmit="return confirm('Delete this sponsor?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sponsor.id) }}">
+                    <button type="submit" class="btn btn-outline-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

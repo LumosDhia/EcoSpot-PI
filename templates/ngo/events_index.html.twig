@@ -1,0 +1,37 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}My Events - EcoSpot{% endblock %}
+{% block page_title %}My Events{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Events</span>
+            <a href="{{ path('ngo_event_new') }}" class="btn btn-primary btn-sm">New event</a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Start date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td>{{ event.nom }}</td>
+                                <td>{{ event.lieu }}</td>
+                                <td>{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</td>
+                            </tr>
+                        {% else %}
+                            <tr><td colspan="3" class="text-center text-muted py-4">No events yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

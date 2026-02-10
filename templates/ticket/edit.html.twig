@@ -1,0 +1,123 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Edit ticket - EcoSpot{% endblock %}
+{% block page_title %}Edit ticket (sent back for modification){% endblock %}
+
+{% block body %}
+    <div class="card mb-3">
+        <div class="card-header bg-info text-white">Admin note</div>
+        <div class="card-body">
+            <p class="mb-0">{{ ticket.adminNotes ?? 'No note provided.' }}</p>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <p class="text-muted mb-3">You must <strong>search and select a location</strong> from the list so we can show the 7-day weather (only places supported by the weather API are accepted).</p>
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+            {{ form_row(form.title) }}
+            {{ form_row(form.description) }}
+            {{ form_row(form.imageFile) }}
+            <div class="mb-3">
+                <label class="form-label">Location <span class="text-danger">*</span></label>
+                <div id="ticket-location-search-wrap" class="mb-2 position-relative {{ ticket.latitude and ticket.longitude ? 'd-none' : '' }}">
+                    <div class="input-group">
+                        <input type="text" id="ticket-place-search" class="form-control" placeholder="Search for a place (e.g. Paris, London)" autocomplete="off">
+                        <button type="button" class="btn btn-outline-primary" id="ticket-location-search-btn">Search</button>
+                    </div>
+                    <div id="ticket-geocode-results" class="list-group mt-1 position-absolute start-0 w-100" style="z-index: 1050; display: none; max-height: 220px; overflow-y: auto; background: #fff;"></div>
+                </div>
+                <div id="ticket-location-selected" class="{{ ticket.latitude and ticket.longitude ? '' : 'd-none' }}">
+                    <div class="input-group">
+                        <input type="text" id="ticket_location_display" class="form-control bg-light" readonly placeholder="No location selected" value="{{ ticket.location }}">
+                        <button type="button" class="btn btn-outline-secondary" id="ticket-location-clear">Change location</button>
+                    </div>
+                </div>
+                <div class="form-text">Choose a place from the search results.</div>
+                {{ form_widget(form.location, { attr: { class: 'd-none' } }) }}
+                {{ form_widget(form.latitude) }}
+                {{ form_widget(form.longitude) }}
+                {{ form_errors(form.location) }}
+            </div>
+            {{ form_row(form.priority) }}
+            {{ form_row(form.domain) }}
+            <div class="d-flex gap-2 mt-3">
+                <button type="submit" class="btn btn-primary">Resubmit for review</button>
+                <a href="{{ path('ticket_my_list') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const locationInput = document.querySelector('#ticket_location');
+        const locationDisplay = document.getElementById('ticket_location_display');
+        const latInput = document.querySelector('#ticket_latitude');
+        const lngInput = document.querySelector('#ticket_longitude');
+        const searchInput = document.getElementById('ticket-place-search');
+        const searchWrap = document.getElementById('ticket-location-search-wrap');
+        const selectedWrap = document.getElementById('ticket-location-selected');
+        const searchBtn = document.getElementById('ticket-location-search-btn');
+        const clearBtn = document.getElementById('ticket-location-clear');
+        const resultsEl = document.getElementById('ticket-geocode-results');
+
+        function doSearch() {
+            const q = searchInput && searchInput.value ? searchInput.value.trim() : '';
+            if (q.length < 2) { resultsEl.style.display = 'none'; return; }
+            resultsEl.innerHTML = '<div class="list-group-item">Searching…</div>';
+            resultsEl.style.display = 'block';
+            fetch('{{ path('api_geocode') }}?q=' + encodeURIComponent(q), { credentials: 'same-origin' })
+                .then(function(r) {
+                    if (!r.ok) throw new Error('API returned ' + r.status);
+                    return r.json();
+                })
+                .then(function(data) {
+                    if (!Array.isArray(data)) { resultsEl.innerHTML = '<div class="list-group-item text-danger">Invalid response</div>'; return; }
+                    if (!data.length) { resultsEl.innerHTML = '<div class="list-group-item">No results. Try another search.</div>'; return; }
+                    resultsEl.innerHTML = data.map(function(r) {
+                        var name = (r.display_name || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                        return '<a href="#" class="list-group-item list-group-item-action" data-name="' + name + '" data-lat="' + (r.lat || '') + '" data-lon="' + (r.lon || '') + '">' + (r.display_name || '') + '</a>';
+                    }).join('');
+                })
+                .catch(function(err) {
+                    resultsEl.innerHTML = '<div class="list-group-item text-danger">Search failed: ' + (err.message || 'check connection') + '.</div>';
+                });
+        }
+
+        function selectPlace(name, lat, lon) {
+            if (locationInput) locationInput.value = name || '';
+            if (locationDisplay) locationDisplay.value = name || '';
+            if (latInput) latInput.value = lat || '';
+            if (lngInput) lngInput.value = lon || '';
+            resultsEl.style.display = 'none';
+            searchWrap.classList.add('d-none');
+            selectedWrap.classList.remove('d-none');
+        }
+
+        function clearLocation() {
+            if (locationInput) locationInput.value = '';
+            if (locationDisplay) locationDisplay.value = '';
+            if (latInput) latInput.value = '';
+            if (lngInput) lngInput.value = '';
+            searchWrap.classList.remove('d-none');
+            selectedWrap.classList.add('d-none');
+            if (searchInput) searchInput.value = '';
+        }
+
+        if (searchBtn) searchBtn.addEventListener('click', doSearch);
+        if (searchInput) searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+        if (clearBtn) clearBtn.addEventListener('click', clearLocation);
+
+        resultsEl.addEventListener('click', function(e) {
+            e.preventDefault();
+            var a = e.target.closest('a[data-lat]');
+            if (!a) return;
+            selectPlace(a.getAttribute('data-name'), a.getAttribute('data-lat'), a.getAttribute('data-lon'));
+        });
+    });
+    </script>
+{% endblock %}

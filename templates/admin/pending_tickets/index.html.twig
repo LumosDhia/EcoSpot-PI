@@ -1,0 +1,56 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Pending tickets - EcoSpot Admin{% endblock %}
+{% block page_title %}Pending tickets{% endblock %}
+
+{% block body %}
+    <p class="text-muted mb-4">Accept (publish), refuse, or send tickets back to the user with a note.</p>
+
+    {% if tickets is empty %}
+        <div class="alert alert-info">No pending or sent-back tickets.</div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Domain</th>
+                        <th>Created</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                        <tr>
+                            <td>
+                                <strong>{{ ticket.title }}</strong>
+                                <br><small class="text-muted">{{ ticket.description|slice(0, 80) }}{% if ticket.description|length > 80 %}...{% endif %}</small>
+                            </td>
+                            <td>{{ ticket.user.firstname }} {{ ticket.user.lastname }}<br><small>{{ ticket.user.email }}</small></td>
+                            <td><span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel() }}</span></td>
+                            <td>{{ ticket.domain.getLabel() }}</td>
+                            <td>{{ ticket.createdAt|date('d/m/Y H:i') }}</td>
+                            <td class="text-end">
+                                <form action="{{ path('admin_pending_ticket_publish', { id: ticket.id }) }}" method="post" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-publish-' ~ ticket.id) }}">
+                                    <button type="submit" class="btn btn-sm btn-success">Publish</button>
+                                </form>
+                                <a href="{{ path('admin_pending_ticket_send_back', { id: ticket.id }) }}" class="btn btn-sm btn-warning">Send back</a>
+                                <a href="{{ path('admin_pending_ticket_refuse', { id: ticket.id }) }}" class="btn btn-sm btn-danger">Refuse</a>
+                            </td>
+                        </tr>
+                        {% if ticket.adminNotes %}
+                            <tr class="table-light">
+                                <td colspan="6" class="small">
+                                    <strong>Admin note:</strong> {{ ticket.adminNotes }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+{% endblock %}
