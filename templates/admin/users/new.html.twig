@@ -1,0 +1,33 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Create user - EcoSpot Admin{% endblock %}
+{% block page_title %}Create user{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+            <div class="mb-3">
+                {{ form_row(form.email) }}
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">{{ form_row(form.firstname) }}</div>
+                <div class="col-md-6">{{ form_row(form.lastname) }}</div>
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.userType) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.plainPassword.first) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.plainPassword.second) }}
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Create user</button>
+                <a href="{{ path('admin_users_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
