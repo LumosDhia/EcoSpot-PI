@@ -1,0 +1,69 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}EcoSpot - Home{% endblock %}
+
+{% block body %}
+    <!-- Hero -->
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h1 class="text-white display-3 mb-4">Welcome to EcoSpot</h1>
+            <p class="fs-4 text-white mb-4">Your place for environmental news, events, and action.</p>
+            <div class="d-flex flex-wrap gap-3 justify-content-center">
+                <a href="{{ path('blog_index') }}" class="btn btn-primary btn-lg px-4 py-3">Blog</a>
+                <a href="{{ path('events_index') }}" class="btn btn-outline-light btn-lg px-4 py-3">Events</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro -->
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <h2 class="text-primary mb-4">About EcoSpot</h2>
+                    <p class="lead text-body mb-4">EcoSpot brings together articles, events, and community around environmental protection and nature.</p>
+                    <p class="text-body">Read the latest on the blog, discover upcoming events, and connect with initiatives that matter.</p>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <span class="display-1 text-primary">🌿</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="container-fluid py-5 bg-light">
+        <div class="container py-5">
+            <h2 class="text-center text-primary mb-5">Explore</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ path('blog_index') }}" class="text-decoration-none text-dark">
+                        <div class="card border-0 shadow-sm h-100 text-center p-4">
+                            <div class="mb-3"><i class="fas fa-newspaper fa-3x text-primary"></i></div>
+                            <h5 class="card-title">Blog</h5>
+                            <p class="card-text small text-muted">Articles and environmental news</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ path('events_index') }}" class="text-decoration-none text-dark">
+                        <div class="card border-0 shadow-sm h-100 text-center p-4">
+                            <div class="mb-3"><i class="fas fa-calendar-alt fa-3x text-primary"></i></div>
+                            <h5 class="card-title">Events</h5>
+                            <p class="card-text small text-muted">Discover and join events</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <a href="{{ path('public_tickets') }}" class="text-decoration-none text-dark">
+                        <div class="card border-0 shadow-sm h-100 text-center p-4">
+                            <div class="mb-3"><i class="fas fa-ticket-alt fa-3x text-primary"></i></div>
+                            <h5 class="card-title">Community tickets</h5>
+                            <p class="card-text small text-muted">Help solve environmental issues reported by others</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

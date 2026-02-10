@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr" style="background-color: #f0f7f4">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}EcoSpot - Blog{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🌿</text></svg>">
+
+        <!-- Google Web Fonts (Environs) -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600&family=Roboto&display=swap" rel="stylesheet">
+
+        <!-- Icon Font Stylesheet -->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+        <!-- Environs Template Assets -->
+        <link href="{{ asset('environs/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('environs/lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('environs/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('environs/css/style.css') }}" rel="stylesheet">
+
+        <style>
+            /* EcoSpot green theme – override Environs for a greener look */
+            :root {
+                --bs-primary: #2d6a4f;
+                --bs-primary-rgb: 45, 106, 79;
+                --bs-secondary: #40916c;
+                --eco-dark-green: #1b4332;
+                --eco-forest: #2d6a4f;
+                --eco-leaf: #40916c;
+                --eco-mint: #52b788;
+                --eco-pale: #95d5b2;
+                --eco-cream: #d8f3dc;
+            }
+            .text-primary, .navbar-brand .text-primary, .spinner-grow.text-primary { color: var(--eco-forest) !important; }
+            .btn-primary { background-color: var(--eco-forest) !important; border-color: var(--eco-forest) !important; color: #fff !important; }
+            .btn-primary:hover { background-color: var(--eco-dark-green) !important; border-color: var(--eco-dark-green) !important; color: #fff !important; }
+            .topbar { background: var(--eco-forest) !important; }
+            .navbar .navbar-nav .nav-link:hover, .navbar .navbar-nav .nav-link.active { color: var(--eco-forest) !important; }
+            .btn-hover-bg:hover { background: var(--eco-leaf) !important; color: #fff !important; }
+            .footer { background: linear-gradient(135deg, var(--eco-dark-green) 0%, var(--eco-forest) 100%) !important; }
+            .copyright { background: var(--eco-dark-green) !important; }
+            .back-to-top { background-color: var(--eco-forest) !important; border-color: var(--eco-forest) !important; }
+            .back-to-top:hover { background-color: var(--eco-leaf) !important; }
+            body { background-color: #f0f7f4; }
+            .form-error-list, .invalid-feedback { color: #b02a37; font-size: 0.875rem; margin-top: 0.25rem; }
+            .form-error-list { list-style: none; padding-left: 0; }
+        </style>
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body>
+        <!-- Spinner -->
+        <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center" style="z-index: 99999;">
+            <div class="spinner-grow text-primary" role="status"></div>
+        </div>
+
+        <!-- Navbar (Environs) -->
+        <div class="container-fluid fixed-top px-0">
+            <div class="container px-0">
+                <div class="topbar">
+                    <div class="row align-items-center justify-content-center">
+                        <div class="col-md-8">
+                            <div class="topbar-info d-flex flex-wrap align-items-center">
+                                <a href="{{ path('home') }}" class="text-light me-4"><i class="fas fa-leaf text-white me-2"></i>EcoSpot</a>
+                                {% if app.user %}
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('admin_dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>Admin dashboard</a>
+                                    {% elseif is_granted('ROLE_NGO') %}
+                                        <a href="{{ path('ngo_dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>NGO dashboard</a>
+                                    {% else %}
+                                        <a href="{{ path('dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>Dashboard</a>
+                                    {% endif %}
+                                    <a href="{{ path('app_logout') }}" class="text-light"><i class="fas fa-sign-out-alt text-white me-2"></i>Logout</a>
+                                {% else %}
+                                    <a href="{{ path('app_login') }}" class="text-light me-4"><i class="fas fa-sign-in-alt text-white me-2"></i>Login</a>
+                                    <a href="{{ path('app_register') }}" class="text-light"><i class="fas fa-user-plus text-white me-2"></i>Register</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="topbar-icon d-flex align-items-center justify-content-end">
+                                <a href="{{ path('home') }}" class="btn-square text-white me-2"><i class="fas fa-home"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <nav class="navbar navbar-light bg-light navbar-expand-xl">
+                    <a href="{{ path('home') }}" class="navbar-brand ms-3">
+                        <h1 class="text-primary display-5">EcoSpot</h1>
+                    </a>
+                    <button class="navbar-toggler py-2 px-3 me-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                        <span class="fa fa-bars text-primary"></span>
+                    </button>
+                    <div class="collapse navbar-collapse bg-light" id="navbarCollapse">
+                        <div class="navbar-nav ms-auto">
+                            <a href="{{ path('home') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">Home</a>
+                            <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and 'events_' in app.request.attributes.get('_route') ? 'active' : '' }}">Events</a>
+                            <a href="{{ path('public_tickets') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">Tickets</a>
+                            <a href="{{ path('public_achievements') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_achievements' ? 'active' : '' }}">Achievements</a>
+                        </div>
+                        <div class="d-flex align-items-center flex-nowrap pt-xl-0" style="margin-left: 15px;">
+                            <a href="{{ path('blog_index') }}" class="btn-hover-bg btn btn-primary text-white py-2 px-4 me-3">Blog</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+
+        {% block breadcrumb %}{% endblock %}
+
+        <main>
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="container py-2">
+                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% block body %}{% endblock %}
+        </main>
+
+        <!-- Footer -->
+        <footer class="container-fluid footer py-5">
+            <div class="container py-4">
+                <div class="row g-4 g-lg-5 align-items-start text-center text-md-start">
+                    <div class="col-md-5 col-lg-4">
+                        <h4 class="text-white fw-bold mb-3">EcoSpot</h4>
+                        <p class="text-white-50 small mb-0">Environmental news, events, and community action for a greener future.</p>
+                    </div>
+                    <div class="col-md-4 col-lg-4">
+                        <h5 class="text-white fw-semibold mb-3 small text-uppercase" style="letter-spacing: 0.08em;">Quick links</h5>
+                        <nav class="d-flex flex-wrap gap-2 gap-md-3 align-items-center">
+                            <a href="{{ path('home') }}" class="text-white text-decoration-none small">Home</a>
+                            <span class="text-white opacity-50">·</span>
+                            <a href="{{ path('blog_index') }}" class="text-white text-decoration-none small">Blog</a>
+                            <span class="text-white opacity-50">·</span>
+                            <a href="{{ path('events_index') }}" class="text-white text-decoration-none small">Events</a>
+                            <span class="text-white opacity-50">·</span>
+                            <a href="{{ path('public_tickets') }}" class="text-white text-decoration-none small">Community tickets</a>
+                            <span class="text-white opacity-50">·</span>
+                            <a href="{{ path('public_achievements') }}" class="text-white text-decoration-none small">Achievements</a>
+                        </nav>
+                    </div>
+                    <div class="col-md-3 col-lg-4 text-center text-md-end">
+                        <h5 class="text-white fw-semibold mb-3 small text-uppercase" style="letter-spacing: 0.08em;">Follow us</h5>
+                        <a href="https://www.instagram.com/green.team2026" target="_blank" rel="noopener noreferrer" class="d-inline-flex align-items-center justify-content-center text-white text-decoration-none" style="width: 28px; height: 28px;" title="Instagram">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28" aria-label="Instagram"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-top border-white border-opacity-10 mt-4 pt-4">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-12 text-center">
+                            <span class="text-white-50 small">{{ 'now'|date('Y') }} EcoSpot. All rights reserved.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary btn-primary-outline-0 btn-md-square back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+        <!-- JavaScript Libraries (Environs) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{{ asset('environs/lib/easing/easing.min.js') }}"></script>
+        <script src="{{ asset('environs/lib/waypoints/waypoints.min.js') }}"></script>
+        <script src="{{ asset('environs/lib/counterup/counterup.min.js') }}"></script>
+        <script src="{{ asset('environs/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+        <script src="{{ asset('environs/lib/lightbox/js/lightbox.min.js') }}"></script>
+        <script src="{{ asset('environs/js/main.js') }}"></script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>
