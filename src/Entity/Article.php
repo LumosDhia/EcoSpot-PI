@@ -23,17 +23,18 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
-    #[Assert\Length(min: 3, max: 255, minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.', maxMessage: 'Le titre ne peut pas dépasser {{ limit }} caractères.')]
-    #[Assert\Regex(pattern: '/\S/', message: 'Le titre doit contenir au moins un caractère non vide (pas uniquement des espaces).')]
+    #[Assert\NotBlank(message: 'Title is required.')]
+    #[Assert\Length(min: 5, max: 100, minMessage: 'Title must be at least {{ limit }} characters.', maxMessage: 'Title cannot exceed {{ limit }} characters.')]
+    #[Assert\Regex(pattern: '/^\d+$/', match: false, message: 'The title cannot be composed entirely of numbers.')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank(message: 'Le contenu est obligatoire.')]
-    #[Assert\Length(min: 10, minMessage: 'Le contenu doit contenir au moins {{ limit }} caractères.')]
+    #[Assert\NotBlank(message: 'Content is required.')]
+    #[Assert\Length(min: 20, minMessage: 'The article content must be more detailed (at least {{ limit }} characters).')]
     private ?string $content = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url(message: 'The image URL is not valid.')]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
