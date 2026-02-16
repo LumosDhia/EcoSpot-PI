@@ -28,6 +28,7 @@ class Comment
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'The comment cannot be empty.')]
     #[Assert\Length(min: 5, max: 2000, minMessage: 'The comment must be at least {{ limit }} characters.', maxMessage: 'The comment cannot exceed {{ limit }} characters.')]
+    #[Assert\Regex(pattern: '/^\d+$/', match: false, message: 'The comment cannot be composed entirely of numbers.')]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
