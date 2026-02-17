@@ -52,6 +52,9 @@ class BlogController extends AbstractController
             throw new NotFoundHttpException('Article not found.');
         }
 
+        $article->incrementViews();
+        $this->articleRepository->save($article, true);
+
         $comment = new Comment();
         $comment->setArticle($article);
         if ($this->getUser()) {

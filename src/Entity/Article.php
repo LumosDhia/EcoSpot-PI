@@ -52,6 +52,9 @@ class Article
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $writer = null;
 
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 0])]
+    private int $views = 0;
+
     /**
      * @var Collection<int, Comment>
      */
@@ -161,6 +164,23 @@ class Article
         $text = strip_tags($this->content);
         $wordCount = str_word_count($text);
         return (int) ceil($wordCount / 200) ?: 1;
+    }
+
+    public function getViews(): int
+    {
+        return $this->views;
+    }
+
+    public function setViews(int $views): static
+    {
+        $this->views = $views;
+        return $this;
+    }
+
+    public function incrementViews(): static
+    {
+        $this->views++;
+        return $this;
     }
 
     public function getAdminRevisionNote(): ?string
