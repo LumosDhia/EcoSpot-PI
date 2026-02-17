@@ -36,7 +36,7 @@
             <div class="card mb-5">
                 <div class="card-body">
                     <form method="get" action="{{ path('blog_index') }}" class="row g-2 align-items-end" novalidate="novalidate">
-                        <input type="hidden" name="sort" value="{{ sort }}">
+                        <input type="hidden" name="order" value="{{ order }}">
                         <div class="col-md-5">
                             <label for="q" class="form-label">Search by title</label>
                             <input type="text" name="q" id="q" class="form-control" value="{{ search }}" placeholder="Article title...">
@@ -44,8 +44,8 @@
                         <div class="col-md-4">
                             <label class="form-label d-block">Sort by date</label>
                             <div class="btn-group" role="group">
-                                <a href="{{ path('blog_index', { q: search, sort: 'DESC' }) }}" class="btn {{ sort == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
-                                <a href="{{ path('blog_index', { q: search, sort: 'ASC' }) }}" class="btn {{ sort == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
+                                <a href="{{ path('blog_index', { q: search, order: 'DESC' }) }}" class="btn {{ order == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
+                                <a href="{{ path('blog_index', { q: search, order: 'ASC' }) }}" class="btn {{ order == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
                             </div>
                         </div>
                         <div class="col-md-3">

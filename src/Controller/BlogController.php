@@ -30,9 +30,9 @@ class BlogController extends AbstractController
     public function index(Request $request): Response
     {
         $search = $request->query->get('q');
-        $sort = $request->query->get('sort', 'DESC');
-        if (!in_array($sort, ['ASC', 'DESC'], true)) {
-            $sort = 'DESC';
+        $order = $request->query->get('order', 'DESC');
+        if (!in_array($order, ['ASC', 'DESC'], true)) {
+            $order = 'DESC';
         }
 
         $categoryId = $request->query->get('category') ? (int) $request->query->get('category') : null;
@@ -40,7 +40,7 @@ class BlogController extends AbstractController
 
         $query = $this->articleRepository->getQueryPublishedBySearchAndOrder(
             $search === '' ? null : $search,
-            $sort,
+            $order,
             $categoryId,
             $tagId
         );
@@ -57,7 +57,7 @@ class BlogController extends AbstractController
         return $this->render('blog/index.html.twig', [
             'pagination' => $pagination,
             'search' => $search ?? '',
-            'sort' => $sort,
+            'order' => $order,
             'selectedCategory' => $selectedCategory,
             'selectedTag' => $selectedTag,
         ]);
