@@ -1,0 +1,5 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        turnstile_site_key: '%env(TURNSTILE_SITE_KEY)%'
+        tinymce_api_key: '%env(TINYMCE_API_KEY)%'
