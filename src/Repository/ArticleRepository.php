@@ -22,18 +22,30 @@ class ArticleRepository extends ServiceEntityRepository
      * Published articles only (for public blog). Order by publishedAt.
      * @return Article[]
      */
-    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC'): array
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $category = null, ?int $tag = null): array
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->leftJoin('a.category', 'c')->addSelect('c')
+            ->leftJoin('a.tags', 't')->addSelect('t')
             ->andWhere('a.publishedAt IS NOT NULL')
             ->andWhere('a.publishedAt <= :now')
             ->setParameter('now', new \DateTimeImmutable())
             ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC');
 
         if ($search !== null && $search !== '') {
-            $qb->andWhere('a.title LIKE :search')
+            $qb->andWhere('a.title LIKE :search OR a.content LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($category !== null) {
+            $qb->andWhere('a.category = :category')
+                ->setParameter('category', $category);
+        }
+
+        if ($tag !== null) {
+            $qb->andWhere(':tag MEMBER OF a.tags')
+                ->setParameter('tag', $tag);
         }
 
         return $qb->getQuery()->getResult();

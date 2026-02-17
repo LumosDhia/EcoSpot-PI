@@ -28,19 +28,26 @@ class BlogController extends AbstractController
     {
         $search = $request->query->get('q');
         $sort = $request->query->get('sort', 'DESC');
+        $categoryId = $request->query->get('category');
+        $tagId = $request->query->get('tag');
+
         if (!in_array($sort, ['ASC', 'DESC'], true)) {
             $sort = 'DESC';
         }
 
         $articles = $this->articleRepository->findPublishedBySearchAndOrder(
             $search === '' ? null : $search,
-            $sort
+            $sort,
+            $categoryId ? (int) $categoryId : null,
+            $tagId ? (int) $tagId : null
         );
 
         return $this->render('blog/index.html.twig', [
             'articles' => $articles,
             'search' => $search ?? '',
             'sort' => $sort,
+            'currentCategoryId' => $categoryId,
+            'currentTagId' => $tagId,
         ]);
     }
 

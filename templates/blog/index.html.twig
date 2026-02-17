@@ -37,6 +37,8 @@
                 <div class="card-body">
                     <form method="get" action="{{ path('blog_index') }}" class="row g-2 align-items-end" novalidate="novalidate">
                         <input type="hidden" name="sort" value="{{ sort }}">
+                        {% if currentCategoryId %}<input type="hidden" name="category" value="{{ currentCategoryId }}">{% endif %}
+                        {% if currentTagId %}<input type="hidden" name="tag" value="{{ currentTagId }}">{% endif %}
                         <div class="col-md-5">
                             <label for="q" class="form-label">Search by title</label>
                             <input type="text" name="q" id="q" class="form-control" value="{{ search }}" placeholder="Article title...">
@@ -44,12 +46,17 @@
                         <div class="col-md-4">
                             <label class="form-label d-block">Sort by date</label>
                             <div class="btn-group" role="group">
-                                <a href="{{ path('blog_index', { q: search, sort: 'DESC' }) }}" class="btn {{ sort == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
-                                <a href="{{ path('blog_index', { q: search, sort: 'ASC' }) }}" class="btn {{ sort == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
+                                <a href="{{ path('blog_index', { q: search, sort: 'DESC', category: currentCategoryId, tag: currentTagId }) }}" class="btn {{ sort == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
+                                <a href="{{ path('blog_index', { q: search, sort: 'ASC', category: currentCategoryId, tag: currentTagId }) }}" class="btn {{ sort == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <button type="submit" class="btn btn-primary w-100">Search</button>
+                            {% if search or currentCategoryId or currentTagId %}
+                                <div class="text-center mt-2">
+                                    <a href="{{ path('blog_index') }}" class="text-secondary small"><i class="fas fa-times-circle"></i> Clear all filters</a>
+                                </div>
+                            {% endif %}
                         </div>
                     </form>
                 </div>
@@ -79,7 +86,7 @@
                             </div>
                             <div class="text-dark border p-4">
                                 {% if article.category %}
-                                    <span class="badge bg-primary mb-2">{{ article.category.name }}</span>
+                                    <a href="{{ path('blog_index', { category: article.category.id }) }}" class="badge bg-primary mb-2 text-white decoration-none">{{ article.category.name }}</a>
                                 {% endif %}
                                 <h4 class="mb-4">{{ article.title }}</h4>
                                 {% if article.writer %}
