@@ -25,12 +25,13 @@ class Article
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Title is required.')]
     #[Assert\Length(min: 5, max: 100, minMessage: 'Title must be at least {{ limit }} characters.', maxMessage: 'Title cannot exceed {{ limit }} characters.')]
-    #[Assert\Regex(pattern: '/^\d+$/', match: false, message: 'The title cannot be composed entirely of numbers.')]
+    #[Assert\Regex(pattern: '/[a-zA-Z]/', message: 'The title must contain at least one letter.')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'Content is required.')]
     #[Assert\Length(min: 20, minMessage: 'The article content must be more detailed (at least {{ limit }} characters).')]
+    #[Assert\Regex(pattern: '/[a-zA-Z]/', message: 'The article content must contain at least some text (letters).')]
     private ?string $content = null;
 
     #[ORM\Column(length: 255, nullable: true)]
