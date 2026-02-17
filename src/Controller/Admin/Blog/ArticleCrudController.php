@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Blog;
 
-use App\Entity\Article;
-use App\Form\ArticleType;
-use App\Repository\ArticleRepository;
+use App\Entity\Blog\Article\Article;
+use App\Form\Blog\Article\ArticleType;
+use App\Repository\Blog\Article\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;

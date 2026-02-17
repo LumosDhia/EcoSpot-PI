@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use App\Entity\Article;
-use App\Entity\Category;
-use App\Entity\Tag;
+use App\Entity\Blog\Article\Article;
+use App\Entity\Blog\Article\Category;
+use App\Entity\Blog\Article\Tag;
 use App\Entity\User;
 use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\Console\Application;

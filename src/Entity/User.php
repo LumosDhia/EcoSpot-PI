@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Entity\Article;
+use App\Entity\Blog\Article\Article;
+use App\Entity\Blog\Article\ArticleReaction;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -53,11 +54,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'user', orphanRemoval: true)]
     private \Doctrine\Common\Collections\Collection $tickets;
 
-    /** @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Article> */
+    /** @var \Doctrine\Common\Collections\Collection<int, Article> */
     #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'writer')]
     private \Doctrine\Common\Collections\Collection $articles;
 
-    /** @var \Doctrine\Common\Collections\Collection<int, \App\Entity\ArticleReaction> */
+    /** @var \Doctrine\Common\Collections\Collection<int, ArticleReaction> */
     #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'user', orphanRemoval: true)]
     private \Doctrine\Common\Collections\Collection $reactions;
 

@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Blog\Article;
 
-use App\Repository\ArticleReactionRepository;
+use App\Repository\Blog\Article\ArticleReactionRepository;
+use App\Entity\User;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ArticleReactionRepository::class)]
@@ -20,7 +21,7 @@ class ArticleReaction
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reactions')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 

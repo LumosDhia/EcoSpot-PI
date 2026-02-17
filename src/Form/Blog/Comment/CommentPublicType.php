@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Form\Blog\Comment;
 
-use App\Entity\Comment;
+use App\Entity\Blog\Comment\Comment;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;

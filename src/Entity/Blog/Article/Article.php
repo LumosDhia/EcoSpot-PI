@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Blog\Article;
 
-use App\Repository\ArticleRepository;
-use App\Entity\ArticleReaction;
+use App\Repository\Blog\Article\ArticleRepository;
+use App\Entity\Blog\Comment\Comment;
+use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;

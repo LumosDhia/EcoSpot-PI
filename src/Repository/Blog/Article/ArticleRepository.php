@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Repository;
+namespace App\Repository\Blog\Article;
 
-use App\Entity\Article;
+use App\Entity\Blog\Article\Article;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -85,7 +86,7 @@ class ArticleRepository extends ServiceEntityRepository
      * Articles written by admin (or no writer). For admin's own list: full edit/publish/delete.
      * @return Article[]
      */
-    public function findAdminOwnArticles(\App\Entity\User $admin, string $order = 'DESC'): array
+    public function findAdminOwnArticles(User $admin, string $order = 'DESC'): array
     {
         return $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')

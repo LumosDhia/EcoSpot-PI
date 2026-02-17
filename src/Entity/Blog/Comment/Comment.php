@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Blog\Comment;
 
-use App\Repository\CommentRepository;
+use App\Repository\Blog\Comment\CommentRepository;
+use App\Entity\Blog\Article\Article;
+use App\Entity\User;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\User;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]

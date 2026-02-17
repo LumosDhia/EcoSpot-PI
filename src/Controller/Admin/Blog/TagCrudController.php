@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Blog;
 
-use App\Entity\Tag;
-use App\Form\TagType;
-use App\Repository\TagRepository;
+use App\Entity\Blog\Article\Tag;
+use App\Form\Blog\Article\TagType;
+use App\Repository\Blog\Article\TagRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

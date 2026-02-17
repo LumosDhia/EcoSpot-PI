@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Blog;
 
-use App\Entity\Comment;
-use App\Repository\CommentRepository;
+use App\Entity\Blog\Comment\Comment;
+use App\Repository\Blog\Comment\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

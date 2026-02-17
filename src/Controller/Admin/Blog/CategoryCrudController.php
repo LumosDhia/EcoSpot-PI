@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller\Admin\Blog;
 
-use App\Entity\Category;
-use App\Form\CategoryType;
-use App\Repository\CategoryRepository;
+use App\Entity\Blog\Article\Category;
+use App\Form\Blog\Article\CategoryType;
+use App\Repository\Blog\Article\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

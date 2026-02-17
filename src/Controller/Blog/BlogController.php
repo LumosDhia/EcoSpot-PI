@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller;
+namespace App\Controller\Blog;
 
-use App\Entity\Article;
-use App\Entity\Comment;
-use App\Form\CommentPublicType;
-use App\Repository\ArticleRepository;
-use App\Repository\CommentRepository;
+use App\Entity\Blog\Article\Article;
+use App\Entity\Blog\Comment\Comment;
+use App\Form\Blog\Comment\CommentPublicType;
+use App\Repository\Blog\Article\ArticleRepository;
+use App\Repository\Blog\Comment\CommentRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,9 +20,9 @@ class BlogController extends AbstractController
     public function __construct(
         private readonly ArticleRepository $articleRepository,
         private readonly CommentRepository $commentRepository,
-        private readonly \App\Repository\CategoryRepository $categoryRepository,
-        private readonly \App\Repository\TagRepository $tagRepository,
-        private readonly \App\Repository\ArticleReactionRepository $reactionRepository,
+        private readonly \App\Repository\Blog\Article\CategoryRepository $categoryRepository,
+        private readonly \App\Repository\Blog\Article\TagRepository $tagRepository,
+        private readonly \App\Repository\Blog\Article\ArticleReactionRepository $reactionRepository,
         private readonly \Knp\Component\Pager\PaginatorInterface $paginator
     ) {
     }
@@ -128,7 +128,7 @@ class BlogController extends AbstractController
             }
         } else {
             // New reaction
-            $reaction = new \App\Entity\ArticleReaction();
+            $reaction = new \App\Entity\Blog\Article\ArticleReaction();
             $reaction->setArticle($article);
             $reaction->setUser($user);
             $reaction->setType($type);

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Form\Blog\Article;
 
-use App\Entity\Article;
-use App\Entity\Category;
-use App\Entity\Tag;
+use App\Entity\Blog\Article\Article;
+use App\Entity\Blog\Article\Category;
+use App\Entity\Blog\Article\Tag;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

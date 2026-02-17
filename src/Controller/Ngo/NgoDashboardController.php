@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller\Ngo;
 
-use App\Entity\Article;
-use App\Entity\Comment;
+use App\Entity\Blog\Article\Article;
+use App\Entity\Blog\Comment\Comment;
 use App\Entity\Evenement;
-use App\Form\ArticleType;
+use App\Form\Blog\Article\ArticleType;
 use App\Form\EvenementType;
-use App\Repository\ArticleRepository;
-use App\Repository\CommentRepository;
+use App\Repository\Blog\Article\ArticleRepository;
+use App\Repository\Blog\Comment\CommentRepository;
 use App\Repository\EvenementRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
