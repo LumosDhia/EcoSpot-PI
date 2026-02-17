@@ -78,6 +78,9 @@
                                 </div>
                             </div>
                             <div class="text-dark border p-4">
+                                {% if article.category %}
+                                    <span class="badge bg-primary mb-2">{{ article.category.name }}</span>
+                                {% endif %}
                                 <h4 class="mb-4">{{ article.title }}</h4>
                                 {% if article.writer %}
                                     <p class="text-muted small mb-2">Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>

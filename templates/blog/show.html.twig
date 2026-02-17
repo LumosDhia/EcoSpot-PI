@@ -40,7 +40,17 @@
                             </div>
                         {% endif %}
                         <div class="text-dark border p-4 p-md-5">
+                            {% if article.category %}
+                                <span class="badge bg-primary mb-2">{{ article.category.name }}</span>
+                            {% endif %}
                             <h1 class="mb-4">{{ article.title }}</h1>
+                            {% if article.tags|length > 0 %}
+                                <div class="mb-3">
+                                    {% for tag in article.tags %}
+                                        <span class="badge border border-primary text-primary small me-1">#{{ tag.name }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                             <p class="text-muted small mb-4">
                                 <i class="fa fa-clock me-2"></i>{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : article.createdAt|date('d/m/Y H:i') }}
                                 <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ article.readingTime }} min read</span>

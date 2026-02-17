@@ -1,0 +1,27 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}{{ category.id ? 'Edit' : 'New' }} Category - EcoSpot Admin{% endblock %}
+{% block page_title %}{{ category.id ? 'Edit Category' : 'Create New Category' }}{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    {{ form_start(form) }}
+                        <div class="mb-4">
+                            {{ form_row(form.name) }}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('admin_blog_category_index') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button class="btn btn-primary px-4 shadow-sm">
+                                <i class="fas fa-save me-1"></i> {{ category.id ? 'Update' : 'Save' }}
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

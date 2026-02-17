@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Article;
+use App\Entity\Category;
+use App\Entity\Tag;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -35,6 +38,23 @@ class ArticleType extends AbstractType
                     'rows' => 12,
                     'placeholder' => 'Write your article...',
                 ],
+            ])
+            ->add('category', EntityType::class, [
+                'class' => Category::class,
+                'choice_label' => 'name',
+                'label' => 'Category',
+                'required' => false,
+                'placeholder' => 'Choose a category',
+                'attr' => ['class' => 'form-select'],
+            ])
+            ->add('tags', EntityType::class, [
+                'class' => Tag::class,
+                'choice_label' => 'name',
+                'label' => 'Tags',
+                'multiple' => true,
+                'expanded' => false, // Set to true for checkboxes
+                'required' => false,
+                'attr' => ['class' => 'form-select', 'size' => 5],
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'Thumbnail / hero image (upload)',
