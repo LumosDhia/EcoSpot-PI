@@ -156,6 +156,13 @@ class Article
         return $this->publishedAt > new \DateTimeImmutable() ? 'scheduled' : 'published';
     }
 
+    public function getReadingTime(): int
+    {
+        $text = strip_tags($this->content);
+        $wordCount = str_word_count($text);
+        return (int) ceil($wordCount / 200) ?: 1;
+    }
+
     public function getAdminRevisionNote(): ?string
     {
         return $this->adminRevisionNote;
