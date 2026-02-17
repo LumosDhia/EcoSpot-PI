@@ -22,6 +22,7 @@ class BlogController extends AbstractController
         private readonly CommentRepository $commentRepository,
         private readonly \App\Repository\CategoryRepository $categoryRepository,
         private readonly \App\Repository\TagRepository $tagRepository,
+        private readonly \App\Repository\ArticleReactionRepository $reactionRepository,
         private readonly \Knp\Component\Pager\PaginatorInterface $paginator
     ) {
     }
@@ -102,6 +103,42 @@ class BlogController extends AbstractController
             'article' => $article,
             'comments' => $comments,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/blog/{id}/react/{type}', name: 'blog_react', requirements: ['id' => '\d+', 'type' => 'like|dislike'], methods: ['POST'])]
+    public function react(Article $article, string $type): Response
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'You must be logged in to react.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        /** @var \App\Entity\User $user */
+        $reaction = $this->reactionRepository->findOneByArticleAndUser($article->getId(), $user->getId());
+
+        if ($reaction) {
+            if ($reaction->getType() === $type) {
+                // Toggle off
+                $this->reactionRepository->remove($reaction, true);
+            } else {
+                // Switch type
+                $reaction->setType($type);
+                $this->reactionRepository->save($reaction, true);
+            }
+        } else {
+            // New reaction
+            $reaction = new \App\Entity\ArticleReaction();
+            $reaction->setArticle($article);
+            $reaction->setUser($user);
+            $reaction->setType($type);
+            $this->reactionRepository->save($reaction, true);
+        }
+
+        return $this->json([
+            'likes' => $article->getLikesCount(),
+            'dislikes' => $article->getDislikesCount(),
+            'userReaction' => ($article->getUserReaction($user))?->getType(),
         ]);
     }
 }

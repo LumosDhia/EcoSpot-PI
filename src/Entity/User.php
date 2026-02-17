@@ -57,11 +57,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'writer')]
     private \Doctrine\Common\Collections\Collection $articles;
 
+    /** @var \Doctrine\Common\Collections\Collection<int, \App\Entity\ArticleReaction> */
+    #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'user', orphanRemoval: true)]
+    private \Doctrine\Common\Collections\Collection $reactions;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->tickets = new \Doctrine\Common\Collections\ArrayCollection();
         $this->articles = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->reactions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     public function getId(): ?int
@@ -208,5 +213,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getArticles(): \Doctrine\Common\Collections\Collection
     {
         return $this->articles;
+    }
+
+    /** @return \Doctrine\Common\Collections\Collection<int, ArticleReaction> */
+    public function getReactions(): \Doctrine\Common\Collections\Collection
+    {
+        return $this->reactions;
     }
 }

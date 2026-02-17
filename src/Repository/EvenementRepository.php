@@ -34,6 +34,11 @@ class EvenementRepository extends ServiceEntityRepository
      */
     public function searchOrderedByDate(?string $query): array
     {
+        return $this->getQuerySearchOrderedByDate($query)->getResult();
+    }
+
+    public function getQuerySearchOrderedByDate(?string $query): \Doctrine\ORM\Query
+    {
         $qb = $this->createQueryBuilder('e')
             ->orderBy('e.dateDebut', 'DESC');
 
@@ -48,7 +53,7 @@ class EvenementRepository extends ServiceEntityRepository
             )->setParameter('q', $query . '%');
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     public function save(Evenement $entity, bool $flush = false): void

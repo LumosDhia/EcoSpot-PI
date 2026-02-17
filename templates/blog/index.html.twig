@@ -90,7 +90,9 @@
                                     <div class="d-flex">
                                         <span class="me-3">{{ article.comments|length }} <i class="fa fa-comment"></i></span>
                                         <span class="me-3"><i class="fa fa-book-reader"></i> {{ article.readingTime }} min read</span>
-                                        <span><i class="fa fa-eye"></i> {{ article.views }}</span>
+                                        <span class="me-3"><i class="fa fa-eye"></i> {{ article.views }}</span>
+                                        <span class="me-3"><i class="fa fa-thumbs-up"></i> {{ article.likesCount }}</span>
+                                        <span><i class="fa fa-thumbs-down"></i> {{ article.dislikesCount }}</span>
                                     </div>
                                 </div>
                                 <div class="search-icon">

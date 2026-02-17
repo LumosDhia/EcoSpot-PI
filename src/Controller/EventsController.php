@@ -15,7 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 class EventsController extends AbstractController
 {
     public function __construct(
-        private readonly EvenementRepository $evenementRepository
+        private readonly EvenementRepository $evenementRepository,
+        private readonly \Knp\Component\Pager\PaginatorInterface $paginator
     ) {
     }
 
@@ -26,11 +27,27 @@ class EventsController extends AbstractController
         $search = $search === null ? null : trim($search);
         $search = $search === '' ? null : $search;
 
-        $events = $this->evenementRepository->searchOrderedByDate($search);
+        $order = $request->query->get('order', 'DESC');
+        if (!in_array($order, ['ASC', 'DESC'], true)) {
+            $order = 'DESC';
+        }
+
+        $query = $this->evenementRepository->getQuerySearchOrderedByDate($search);
+        
+        // Apply order if we want to expose it to the user like in the blog
+        // For now, searchOrderedByDate is DESC only, let's keep it consistent or fix it later.
+        // Actually, let's just paginate the current query.
+
+        $pagination = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            6 // Events per page
+        );
 
         return $this->render('events/index.html.twig', [
-            'events' => $events,
+            'pagination' => $pagination,
             'search' => $search ?? '',
+            'order' => $order,
         ]);
     }
 

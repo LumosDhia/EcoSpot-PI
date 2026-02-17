@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use App\Entity\ArticleReaction;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -74,11 +75,18 @@ class Article
     #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $comments;
 
+    /**
+     * @var Collection<int, ArticleReaction>
+     */
+    #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $reactions;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->reactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -277,5 +285,33 @@ class Article
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, ArticleReaction>
+     */
+    public function getReactions(): Collection
+    {
+        return $this->reactions;
+    }
+
+    public function getLikesCount(): int
+    {
+        return $this->reactions->filter(fn(ArticleReaction $r) => $r->getType() === ArticleReaction::TYPE_LIKE)->count();
+    }
+
+    public function getDislikesCount(): int
+    {
+        return $this->reactions->filter(fn(ArticleReaction $r) => $r->getType() === ArticleReaction::TYPE_DISLIKE)->count();
+    }
+
+    public function getUserReaction(User $user): ?ArticleReaction
+    {
+        foreach ($this->reactions as $reaction) {
+            if ($reaction->getUser() === $user) {
+                return $reaction;
+            }
+        }
+        return null;
     }
 }

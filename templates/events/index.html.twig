@@ -8,7 +8,7 @@
             <h3 class="text-white display-3 mb-4">Events</h3>
             <p class="fs-5 text-white mb-4">Discover environmental events and activities.</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
                 <li class="breadcrumb-item active text-white">Events</li>
             </ol>
         </div>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="row g-4" id="events-list">
-                {% for event in events %}
+                {% for event in pagination %}
                     <div class="col-lg-6 col-xl-4">
                         <div class="blog-item">
                             <div class="blog-img">
@@ -78,6 +78,10 @@
                         </div>
                     </div>
                 {% endfor %}
+            </div>
+
+            <div class="mt-5 d-flex justify-content-center pagination-wrapper">
+                {{ knp_pagination_render(pagination) }}
             </div>
         </div>
     </div>

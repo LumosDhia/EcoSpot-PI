@@ -59,11 +59,27 @@
                                 <i class="fa fa-clock me-2"></i>{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : article.createdAt|date('d/m/Y H:i') }}
                                 <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ article.readingTime }} min read</span>
                                 <span class="ms-3"><i class="fa fa-eye me-1"></i>{{ article.views }} views</span>
+                                <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
+                                <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1"></i>{{ article.dislikesCount }}</span>
                                 {% if article.writer %}
                                     <span class="ms-3"><i class="fas fa-user-edit me-1"></i>Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</span>
                                 {% endif %}
                             </p>
-                            <div class="article-content prose">{{ article.content|raw }}</div>
+                            <div class="article-content prose mb-4">{{ article.content|raw }}</div>
+
+                            {# Reactions section #}
+                            <div class="border-top pt-4 mt-4 d-flex align-items-center gap-3">
+                                <span class="fw-bold me-2">Rate this article:</span>
+                                {% set userReaction = app.user ? article.userReaction(app.user) : null %}
+                                <button class="btn {{ userReaction and userReaction.type == 'like' ? 'btn-primary' : 'btn-outline-primary' }} reaction-btn" 
+                                        data-type="like" data-url="{{ path('blog_react', {id: article.id, type: 'like'}) }}">
+                                    <i class="fa fa-thumbs-up me-1"></i> Like
+                                </button>
+                                <button class="btn {{ userReaction and userReaction.type == 'dislike' ? 'btn-danger' : 'btn-outline-danger' }} reaction-btn" 
+                                        data-type="dislike" data-url="{{ path('blog_react', {id: article.id, type: 'dislike'}) }}">
+                                    <i class="fa fa-thumbs-down me-1"></i> Dislike
+                                </button>
+                            </div>
                         </div>
                     </article>
 
@@ -102,4 +118,45 @@
             </div>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const reactionBtns = document.querySelectorAll('.reaction-btn');
+        reactionBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const url = this.getAttribute('data-url');
+                const type = this.getAttribute('data-type');
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 401) {
+                        window.location.href = "{{ path('app_login', { _target_path: app.request.requestUri }) }}";
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data) {
+                        document.getElementById('article-likes-count').innerHTML = '<i class="fa fa-thumbs-up me-1"></i>' + data.likes;
+                        document.getElementById('article-dislikes-count').innerHTML = '<i class="fa fa-thumbs-down me-1"></i>' + data.dislikes;
+                        
+                        reactionBtns.forEach(b => {
+                            const bType = b.getAttribute('data-type');
+                            if (bType === 'like') {
+                                b.className = 'btn ' + (data.userReaction === 'like' ? 'btn-primary' : 'btn-outline-primary') + ' reaction-btn';
+                            } else {
+                                b.className = 'btn ' + (data.userReaction === 'dislike' ? 'btn-danger' : 'btn-outline-danger') + ' reaction-btn';
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    });
+    </script>
 {% endblock %}
