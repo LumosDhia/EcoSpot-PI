@@ -23,6 +23,11 @@ class ArticleRepository extends ServiceEntityRepository
      */
     public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): array
     {
+        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId)->getResult();
+    }
+
+    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): \Doctrine\ORM\Query
+    {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
             ->leftJoin('a.category', 'c')->addSelect('c')
@@ -47,7 +52,7 @@ class ArticleRepository extends ServiceEntityRepository
                 ->setParameter('tagId', $tagId);
         }
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
     public function findOnePublishedById(int $id): ?Article

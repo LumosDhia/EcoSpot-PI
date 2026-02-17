@@ -89,6 +89,31 @@ $article3->setViews(210);
 $article3->setPublishedAt(new \DateTimeImmutable());
 $entityManager->persist($article3);
 
+echo "Seeding additional articles for pagination testing...\n";
+$categoryList = array_values($categories);
+$tagList = array_values($tags);
+
+for ($i = 1; $i <= 10; $i++) {
+    $extraArticle = new Article();
+    $extraArticle->setTitle("Eco News Topic #" . $i);
+    $extraArticle->setContent("This is a dummy article content for topic number " . $i . ". Sustainability is key to our future, and we must explore all avenues of conservation and renewable energy to protect our ecosystem.");
+    $extraArticle->setWriter($admin);
+    
+    // Pick a random category
+    $randomCat = $categoryList[array_rand($categoryList)];
+    $extraArticle->setCategory($randomCat);
+    
+    // Pick 1-2 random tags
+    $randomTagKeys = (array) array_rand($tagList, rand(1, 2));
+    foreach ($randomTagKeys as $key) {
+        $extraArticle->addTag($tagList[$key]);
+    }
+    
+    $extraArticle->setViews(rand(10, 300));
+    $extraArticle->setPublishedAt(new \DateTimeImmutable("-" . $i . " days"));
+    $entityManager->persist($extraArticle);
+}
+
 $entityManager->flush();
 
 echo "Seeding completed successfully!\n";

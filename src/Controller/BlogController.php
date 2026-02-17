@@ -21,7 +21,8 @@ class BlogController extends AbstractController
         private readonly ArticleRepository $articleRepository,
         private readonly CommentRepository $commentRepository,
         private readonly \App\Repository\CategoryRepository $categoryRepository,
-        private readonly \App\Repository\TagRepository $tagRepository
+        private readonly \App\Repository\TagRepository $tagRepository,
+        private readonly \Knp\Component\Pager\PaginatorInterface $paginator
     ) {
     }
 
@@ -37,18 +38,24 @@ class BlogController extends AbstractController
         $categoryId = $request->query->get('category') ? (int) $request->query->get('category') : null;
         $tagId = $request->query->get('tag') ? (int) $request->query->get('tag') : null;
 
-        $articles = $this->articleRepository->findPublishedBySearchAndOrder(
+        $query = $this->articleRepository->getQueryPublishedBySearchAndOrder(
             $search === '' ? null : $search,
             $sort,
             $categoryId,
             $tagId
         );
 
+        $pagination = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            8 // Articles per page
+        );
+
         $selectedCategory = $categoryId ? $this->categoryRepository->find($categoryId) : null;
         $selectedTag = $tagId ? $this->tagRepository->find($tagId) : null;
 
         return $this->render('blog/index.html.twig', [
-            'articles' => $articles,
+            'pagination' => $pagination,
             'search' => $search ?? '',
             'sort' => $sort,
             'selectedCategory' => $selectedCategory,
