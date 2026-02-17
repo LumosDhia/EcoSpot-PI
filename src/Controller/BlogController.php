@@ -19,7 +19,9 @@ class BlogController extends AbstractController
 {
     public function __construct(
         private readonly ArticleRepository $articleRepository,
-        private readonly CommentRepository $commentRepository
+        private readonly CommentRepository $commentRepository,
+        private readonly \App\Repository\CategoryRepository $categoryRepository,
+        private readonly \App\Repository\TagRepository $tagRepository
     ) {
     }
 
@@ -28,26 +30,29 @@ class BlogController extends AbstractController
     {
         $search = $request->query->get('q');
         $sort = $request->query->get('sort', 'DESC');
-        $categoryId = $request->query->get('category');
-        $tagId = $request->query->get('tag');
-
         if (!in_array($sort, ['ASC', 'DESC'], true)) {
             $sort = 'DESC';
         }
 
+        $categoryId = $request->query->get('category') ? (int) $request->query->get('category') : null;
+        $tagId = $request->query->get('tag') ? (int) $request->query->get('tag') : null;
+
         $articles = $this->articleRepository->findPublishedBySearchAndOrder(
             $search === '' ? null : $search,
             $sort,
-            $categoryId ? (int) $categoryId : null,
-            $tagId ? (int) $tagId : null
+            $categoryId,
+            $tagId
         );
+
+        $selectedCategory = $categoryId ? $this->categoryRepository->find($categoryId) : null;
+        $selectedTag = $tagId ? $this->tagRepository->find($tagId) : null;
 
         return $this->render('blog/index.html.twig', [
             'articles' => $articles,
             'search' => $search ?? '',
             'sort' => $sort,
-            'currentCategoryId' => $categoryId,
-            'currentTagId' => $tagId,
+            'selectedCategory' => $selectedCategory,
+            'selectedTag' => $selectedTag,
         ]);
     }
 

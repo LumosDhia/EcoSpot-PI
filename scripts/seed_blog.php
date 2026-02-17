@@ -22,8 +22,9 @@ $entityManager = $container->get('doctrine')->getManager();
 
 echo "Seeding Categories...\n";
 $categories = [];
+$categoryRepo = $entityManager->getRepository(Category::class);
 foreach (['Ocean Conservation', 'Reforestation', 'Urban Sustainability'] as $name) {
-    $category = $entityManager->getRepository(Category::class)->findOneBy(['name' => $name]);
+    $category = $categoryRepo->findOneBy(['name' => $name]);
     if (!$category) {
         $category = new Category();
         $category->setName($name);
@@ -34,8 +35,9 @@ foreach (['Ocean Conservation', 'Reforestation', 'Urban Sustainability'] as $nam
 
 echo "Seeding Tags...\n";
 $tags = [];
+$tagRepo = $entityManager->getRepository(Tag::class);
 foreach (['plasticfree', 'trees', 'green', 'nature'] as $name) {
-    $tag = $entityManager->getRepository(Tag::class)->findOneBy(['name' => $name]);
+    $tag = $tagRepo->findOneBy(['name' => $name]);
     if (!$tag) {
         $tag = new Tag();
         $tag->setName($name);
@@ -52,46 +54,40 @@ if (!$admin) {
 
 echo "Seeding Articles...\n";
 
-$articleData = [
-    [
-        'title' => "Saving Our Oceans",
-        'content' => "Our oceans are filling with plastic. We need to take action now to protect marine life and ensure a healthy planet for future generations. Reducing single-use plastics is a vital first step.",
-        'category' => 'Ocean Conservation',
-        'tags' => ['plasticfree', 'nature'],
-        'views' => 150
-    ],
-    [
-        'title' => "Planting a Billion Trees",
-        'content' => "Trees are the lungs of our planet. Reforestation projects across the globe are working to soak up carbon and restore biodiversity. Every tree planted makes a difference.",
-        'category' => 'Reforestation',
-        'tags' => ['trees', 'green'],
-        'views' => 85
-    ],
-    [
-        'title' => "Smart Cities for a Green Future",
-        'content' => "Urban environments don't have to be concrete jungles. By implementing smart technologies and green infrastructure, we can create sustainable cities that thrive alongside nature.",
-        'category' => 'Urban Sustainability',
-        'tags' => ['green'],
-        'views' => 210
-    ]
-];
+// Article 1
+$article1 = new Article();
+$article1->setTitle("Saving Our Oceans");
+$article1->setContent("Our oceans are filling with plastic. We need to take action now to protect marine life and ensure a healthy planet for future generations. Reducing single-use plastics is a vital first step.");
+$article1->setWriter($admin);
+$article1->setCategory($categories['Ocean Conservation']);
+$article1->addTag($tags['plasticfree']);
+$article1->addTag($tags['nature']);
+$article1->setViews(150);
+$article1->setPublishedAt(new \DateTimeImmutable());
+$entityManager->persist($article1);
 
-foreach ($articleData as $data) {
-    $article = $entityManager->getRepository(Article::class)->findOneBy(['title' => $data['title']]);
-    if (!$article) {
-        $article = new Article();
-        $article->setTitle($data['title']);
-        $article->setContent($data['content']);
-        $article->setWriter($admin);
-        $article->setCategory($categories[$data['category']]);
-        foreach ($data['tags'] as $tagName) {
-            $article->addTag($tags[$tagName]);
-        }
-        $article->setViews($data['views']);
-        $article->setPublishedAt(new \DateTimeImmutable());
-        $entityManager->persist($article);
-    }
-}
+// Article 2
+$article2 = new Article();
+$article2->setTitle("Planting a Billion Trees");
+$article2->setContent("Trees are the lungs of our planet. Reforestation projects across the globe are working to soak up carbon and restore biodiversity. Every tree planted makes a difference.");
+$article2->setWriter($admin);
+$article2->setCategory($categories['Reforestation']);
+$article2->addTag($tags['trees']);
+$article2->addTag($tags['green']);
+$article2->setViews(85);
+$article2->setPublishedAt(new \DateTimeImmutable());
+$entityManager->persist($article2);
+
+// Article 3
+$article3 = new Article();
+$article3->setTitle("Smart Cities for a Green Future");
+$article3->setContent("Urban environments don't have to be concrete jungles. By implementing smart technologies and green infrastructure, we can create sustainable cities that thrive alongside nature.");
+$article3->setWriter($admin);
+$article3->setCategory($categories['Urban Sustainability']);
+$article3->addTag($tags['green']);
+$article3->setViews(210);
+$article3->setPublishedAt(new \DateTimeImmutable());
+$entityManager->persist($article3);
 
 $entityManager->flush();
 

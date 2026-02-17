@@ -41,13 +41,17 @@
                         {% endif %}
                         <div class="text-dark border p-4 p-md-5">
                             {% if article.category %}
-                                <a href="{{ path('blog_index', { category: article.category.id }) }}" class="badge bg-primary mb-2 text-white decoration-none">{{ article.category.name }}</a>
+                                <a href="{{ path('blog_index', { 'category': article.category.id }) }}" class="badge bg-primary mb-2 text-decoration-none">
+                                    {{ article.category.name }}
+                                </a>
                             {% endif %}
                             <h1 class="mb-4">{{ article.title }}</h1>
                             {% if article.tags|length > 0 %}
                                 <div class="mb-3">
                                     {% for tag in article.tags %}
-                                        <a href="{{ path('blog_index', { tag: tag.id }) }}" class="badge border border-primary text-primary small me-1 decoration-none">#{{ tag.name }}</a>
+                                        <a href="{{ path('blog_index', { 'tag': tag.id }) }}" class="badge border border-primary text-primary small me-1 text-decoration-none">
+                                            #{{ tag.name }}
+                                        </a>
                                     {% endfor %}
                                 </div>
                             {% endif %}

@@ -19,10 +19,9 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
-     * Published articles only (for public blog). Order by publishedAt.
      * @return Article[]
      */
-    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $category = null, ?int $tag = null): array
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): array
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
@@ -38,14 +37,14 @@ class ArticleRepository extends ServiceEntityRepository
                 ->setParameter('search', '%' . $search . '%');
         }
 
-        if ($category !== null) {
-            $qb->andWhere('a.category = :category')
-                ->setParameter('category', $category);
+        if ($categoryId !== null) {
+            $qb->andWhere('c.id = :categoryId')
+                ->setParameter('categoryId', $categoryId);
         }
 
-        if ($tag !== null) {
-            $qb->andWhere(':tag MEMBER OF a.tags')
-                ->setParameter('tag', $tag);
+        if ($tagId !== null) {
+            $qb->andWhere('t.id = :tagId')
+                ->setParameter('tagId', $tagId);
         }
 
         return $qb->getQuery()->getResult();
