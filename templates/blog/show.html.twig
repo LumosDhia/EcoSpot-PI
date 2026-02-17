@@ -72,11 +72,11 @@
                                 <span class="fw-bold me-2">Rate this article:</span>
                                 {% set userReaction = app.user ? article.userReaction(app.user) : null %}
                                 <button class="btn {{ userReaction and userReaction.type == 'like' ? 'btn-primary' : 'btn-outline-primary' }} reaction-btn" 
-                                        data-type="like" data-url="{{ path('blog_react', {id: article.id, type: 'like'}) }}">
+                                        data-type="like" data-url="{{ path('blog_react', {slug: article.slug, type: 'like'}) }}">
                                     <i class="fa fa-thumbs-up me-1"></i> Like
                                 </button>
                                 <button class="btn {{ userReaction and userReaction.type == 'dislike' ? 'btn-danger' : 'btn-outline-danger' }} reaction-btn" 
-                                        data-type="dislike" data-url="{{ path('blog_react', {id: article.id, type: 'dislike'}) }}">
+                                        data-type="dislike" data-url="{{ path('blog_react', {slug: article.slug, type: 'dislike'}) }}">
                                     <i class="fa fa-thumbs-down me-1"></i> Dislike
                                 </button>
                             </div>

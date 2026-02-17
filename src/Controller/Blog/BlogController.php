@@ -64,10 +64,10 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/{id}', name: 'blog_show', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function show(Request $request, int $id): Response
+    #[Route('/blog/{slug}', name: 'blog_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, string $slug): Response
     {
-        $article = $this->articleRepository->findOnePublishedById($id);
+        $article = $this->articleRepository->findOnePublishedBySlug($slug);
         if ($article === null) {
             throw new NotFoundHttpException('Article not found.');
         }
@@ -94,7 +94,7 @@ class BlogController extends AbstractController
             $this->commentRepository->save($comment, true);
             $this->addFlash('success', 'Your comment has been published.');
 
-            return $this->redirectToRoute('blog_show', ['id' => $article->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('blog_show', ['slug' => $article->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
         $comments = $this->commentRepository->findByArticleOrderByCreatedAt($article->getId(), 'DESC');
@@ -106,7 +106,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/{id}/react/{type}', name: 'blog_react', requirements: ['id' => '\d+', 'type' => 'like|dislike'], methods: ['POST'])]
+    #[Route('/blog/{slug}/react/{type}', name: 'blog_react', requirements: ['type' => 'like|dislike'], methods: ['POST'])]
     public function react(Article $article, string $type): Response
     {
         $user = $this->getUser();
