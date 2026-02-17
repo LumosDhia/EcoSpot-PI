@@ -84,7 +84,7 @@
                     </article>
 
                     <section class="border p-4 p-md-5 mb-5">
-                        <h4 class="mb-4 text-primary">Comments ({{ comments|length }})</h4>
+                        <h4 class="mb-4">{{ 'blog.comments'|trans }} ({{ comments|length }})</h4>
                         {% for comment in comments %}
                             <div class="border-bottom pb-3 mb-3 {% if not loop.last %}{% else %}border-0 mb-0{% endif %}">
                                 <strong class="text-primary">{{ comment.author }}</strong>
@@ -97,22 +97,22 @@
                     </section>
 
                     <section class="border p-4 p-md-5">
-                        <h4 class="mb-4 text-primary">Leave a comment</h4>
+                        <h4 class="mb-4">{{ 'blog.leave_comment'|trans }}</h4>
                         {% if app.user %}
                             {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
                             <div class="mb-3">
                                 {{ form_row(form.content) }}
                             </div>
-                            <button type="submit" class="btn-hover-bg btn btn-primary text-white py-2 px-4">Submit</button>
+                            <button type="submit" class="btn-hover-bg btn btn-primary text-white py-2 px-4">{{ 'blog.submit_comment'|trans }}</button>
                             {{ form_end(form) }}
                             <p class="text-muted small mt-2 mb-0">Comment will appear as {{ app.user.firstname }} {{ app.user.lastname }}.</p>
                         {% else %}
-                            <p class="text-muted mb-0">You must <a href="{{ path('app_login', { _target_path: app.request.requestUri }) }}">sign in</a> to leave a comment.</p>
+                            <p class="text-muted mb-0">{{ 'blog.sign_in_to_comment'|trans({'%url%': path('app_login', { _target_path: app.request.requestUri })})|raw }}</p>
                         {% endif %}
                     </section>
 
                     <p class="mt-4">
-                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i>Back to blog</a>
+                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i>{{ 'blog.back_to_blog'|trans }}</a>
                     </p>
                 </div>
             </div>

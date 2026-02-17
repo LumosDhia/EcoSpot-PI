@@ -5,11 +5,11 @@
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">Events</h3>
-            <p class="fs-5 text-white mb-4">Discover environmental events and activities.</p>
+            <h3 class="text-white display-3 mb-4">{{ 'events.upcoming_past'|trans }}</h3>
+            <p class="fs-5 text-white mb-4">{{ 'events.title'|trans }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
-                <li class="breadcrumb-item active text-white">Events</li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">{{ 'nav.events'|trans }}</li>
             </ol>
         </div>
     </div>
@@ -26,11 +26,13 @@
             <div class="card mb-5">
                 <div class="card-body">
                     <form method="get" action="{{ path('events_index') }}" class="row g-2 align-items-end" id="events-search-form">
-                        <div class="col-md-9">
-                            <label for="events-search" class="form-label">Search events</label>
-                            <input type="text" name="q" id="events-search" class="form-control" value="{{ search }}" placeholder="Search by name, description or location (matches from start)...">
+                        <div class="col-lg-8 mx-auto">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" name="q" id="events-search" class="form-control border-start-0 ps-0" value="{{ search }}" placeholder="{{ 'events.search_placeholder'|trans }}">
+                            </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3 d-none"> {# Hidden as per new design, search is now dynamic #}
                             <button type="submit" class="btn btn-primary w-100">Search</button>
                         </div>
                     </form>
@@ -59,9 +61,9 @@
                                 <h4 class="mb-3">{{ event.nom }}</h4>
                                 <p class="mb-3">{{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}</p>
                                 <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
-                                    <span><i class="fa fa-users me-1"></i> {{ event.capacite }} capacity</span>
+                                    <p class="text-muted small mb-0"><i class="fas fa-users me-1"></i> {{ event.capacite }} {{ 'events.capacity'|trans }}</p>
                                     {% if event.sponsors|length > 0 %}
-                                        <span><i class="fa fa-hand-holding-heart me-1"></i> {{ event.sponsors|length }} sponsor(s)</span>
+                                        <p class="text-muted small mb-0 ms-3"><i class="fas fa-hand-holding-heart me-1"></i> {{ event.sponsors|length }} {{ 'events.sponsors'|trans }}</p>
                                     {% endif %}
                                 </div>
                                 <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('events_show', { slug: event.slug }) }}">View event</a>
@@ -102,7 +104,7 @@
             if (events.length === 0) {
                 const msg = searchTerm
                     ? `No events match "${searchTerm}".`
-                    : 'No events yet. Check back later.';
+                    : '{{ 'events.no_events'|trans }}';
                 const clearLink = searchTerm
                     ? '<a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">Clear search</a>'
                     : '';

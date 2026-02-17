@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fr" style="background-color: #f0f7f4">
+{% set locale = app.request.locale %}
+<html lang="{{ locale }}" {% if locale == 'ar' %}dir="rtl"{% endif %} style="background-color: #f0f7f4">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -47,6 +48,23 @@
             body { background-color: #f0f7f4; }
             .form-error-list, .invalid-feedback { color: #b02a37; font-size: 0.875rem; margin-top: 0.25rem; }
             .form-error-list { list-style: none; padding-left: 0; }
+            
+            /* Language Switcher Styling */
+            .lang-dropdown .dropdown-toggle { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; padding: 2px 10px; border-radius: 4px; font-size: 0.85rem; }
+            .lang-dropdown .dropdown-menu { min-width: 100px; padding: 0.5rem 0; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+            .lang-dropdown .dropdown-item { font-size: 0.85rem; padding: 0.25rem 1rem; color: #333; }
+            .lang-dropdown .dropdown-item:hover { background-color: var(--eco-cream); color: var(--eco-forest); }
+            .lang-dropdown .dropdown-item.active { background-color: var(--eco-forest); color: white; }
+
+            [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
+            [dir="rtl"] .me-4 { margin-left: 1.5rem !important; margin-right: 0 !important; }
+            [dir="rtl"] .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+            [dir="rtl"] .me-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+            [dir="rtl"] .ms-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+            [dir="rtl"] .text-md-end { text-align: left !important; }
+            [dir="rtl"] .text-md-start { text-align: right !important; }
+            [dir="rtl"] .float-end { float: left !important; }
+            [dir="rtl"] .navbar-brand { margin-left: 1rem; margin-right: 0; }
         </style>
         {% block stylesheets %}{% endblock %}
     </head>
@@ -61,26 +79,36 @@
             <div class="container px-0">
                 <div class="topbar">
                     <div class="row align-items-center justify-content-center">
-                        <div class="col-md-8">
+                        <div class="col-md-9">
                             <div class="topbar-info d-flex flex-wrap align-items-center">
                                 <a href="{{ path('home') }}" class="text-light me-4"><i class="fas fa-leaf text-white me-2"></i>EcoSpot</a>
                                 {% if app.user %}
                                     {% if is_granted('ROLE_ADMIN') %}
-                                        <a href="{{ path('admin_dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>Admin dashboard</a>
+                                        <a href="{{ path('admin_dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>{{ 'nav.admin_dashboard'|trans }}</a>
                                     {% elseif is_granted('ROLE_NGO') %}
-                                        <a href="{{ path('ngo_dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>NGO dashboard</a>
+                                        <a href="{{ path('ngo_dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>{{ 'nav.ngo_dashboard'|trans }}</a>
                                     {% else %}
-                                        <a href="{{ path('dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>Dashboard</a>
+                                        <a href="{{ path('dashboard') }}" class="text-light me-4"><i class="fas fa-tachometer-alt text-white me-2"></i>{{ 'nav.dashboard'|trans }}</a>
                                     {% endif %}
-                                    <a href="{{ path('app_logout') }}" class="text-light"><i class="fas fa-sign-out-alt text-white me-2"></i>Logout</a>
+                                    <a href="{{ path('app_logout') }}" class="text-light"><i class="fas fa-sign-out-alt text-white me-2"></i>{{ 'nav.logout'|trans }}</a>
                                 {% else %}
-                                    <a href="{{ path('app_login') }}" class="text-light me-4"><i class="fas fa-sign-in-alt text-white me-2"></i>Login</a>
-                                    <a href="{{ path('app_register') }}" class="text-light"><i class="fas fa-user-plus text-white me-2"></i>Register</a>
+                                    <a href="{{ path('app_login') }}" class="text-light me-4"><i class="fas fa-sign-in-alt text-white me-2"></i>{{ 'nav.login'|trans }}</a>
+                                    <a href="{{ path('app_register') }}" class="text-light"><i class="fas fa-user-plus text-white me-2"></i>{{ 'nav.register'|trans }}</a>
                                 {% endif %}
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="topbar-icon d-flex align-items-center justify-content-end">
+                                <div class="dropdown lang-dropdown me-2">
+                                    <button class="dropdown-toggle" type="button" id="langDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-globe me-1"></i> {{ locale|upper }}
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
+                                        <li><a class="dropdown-item {{ locale == 'en' ? 'active' : '' }}" href="{{ path('change_language', {locale: 'en'}) }}">English</a></li>
+                                        <li><a class="dropdown-item {{ locale == 'fr' ? 'active' : '' }}" href="{{ path('change_language', {locale: 'fr'}) }}">Français</a></li>
+                                        <li><a class="dropdown-item {{ locale == 'ar' ? 'active' : '' }}" href="{{ path('change_language', {locale: 'ar'}) }}">العربية</a></li>
+                                    </ul>
+                                </div>
                                 <a href="{{ path('home') }}" class="btn-square text-white me-2"><i class="fas fa-home"></i></a>
                             </div>
                         </div>
@@ -95,13 +123,13 @@
                     </button>
                     <div class="collapse navbar-collapse bg-light" id="navbarCollapse">
                         <div class="navbar-nav ms-auto">
-                            <a href="{{ path('home') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">Home</a>
-                            <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and 'events_' in app.request.attributes.get('_route') ? 'active' : '' }}">Events</a>
-                            <a href="{{ path('public_tickets') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">Tickets</a>
-                            <a href="{{ path('public_achievements') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_achievements' ? 'active' : '' }}">Achievements</a>
+                            <a href="{{ path('home') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">{{ 'nav.home'|trans }}</a>
+                            <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and 'events_' in app.request.attributes.get('_route') ? 'active' : '' }}">{{ 'nav.events'|trans }}</a>
+                            <a href="{{ path('public_tickets') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">{{ 'nav.tickets'|trans }}</a>
+                            <a href="{{ path('public_achievements') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_achievements' ? 'active' : '' }}">{{ 'nav.achievements'|trans }}</a>
                         </div>
                         <div class="d-flex align-items-center flex-nowrap pt-xl-0" style="margin-left: 15px;">
-                            <a href="{{ path('blog_index') }}" class="btn-hover-bg btn btn-primary text-white py-2 px-4 me-3">Blog</a>
+                            <a href="{{ path('blog_index') }}" class="btn-hover-bg btn btn-primary text-white py-2 px-4 me-3">{{ 'nav.blog'|trans }}</a>
                         </div>
                     </div>
                 </nav>
@@ -130,24 +158,24 @@
                 <div class="row g-4 g-lg-5 align-items-start text-center text-md-start">
                     <div class="col-md-5 col-lg-4">
                         <h4 class="text-white fw-bold mb-3">EcoSpot</h4>
-                        <p class="text-white-50 small mb-0">Environmental news, events, and community action for a greener future.</p>
+                        <p class="text-white-50 small mb-0">{{ 'footer.description'|trans }}</p>
                     </div>
                     <div class="col-md-4 col-lg-4">
-                        <h5 class="text-white fw-semibold mb-3 small text-uppercase" style="letter-spacing: 0.08em;">Quick links</h5>
+                        <h5 class="text-white fw-semibold mb-3 small text-uppercase" style="letter-spacing: 0.08em;">{{ 'footer.quick_links'|trans }}</h5>
                         <nav class="d-flex flex-wrap gap-2 gap-md-3 align-items-center">
-                            <a href="{{ path('home') }}" class="text-white text-decoration-none small">Home</a>
+                            <a href="{{ path('home') }}" class="text-white text-decoration-none small">{{ 'nav.home'|trans }}</a>
                             <span class="text-white opacity-50">·</span>
-                            <a href="{{ path('blog_index') }}" class="text-white text-decoration-none small">Blog</a>
+                            <a href="{{ path('blog_index') }}" class="text-white text-decoration-none small">{{ 'nav.blog'|trans }}</a>
                             <span class="text-white opacity-50">·</span>
-                            <a href="{{ path('events_index') }}" class="text-white text-decoration-none small">Events</a>
+                            <a href="{{ path('events_index') }}" class="text-white text-decoration-none small">{{ 'nav.events'|trans }}</a>
                             <span class="text-white opacity-50">·</span>
-                            <a href="{{ path('public_tickets') }}" class="text-white text-decoration-none small">Community tickets</a>
+                            <a href="{{ path('public_tickets') }}" class="text-white text-decoration-none small">{{ 'nav.tickets'|trans }}</a>
                             <span class="text-white opacity-50">·</span>
-                            <a href="{{ path('public_achievements') }}" class="text-white text-decoration-none small">Achievements</a>
+                            <a href="{{ path('public_achievements') }}" class="text-white text-decoration-none small">{{ 'nav.achievements'|trans }}</a>
                         </nav>
                     </div>
                     <div class="col-md-3 col-lg-4 text-center text-md-end">
-                        <h5 class="text-white fw-semibold mb-3 small text-uppercase" style="letter-spacing: 0.08em;">Follow us</h5>
+                        <h5 class="text-white fw-semibold mb-3 small text-uppercase" style="letter-spacing: 0.08em;">{{ 'footer.follow_us'|trans }}</h5>
                         <a href="https://www.instagram.com/green.team2026" target="_blank" rel="noopener noreferrer" class="d-inline-flex align-items-center justify-content-center text-white text-decoration-none" style="width: 28px; height: 28px;" title="Instagram">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="28" height="28" aria-label="Instagram"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                         </a>
@@ -158,7 +186,7 @@
                 <div class="container">
                     <div class="row align-items-center">
                         <div class="col-12 text-center">
-                            <span class="text-white-50 small">{{ 'now'|date('Y') }} EcoSpot. All rights reserved.</span>
+                            <span class="text-white-50 small">{{ 'now'|date('Y') }} EcoSpot. {{ 'footer.all_rights'|trans }}</span>
                         </div>
                     </div>
                 </div>

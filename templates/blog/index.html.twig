@@ -6,11 +6,11 @@
     <!-- Header (Environs breadcrumb) -->
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">Blog & News</h3>
-            <p class="fs-5 text-white mb-4">Discover our articles on the environment and nature.</p>
+            <h3 class="text-white display-3 mb-4">{{ 'blog.latest_news'|trans }}</h3>
+            <p class="fs-5 text-white mb-4">{{ 'blog.articles'|trans }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
-                <li class="breadcrumb-item active text-white">Blog</li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">{{ 'nav.blog'|trans }}</li>
             </ol>
         </div>
     </div>
@@ -35,21 +35,20 @@
             {# Search & Sort #}
             <div class="card mb-5">
                 <div class="card-body">
-                    <form method="get" action="{{ path('blog_index') }}" class="row g-2 align-items-end" novalidate="novalidate">
-                        <input type="hidden" name="order" value="{{ order }}">
-                        <div class="col-md-5">
-                            <label for="q" class="form-label">Search by title</label>
-                            <input type="text" name="q" id="q" class="form-control" value="{{ search }}" placeholder="Article title...">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label d-block">Sort by date</label>
-                            <div class="btn-group" role="group">
-                                <a href="{{ path('blog_index', { q: search, order: 'DESC' }) }}" class="btn {{ order == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
-                                <a href="{{ path('blog_index', { q: search, order: 'ASC' }) }}" class="btn {{ order == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
+                    <form method="get" action="{{ path('blog_index') }}" class="row g-3 align-items-end" novalidate="novalidate">
+                        <div class="col-md-7">
+                            <label for="search" class="form-label small text-muted mb-1">{{ 'blog.search_label'|trans }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" name="search" id="search" class="form-control border-start-0 ps-0" placeholder="{{ 'blog.search_placeholder'|trans }}" value="{{ app.request.query.get('search') }}">
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        <div class="col-md-5">
+                            <label for="order" class="form-label small text-muted mb-1">{{ 'blog.sort_label'|trans }}</label>
+                            <select name="order" id="order" class="form-select" onchange="this.form.submit()">
+                                <option value="desc" {{ app.request.query.get('order') == 'desc' ? 'selected' : '' }}>{{ 'blog.newest'|trans }}</option>
+                                <option value="asc" {{ app.request.query.get('order') == 'asc' ? 'selected' : '' }}>{{ 'blog.oldest'|trans }}</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -96,7 +95,7 @@
                                     </div>
                                 </div>
                                 <div class="search-icon">
-                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="my-auto"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a>
+                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="btn btn-primary px-3">{{ 'common.read_more'|trans }}</a>
                                 </div>
                             </div>
                             <div class="text-dark border p-4">
@@ -117,8 +116,8 @@
                     </div>
                 {% else %}
                     <div class="col-12">
-                        <div class="text-center py-5 text-muted">
-                            <p class="fs-5">No articles found.</p>
+                        <div class="col-12 text-center py-5">
+                            <p class="text-muted">{{ 'blog.no_articles'|trans }}</p>
                         </div>
                     </div>
                 {% endfor %}

@@ -70,7 +70,9 @@
                             {% endif %}
                         </div>
                     </div>
-                    <a href="{{ path('events_index') }}" class="btn btn-outline-primary">← Back to events</a>
+                    <a href="{{ path('events_index') }}" class="btn btn-outline-primary mb-4">
+                <i class="fas fa-arrow-{{ app.request.locale == 'ar' ? 'right' : 'left' }} me-2"></i> {{ 'events.back_to_events'|trans }}
+            </a>
                 </div>
             </div>
         </div>
