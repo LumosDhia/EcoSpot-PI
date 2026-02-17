@@ -9,8 +9,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity(fields: ['title'], message: 'An article with this title already exists.')]
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 #[ORM\Table(name: 'article')]
 #[ORM\Index(columns: ['created_at'])]
@@ -22,7 +24,7 @@ class Article
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank(message: 'Title is required.')]
     #[Assert\Length(min: 5, max: 100, minMessage: 'Title must be at least {{ limit }} characters.', maxMessage: 'Title cannot exceed {{ limit }} characters.')]
     #[Assert\Regex(pattern: '/(?:.*[a-zA-Z]){5,}/s', message: 'The title must contain at least 5 letters.')]
@@ -48,7 +50,7 @@ class Article
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $adminRevisionNote = null;
 
-    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'articles')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $writer = null;
 
