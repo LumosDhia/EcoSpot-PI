@@ -1,25 +1,25 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}My tickets - EcoSpot{% endblock %}
-{% block page_title %}My tickets{% endblock %}
+{% block title %}{{ 'tickets.my_list_title'|trans }} - EcoSpot{% endblock %}
+{% block page_title %}{{ 'tickets.my_list_title'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <p class="text-muted mb-0">Create and manage your tickets. Pending tickets are reviewed by the administration.</p>
-        <a href="{{ path('ticket_create') }}" class="btn btn-primary">New ticket</a>
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <p class="text-muted mb-0">{{ 'tickets.my_list_desc'|trans }}</p>
+        <a href="{{ path('ticket_create') }}" class="btn btn-primary">{{ 'tickets.new_ticket_btn'|trans }}</a>
     </div>
 
     <div class="card mb-3">
         <div class="card-body py-2">
             <form method="get" class="row g-2 align-items-end">
                 <div class="col-auto">
-                    <label for="status" class="form-label mb-0">Status</label>
+                    <label for="status" class="form-label mb-0">{{ 'common.status'|trans }}</label>
                 </div>
                 <div class="col-md-3">
                     <select name="status" id="status" class="form-select form-select-sm" onchange="this.form.submit()">
-                        <option value="">All statuses</option>
+                        <option value="">{{ 'tickets.all_statuses'|trans }}</option>
                         {% for s in statuses %}
-                            <option value="{{ s.value }}" {{ currentStatus == s ? 'selected' : '' }}>{{ s.getLabel() }}</option>
+                            <option value="{{ s.value }}" {{ currentStatus == s ? 'selected' : '' }}>{{ s.getLabel()|translate }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -28,40 +28,40 @@
     </div>
 
     {% if tickets is empty %}
-        <div class="alert alert-info">You have no tickets yet. <a href="{{ path('ticket_create') }}">Create one</a>.</div>
+        <div class="alert alert-info">{{ 'tickets.no_tickets_yet'|trans }} <a href="{{ path('ticket_create') }}">{{ 'tickets.create_one'|trans }}</a>.</div>
     {% else %}
         <div class="row">
             {% for ticket in tickets %}
                 <div class="col-md-6 mb-3">
                     <div class="card h-100 position-relative">
                         <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-1">
-                            <span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel() }}</span>
-                            <span class="badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel() }}</span>
+                            <span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel()|translate }}</span>
+                            <span class="badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel()|translate }}</span>
                         </div>
                         <div class="card-body">
-                            <h5 class="card-title">{{ ticket.title }}</h5>
+                            <h5 class="card-title">{{ ticket.title|translate }}</h5>
                             <p class="card-text small text-muted">
-                                <i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel() }}
-                                &middot; <i class="bi bi-geo-alt"></i> {{ ticket.location }}
+                                <i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel()|translate }}
+                                &middot; <i class="bi bi-geo-alt"></i> {{ ticket.location|translate }}
                             </p>
-                            <p class="card-text">{{ ticket.description|length > 120 ? ticket.description|slice(0, 120) ~ '...' : ticket.description }}</p>
+                            <p class="card-text">{{ (ticket.description|translate)|length > 120 ? (ticket.description|translate)|slice(0, 120) ~ '...' : (ticket.description|translate) }}</p>
                             {% if ticket.adminNotes and ticket.status.value == 'SENT_BACK' %}
                                 <div class="alert alert-light border small py-2">
-                                    <strong>Admin note:</strong> {{ ticket.adminNotes }}
+                                    <strong>{{ 'tickets.admin_note'|trans }}:</strong> {{ ticket.adminNotes|translate }}
                                 </div>
                             {% endif %}
                         </div>
                         <div class="card-footer bg-transparent d-flex justify-content-between align-items-center flex-wrap gap-1">
-                            <small class="text-muted">Created {{ ticket.createdAt|date('d/m/Y H:i') }}</small>
+                            <small class="text-muted">{{ 'common.created'|trans }} {{ ticket.createdAt|date('d/m/Y H:i') }}</small>
                             <div>
-                                <a href="{{ path('ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-secondary">View</a>
+                                <a href="{{ path('ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-secondary">{{ 'common.view'|trans }}</a>
                                 {% if ticket.status.value == 'SENT_BACK' %}
-                                    <a href="{{ path('ticket_edit', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">Edit and resubmit</a>
+                                    <a href="{{ path('ticket_edit', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">{{ 'tickets.edit_resubmit'|trans }}</a>
                                 {% endif %}
                             </div>
                         </div>
                         {% if ticket.status.value == 'PUBLISHED' and not ticket.completionSubmittedAt and not ticket.achievedAt %}
-                            <a href="{{ path('public_ticket_complete', { id: ticket.id }) }}" class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; line-height: 1;" title="I completed this – submit proof"><i class="fas fa-check"></i></a>
+                            <a href="{{ path('public_ticket_complete', { id: ticket.id }) }}" class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2" style="border-radius: 50%; width: 36px; height: 36px; padding: 0; line-height: 1;" title="{{ 'tickets.completed_proof_title'|trans }}"><i class="fas fa-check"></i></a>
                         {% endif %}
                     </div>
                 </div>

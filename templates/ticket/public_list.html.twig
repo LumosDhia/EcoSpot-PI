@@ -5,11 +5,11 @@
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">Community tickets</h3>
-            <p class="fs-5 text-white mb-4">Environmental issues and suggestions reported by the community. Pick one and complete it.</p>
+            <h3 class="text-white display-3 mb-4">{{ 'tickets.public_title'|trans }}</h3>
+            <p class="fs-5 text-white mb-4">{{ 'tickets.public_desc'|trans }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
-                <li class="breadcrumb-item active text-white">Tickets</li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">{{ 'nav.tickets'|trans }}</li>
             </ol>
         </div>
     </div>
@@ -20,31 +20,31 @@
         <div class="container py-5">
 
         {% if tickets is empty %}
-            <div class="alert alert-info">No published tickets yet.</div>
+            <div class="alert alert-info">{{ 'tickets.no_published'|trans }}</div>
         {% else %}
             <div class="row">
                 {% for ticket in tickets %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100 shadow-sm position-relative">
-                            <div class="card-header d-flex justify-content-between align-items-center">
-                                <span class="badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel() }}</span>
-                                <span class="small text-muted"><i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel() }}</span>
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <span class="badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ('tickets.priority'|trans ~ ': ' ~ ticket.priority.getLabel())|translate }}</span>
+                                <span class="small text-muted"><i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ('tickets.domain'|trans ~ ': ' ~ ticket.domain.getLabel())|translate }}</span>
                             </div>
                             <div class="card-body">
-                                <h5 class="card-title">{{ ticket.title }}</h5>
+                                <h5 class="card-title">{{ ticket.title|translate }}</h5>
                                 <p class="card-text text-muted small">
-                                    <i class="bi bi-geo-alt"></i> {{ ticket.location }}
+                                    <i class="bi bi-geo-alt"></i> {{ ticket.location|translate }}
                                 </p>
-                                <p class="card-text">{{ ticket.description|length > 150 ? ticket.description|slice(0, 150) ~ '...' : ticket.description }}</p>
+                                <p class="card-text">{{ (ticket.description|translate)|length > 150 ? (ticket.description|translate)|slice(0, 150) ~ '...' : (ticket.description|translate) }}</p>
                                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                                    <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">View</a>
+                                    <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">{{ 'common.view'|trans }}</a>
                                     {% if app.user and (is_granted('ROLE_USER') or is_granted('ROLE_NGO')) and ticket.status.value == 'PUBLISHED' and not ticket.completionSubmittedAt and not ticket.achievedAt %}
-                                        <a href="{{ path('public_ticket_complete', { id: ticket.id }) }}" class="btn btn-sm btn-success"><i class="fas fa-check me-1"></i> I completed this</a>
+                                        <a href="{{ path('public_ticket_complete', { id: ticket.id }) }}" class="btn btn-sm btn-success"><i class="fas fa-check me-1"></i> {{ 'tickets.i_completed'|trans }}</a>
                                     {% endif %}
                                 </div>
                             </div>
                             <div class="card-footer bg-transparent small text-muted">
-                                Published {{ ticket.updatedAt ? ticket.updatedAt|date('d/m/Y') : ticket.createdAt|date('d/m/Y') }}
+                                {{ 'tickets.published_on'|trans({'%date%': (ticket.updatedAt ? ticket.updatedAt|date('d/m/Y') : ticket.createdAt|date('d/m/Y'))}) }}
                             </div>
                         </div>
                     </div>

@@ -23,6 +23,7 @@ class BlogController extends AbstractController
         private readonly \App\Repository\Blog\Article\CategoryRepository $categoryRepository,
         private readonly \App\Repository\Blog\Article\TagRepository $tagRepository,
         private readonly \App\Repository\Blog\Article\ArticleReactionRepository $reactionRepository,
+        private readonly \App\Repository\UserRepository $userRepository,
         private readonly \Knp\Component\Pager\PaginatorInterface $paginator
     ) {
     }
@@ -38,12 +39,14 @@ class BlogController extends AbstractController
 
         $categoryId = $request->query->get('category') ? (int) $request->query->get('category') : null;
         $tagId = $request->query->get('tag') ? (int) $request->query->get('tag') : null;
+        $writerId = $request->query->get('writer') ? (int) $request->query->get('writer') : null;
 
         $query = $this->articleRepository->getQueryPublishedBySearchAndOrder(
             $search === '' ? null : $search,
             $order,
             $categoryId,
-            $tagId
+            $tagId,
+            $writerId
         );
 
         $pagination = $this->paginator->paginate(
@@ -54,6 +57,7 @@ class BlogController extends AbstractController
 
         $selectedCategory = $categoryId ? $this->categoryRepository->find($categoryId) : null;
         $selectedTag = $tagId ? $this->tagRepository->find($tagId) : null;
+        $selectedWriter = $writerId ? $this->userRepository->find($writerId) : null;
 
         return $this->render('blog/index.html.twig', [
             'pagination' => $pagination,
@@ -61,13 +65,14 @@ class BlogController extends AbstractController
             'order' => $order,
             'selectedCategory' => $selectedCategory,
             'selectedTag' => $selectedTag,
+            'selectedWriter' => $selectedWriter,
         ]);
     }
 
-    #[Route('/blog/{id}', name: 'blog_show', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
-    public function show(Request $request, int $id): Response
+    #[Route('/blog/{slug}', name: 'blog_show', methods: ['GET', 'POST'])]
+    public function show(Request $request, string $slug): Response
     {
-        $article = $this->articleRepository->findOnePublishedById($id);
+        $article = $this->articleRepository->findOnePublishedBySlug($slug);
         if ($article === null) {
             throw new NotFoundHttpException('Article not found.');
         }
@@ -86,15 +91,15 @@ class BlogController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$this->getUser()) {
-                $this->addFlash('error', 'You must be signed in to leave a comment.');
+                $this->addFlash('error', 'blog.sign_in_flash');
                 return $this->redirectToRoute('app_login', ['_target_path' => $request->getRequestUri()]);
             }
             $comment->setAuthor(trim($this->getUser()->getFirstname() . ' ' . $this->getUser()->getLastname()) ?: $this->getUser()->getUserIdentifier());
             $comment->setAuthorUser($this->getUser());
             $this->commentRepository->save($comment, true);
-            $this->addFlash('success', 'Your comment has been published.');
+            $this->addFlash('success', 'blog.comment_success_flash');
 
-            return $this->redirectToRoute('blog_show', ['id' => $article->getId()], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('blog_show', ['slug' => $article->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
         $comments = $this->commentRepository->findByArticleOrderByCreatedAt($article->getId(), 'DESC');
@@ -106,7 +111,7 @@ class BlogController extends AbstractController
         ]);
     }
 
-    #[Route('/blog/{id}/react/{type}', name: 'blog_react', requirements: ['id' => '\d+', 'type' => 'like|dislike'], methods: ['POST'])]
+    #[Route('/blog/{slug}/react/{type}', name: 'blog_react', requirements: ['type' => 'like|dislike'], methods: ['POST'])]
     public function react(Article $article, string $type): Response
     {
         $user = $this->getUser();

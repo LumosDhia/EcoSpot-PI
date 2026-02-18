@@ -8,6 +8,7 @@ use App\Repository\EvenementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -28,6 +29,10 @@ class Evenement
     #[Assert\NotBlank(message: 'Event name is required.')]
     #[Assert\Length(min: 3, minMessage: 'Name must be at least 3 characters.')]
     private ?string $nom = null;
+
+    #[Gedmo\Slug(fields: ['nom'])]
+    #[ORM\Column(length: 128, unique: true)]
+    private ?string $slug = null;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'Description is required.')]
@@ -216,6 +221,17 @@ class Evenement
     public function setLongitude(?float $longitude): static
     {
         $this->longitude = $longitude;
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
         return $this;
     }
 }

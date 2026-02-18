@@ -72,14 +72,14 @@ class EventsController extends AbstractController
                 'capacite' => $e->getCapacite(),
                 'image' => $e->getImage(),
                 'sponsorsCount' => $e->getSponsors()->count(),
-                'showUrl' => $this->generateUrl('events_show', ['id' => $e->getId()]),
+                'showUrl' => $this->generateUrl('events_show', ['slug' => $e->getSlug()]),
             ];
         }, $events);
 
         return new JsonResponse(['events' => $data]);
     }
 
-    #[Route('/events/{id}', name: 'events_show', requirements: ['id' => '\d+'], methods: ['GET'])]
+    #[Route('/events/{slug}', name: 'events_show', methods: ['GET'])]
     public function show(Evenement $event): Response
     {
         return $this->render('events/show.html.twig', [

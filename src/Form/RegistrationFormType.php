@@ -27,7 +27,7 @@ class RegistrationFormType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'attr' => ['class' => 'form-control'],
-                'label' => 'Email',
+                'label' => 'security.email',
                 'constraints' => [
                     new NotBlank(['message' => 'Please enter your email.']),
                     new Email(['message' => 'Please enter a valid email address.']),
@@ -35,7 +35,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('firstname', TextType::class, [
                 'attr' => ['class' => 'form-control'],
-                'label' => 'First name',
+                'label' => 'security.firstname',
                 'constraints' => [
                     new NotBlank(['message' => 'Please enter your first name.']),
                     new Length(['min' => 1, 'max' => 100, 'maxMessage' => 'First name cannot be longer than {{ limit }} characters.']),
@@ -44,7 +44,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('lastname', TextType::class, [
                 'attr' => ['class' => 'form-control'],
-                'label' => 'Last name',
+                'label' => 'security.lastname',
                 'constraints' => [
                     new NotBlank(['message' => 'Please enter your last name.']),
                     new Length(['min' => 1, 'max' => 100, 'maxMessage' => 'Last name cannot be longer than {{ limit }} characters.']),
@@ -53,7 +53,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('address', TextType::class, [
                 'attr' => ['class' => 'form-control'],
-                'label' => 'Address',
+                'label' => 'security.address',
                 'required' => false,
                 'constraints' => [
                     new Length(['max' => 255, 'maxMessage' => 'Address cannot be longer than {{ limit }} characters.']),
@@ -61,7 +61,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('zipcode', TextType::class, [
                 'attr' => ['class' => 'form-control', 'placeholder' => 'e.g. 75001'],
-                'label' => 'Postal code',
+                'label' => 'security.zipcode',
                 'required' => false,
                 'constraints' => [
                     new Optional([
@@ -72,7 +72,7 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('city', TextType::class, [
                 'attr' => ['class' => 'form-control'],
-                'label' => 'City',
+                'label' => 'security.city',
                 'required' => false,
                 'constraints' => [
                     new Optional([
@@ -86,18 +86,18 @@ class RegistrationFormType extends AbstractType
                 'constraints' => [
                     new IsTrue(['message' => 'You should agree to our terms.']),
                 ],
-                'label' => 'I agree to the terms',
+                'label' => 'security.agree_terms',
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
                 'mapped' => false,
                 'first_options' => [
                     'attr' => ['autocomplete' => 'new-password', 'class' => 'form-control'],
-                    'label' => 'Password',
+                    'label' => 'security.password',
                 ],
                 'second_options' => [
                     'attr' => ['autocomplete' => 'new-password', 'class' => 'form-control'],
-                    'label' => 'Repeat password',
+                    'label' => 'security.repeat_password',
                 ],
                 'invalid_message' => 'The password fields must match.',
                 'constraints' => [

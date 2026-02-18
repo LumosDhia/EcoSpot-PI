@@ -22,12 +22,12 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @return Article[]
      */
-    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): array
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): array
     {
-        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId)->getResult();
+        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId, $writerId)->getResult();
     }
 
-    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): \Doctrine\ORM\Query
+    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
@@ -53,6 +53,11 @@ class ArticleRepository extends ServiceEntityRepository
                 ->setParameter('tagId', $tagId);
         }
 
+        if ($writerId !== null) {
+            $qb->andWhere('w.id = :writerId')
+                ->setParameter('writerId', $writerId);
+        }
+
         return $qb->getQuery();
     }
 
@@ -64,6 +69,21 @@ class ArticleRepository extends ServiceEntityRepository
             ->andWhere('a.publishedAt IS NOT NULL')
             ->andWhere('a.publishedAt <= :now')
             ->setParameter('id', $id)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findOnePublishedBySlug(string $slug): ?Article
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->leftJoin('a.category', 'c')->addSelect('c')
+            ->leftJoin('a.tags', 't')->addSelect('t')
+            ->andWhere('a.slug = :slug')
+            ->andWhere('a.publishedAt IS NOT NULL')
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('slug', $slug)
             ->setParameter('now', new \DateTimeImmutable())
             ->getQuery()
             ->getOneOrNullResult();

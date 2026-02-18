@@ -16,11 +16,11 @@ class CommentPublicType extends AbstractType
     {
         $builder
             ->add('content', TextareaType::class, [
-                'label' => 'Your comment',
+                'label' => 'form.comment_content',
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 4,
-                    'placeholder' => 'Write your comment...',
+                    'placeholder' => 'form.comment_placeholder',
                 ],
             ]);
     }
