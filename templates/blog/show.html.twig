@@ -19,7 +19,15 @@
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
             <h3 class="text-white display-3 mb-4">{{ article.title|translate }}</h3>
-            <p class="fs-5 text-white mb-4">{{ 'blog.published_on'|trans }} {{ (article.publishedAt ?? article.createdAt)|date('d/m/Y H:i') }}</p>
+            <p class="fs-5 text-white mb-4">
+                {{ 'blog.published_on'|trans }} 
+                {% set articleDate = article.publishedAt ?? article.createdAt %}
+                {% if articleDate > date('-1 month') %}
+                    {{ articleDate|ago }}
+                {% else %}
+                    {{ articleDate|date('d/m/Y H:i') }}
+                {% endif %}
+            </p>
             <ol class="breadcrumb justify-content-center mb-0">
                 <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
                 <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
@@ -57,7 +65,13 @@
                                 </div>
                             {% endif %}
                             <p class="text-muted small mb-4">
-                                <i class="fa fa-clock me-2"></i>{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : article.createdAt|date('d/m/Y H:i') }}
+                                <i class="fa fa-clock me-2"></i>
+                                {% set articleDate = article.publishedAt ?? article.createdAt %}
+                                {% if articleDate > date('-1 month') %}
+                                    {{ articleDate|ago }}
+                                {% else %}
+                                    {{ articleDate|date('d/m/Y H:i') }}
+                                {% endif %}
                                 <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ 'blog.min_read'|trans({'%count%': article.readingTime}) }}</span>
                                 <span class="ms-3"><i class="fa fa-eye me-1"></i>{{ 'blog.views'|trans({'%count%': article.views}) }}</span>
                                 <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
@@ -95,7 +109,13 @@
                         {% for comment in comments %}
                             <div class="border-bottom pb-3 mb-3 {% if not loop.last %}{% else %}border-0 mb-0{% endif %}">
                                 <strong class="text-primary">{{ comment.author }}</strong>
-                                <span class="text-muted small"> — {{ comment.createdAt|date('d/m/Y H:i') }}</span>
+                                <span class="text-muted small"> — 
+                                    {% if comment.createdAt > date('-1 month') %}
+                                        {{ comment.createdAt|ago }}
+                                    {% else %}
+                                        {{ comment.createdAt|date('d/m/Y H:i') }}
+                                    {% endif %}
+                                </span>
                                 <p class="mb-0 mt-1">{{ comment.content|translate|nl2br }}</p>
                             </div>
                         {% else %}

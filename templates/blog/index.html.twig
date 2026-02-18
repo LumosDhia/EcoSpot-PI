@@ -86,7 +86,15 @@
                                     <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title|translate }}" loading="lazy">
                                 {% endif %}
                                 <div class="blog-info">
-                                    <span><i class="fa fa-clock"></i> {{ (article.publishedAt ?? article.createdAt)|date('d M Y') }}</span>
+                                    <span>
+                                        <i class="fa fa-clock"></i> 
+                                        {% set articleDate = article.publishedAt ?? article.createdAt %}
+                                        {% if articleDate > date('-1 month') %}
+                                            {{ articleDate|ago }}
+                                        {% else %}
+                                            {{ articleDate|date('d/m/Y') }}
+                                        {% endif %}
+                                    </span>
                                     <div class="d-flex">
                                         <span class="me-3">{{ article.comments|length }} <i class="fa fa-comment"></i></span>
                                         <span class="me-3"><i class="fa fa-book-reader"></i> {{ article.readingTime }} min read</span>
