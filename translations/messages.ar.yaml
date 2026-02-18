@@ -154,6 +154,7 @@ blog:
     showing_articles: "عرض المقالات"
     filter_in: "في"
     filter_with_tag: "بالوسم"
+    filter_by: "بواسطة"
     filter_matching: "المطابقة لـ"
     clear_all: "مسح الكل"
     newest: "الأحدث"

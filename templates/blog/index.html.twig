@@ -55,7 +55,7 @@
             </div>
 
             {# Active Filters #}
-            {% if selectedCategory or selectedTag or search %}
+            {% if selectedCategory or selectedTag or selectedWriter or search %}
                 <div class="row g-4 mb-4">
                     <div class="col-12">
                         <div class="alert alert-info d-flex justify-content-between align-items-center mb-0">
@@ -64,6 +64,7 @@
                                 {{ 'blog.showing_articles'|trans }} 
                                 {% if selectedCategory %} {{ 'blog.filter_in'|trans }} <strong>{{ selectedCategory.name|translate }}</strong>{% endif %}
                                 {% if selectedTag %} {{ 'blog.filter_with_tag'|trans }} <strong>#{{ selectedTag.name|translate }}</strong>{% endif %}
+                                {% if selectedWriter %} {{ 'blog.filter_by'|trans }} <strong>{{ selectedWriter.firstname }} {{ selectedWriter.lastname }}</strong>{% endif %}
                                 {% if search %} {{ 'blog.filter_matching'|trans }} <strong>"{{ search }}"</strong>{% endif %}
                             </div>
                             <a href="{{ path('blog_index') }}" class="btn btn-sm btn-outline-info">
@@ -106,7 +107,12 @@
                                 {% endif %}
                                 <h4 class="mb-4">{{ article.title|translate }}</h4>
                                 {% if article.writer %}
-                                    <p class="text-muted small mb-2">{{ 'common.writer'|trans }}: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>
+                                    <p class="text-muted small mb-2">
+                                        {{ 'common.writer'|trans }}: 
+                                        <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-primary">
+                                            {{ article.writer.firstname }} {{ article.writer.lastname }}
+                                        </a>
+                                    </p>
                                 {% endif %}
                                 {% set excerptText = article.content|translate|striptags|decode_html_entities %}
                                 <p class="mb-4 article-excerpt">{{ excerptText|length > 120 ? excerptText|slice(0, 120) ~ '...' : excerptText }}</p>

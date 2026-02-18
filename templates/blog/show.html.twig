@@ -63,7 +63,13 @@
                                 <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
                                 <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1"></i>{{ article.dislikesCount }}</span>
                                 {% if article.writer %}
-                                    <span class="ms-3"><i class="fas fa-user-edit me-1"></i>{{ 'common.writer'|trans }}: {{ article.writer.firstname }} {{ article.writer.lastname }}</span>
+                                    <span class="ms-3">
+                                        <i class="fas fa-user-edit me-1"></i>
+                                        {{ 'common.writer'|trans }}: 
+                                        <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-primary">
+                                            {{ article.writer.firstname }} {{ article.writer.lastname }}
+                                        </a>
+                                    </span>
                                 {% endif %}
                             </p>
                             <div class="article-content prose mb-4">{{ article.content|translate|raw }}</div>

@@ -153,6 +153,7 @@ blog:
     showing_articles: "Affichage des articles"
     filter_in: "dans"
     filter_with_tag: "avec le tag"
+    filter_by: "par"
     filter_matching: "correspondant à"
     clear_all: "Effacer tout"
     newest: "Plus récents"
