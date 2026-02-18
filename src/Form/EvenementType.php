@@ -24,33 +24,33 @@ class EvenementType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'label' => 'form.event.name',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.event.name_placeholder'],
+                'label' => 'Event name',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Event name'],
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'form.event.description',
-                'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'form.event.description_placeholder'],
+                'label' => 'Description',
+                'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'Description'],
             ])
             ->add('capacite', IntegerType::class, [
-                'label' => 'form.event.capacity',
+                'label' => 'Capacity',
                 'attr' => ['class' => 'form-control', 'min' => 1],
             ])
             ->add('lieu', TextType::class, [
-                'label' => 'form.event.location',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.event.location_placeholder'],
+                'label' => 'Location',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Location'],
             ])
             ->add('dateDebut', DateTimeType::class, [
-                'label' => 'form.event.start',
+                'label' => 'Start date',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('dateFin', DateTimeType::class, [
-                'label' => 'form.event.end',
+                'label' => 'End date',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('imageFile', FileType::class, [
-                'label' => 'form.event.image',
+                'label' => 'Event image',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [
@@ -64,12 +64,12 @@ class EvenementType extends AbstractType
             ])
             ->add('latitude', HiddenType::class, [
                 'required' => false,
-              ])
+            ])
             ->add('longitude', HiddenType::class, [
                 'required' => false,
             ])
             ->add('sponsors', EntityType::class, [
-                'label' => 'form.event.sponsors',
+                'label' => 'Sponsors',
                 'class' => Sponsor::class,
                 'choice_label' => 'nom',
                 'multiple' => true,

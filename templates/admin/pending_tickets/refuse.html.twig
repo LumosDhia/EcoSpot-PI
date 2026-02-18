@@ -1,14 +1,14 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'admin.refuse_ticket'|trans }} - EcoSpot Admin{% endblock %}
-{% block page_title %}{{ 'admin.refuse_ticket'|trans }}{% endblock %}
+{% block title %}Refuse ticket - EcoSpot Admin{% endblock %}
+{% block page_title %}Refuse ticket{% endblock %}
 
 {% block body %}
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">{{ ticket.title|translate }}</h5>
-            <p class="card-text text-muted">{{ ticket.description|translate|slice(0, 200) }}{% if ticket.description|length > 200 %}...{% endif %}</p>
-            <p class="small mb-0">{{ 'common.by'|default('By')|translate }} {{ ticket.user.firstname }} {{ ticket.user.lastname }} ({{ ticket.user.email }})</p>
+            <h5 class="card-title">{{ ticket.title }}</h5>
+            <p class="card-text text-muted">{{ ticket.description|slice(0, 200) }}{% if ticket.description|length > 200 %}...{% endif %}</p>
+            <p class="small mb-0">By {{ ticket.user.firstname }} {{ ticket.user.lastname }} ({{ ticket.user.email }})</p>
         </div>
     </div>
     <div class="card">
@@ -16,13 +16,11 @@
             <form method="post" action="{{ path('admin_pending_ticket_refuse', { id: ticket.id }) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-refuse-' ~ ticket.id) }}">
                 <div class="mb-3">
-                    <label for="note" class="form-label">{{ 'admin.refusal_reason_label'|trans }}</label>
-                    <textarea name="note" id="note" class="form-control" rows="3" placeholder="{{ 'admin.refusal_reason_placeholder'|trans }}"></textarea>
+                    <label for="note" class="form-label">Optional note (visible to user)</label>
+                    <textarea name="note" id="note" class="form-control" rows="3" placeholder="Reason for refusal (optional)"></textarea>
                 </div>
-                <div class="d-flex gap-2 flex-wrap">
-                    <button type="submit" class="btn btn-danger">{{ 'admin.refuse_ticket'|trans }}</button>
-                    <a href="{{ path('admin_pending_tickets') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
-                </div>
+                <button type="submit" class="btn btn-danger">Refuse ticket</button>
+                <a href="{{ path('admin_pending_tickets') }}" class="btn btn-outline-secondary">Cancel</a>
             </form>
         </div>
     </div>

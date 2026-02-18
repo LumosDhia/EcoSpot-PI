@@ -1,38 +1,38 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'admin.completions.title'|trans }} - EcoSpot Admin{% endblock %}
-{% block page_title %}{{ 'admin.completions.title'|trans }}{% endblock %}
+{% block title %}Completion submissions - EcoSpot Admin{% endblock %}
+{% block page_title %}Completion submissions{% endblock %}
 
 {% block body %}
-    <p class="text-muted mb-4">{{ 'admin.completions.desc'|trans }}</p>
+    <p class="text-muted mb-4">Users and NGOs have submitted that they completed these tickets. Mark as achieved to publish them on the Achievements page.</p>
 
     {% if tickets is empty %}
-        <div class="alert alert-info">{{ 'admin.completions.no_completions'|trans }}</div>
+        <div class="alert alert-info">No completion submissions waiting for review.</div>
     {% else %}
         <div class="row">
             {% for ticket in tickets %}
                 <div class="col-md-6 mb-4">
                     <div class="card h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <span>{{ ticket.title|translate }}</span>
-                            <span class="badge bg-secondary">{{ 'common.created'|trans }} {{ ticket.completionSubmittedAt|date('d/m/Y H:i') }}</span>
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>{{ ticket.title }}</span>
+                            <span class="badge bg-secondary">Submitted {{ ticket.completionSubmittedAt|date('d/m/Y H:i') }}</span>
                         </div>
                         <div class="card-body">
                             <p class="small text-muted mb-2">
-                                <i class="bi bi-geo-alt"></i> {{ ticket.location|translate }} &middot; {{ 'common.author'|trans }} {{ ticket.user.firstname }} {{ ticket.user.lastname }}
+                                <i class="bi bi-geo-alt"></i> {{ ticket.location }} &middot; by {{ ticket.user.firstname }} {{ ticket.user.lastname }}
                             </p>
-                            <p class="card-text"><strong>{{ 'tickets.completed_by'|trans }}:</strong> {{ ticket.completedBy ? ticket.completedBy.firstname ~ ' ' ~ ticket.completedBy.lastname ~ ' (' ~ ticket.completedBy.email ~ ')' : '—' }}</p>
-                            <p class="card-text">{{ ticket.completionMessage|translate }}</p>
+                            <p class="card-text"><strong>Completed by:</strong> {{ ticket.completedBy ? ticket.completedBy.firstname ~ ' ' ~ ticket.completedBy.lastname ~ ' (' ~ ticket.completedBy.email ~ ')' : '—' }}</p>
+                            <p class="card-text">{{ ticket.completionMessage }}</p>
                             {% if ticket.completionImage %}
                                 <p class="mb-2"><img src="{{ asset('images/ticket_completions/' ~ ticket.completionImage) }}" alt="Proof" class="img-fluid rounded" style="max-height: 200px;"></p>
                             {% endif %}
                         </div>
-                        <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
-                            <form action="{{ path('admin_completion_achieve', { id: ticket.id }) }}" method="post" class="d-inline" onsubmit="return confirm('{{ 'admin.completions.approve_confirm'|trans }}');">
+                        <div class="card-footer">
+                            <form action="{{ path('admin_completion_achieve', { id: ticket.id }) }}" method="post" class="d-inline">
                                 <input type="hidden" name="_token" value="{{ csrf_token('completion-achieve-' ~ ticket.id) }}">
-                                <button type="submit" class="btn btn-success">{{ 'admin.completions.approve'|trans }}</button>
+                                <button type="submit" class="btn btn-success">Mark as achieved</button>
                             </form>
-                            <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-outline-secondary btn-sm" target="_blank">{{ 'tickets.view_ticket'|trans }}</a>
+                            <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-outline-secondary btn-sm" target="_blank">View ticket</a>
                         </div>
                     </div>
                 </div>

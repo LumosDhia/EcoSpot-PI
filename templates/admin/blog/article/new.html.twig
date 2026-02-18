@@ -1,7 +1,7 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'admin.new_article'|trans }} - Admin EcoSpot{% endblock %}
-{% block page_title %}{{ 'admin.new_article'|trans }}{% endblock %}
+{% block title %}New article - Admin EcoSpot{% endblock %}
+{% block page_title %}New article{% endblock %}
 
 {% block body %}
     <div class="card">
@@ -21,13 +21,13 @@
                 {{ form_label(form.imageFile) }}
                 {{ form_widget(form.imageFile) }}
                 {{ form_errors(form.imageFile) }}
-                <small class="text-muted">{{ 'form.image_file_help'|default('Upload a thumbnail or hero image (JPEG, PNG, GIF, WebP).')|translate }}</small>
+                <small class="text-muted">Upload a thumbnail or hero image (JPEG, PNG, GIF, WebP).</small>
             </div>
             <div class="mb-3">
                 {{ form_label(form.image) }}
                 {{ form_widget(form.image) }}
                 {{ form_errors(form.image) }}
-                <small class="text-muted">{{ 'form.image_url_help'|default('Or paste an image URL if you prefer.')|translate }}</small>
+                <small class="text-muted">Or paste an image URL if you prefer.</small>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -41,9 +41,9 @@
                     {{ form_errors(form.scheduledAt) }}
                 </div>
             </div>
-            <div class="d-flex gap-2 js-article-form flex-wrap">
-                <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
-                <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
+            <div class="d-flex gap-2 js-article-form">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Cancel</a>
             </div>
             {{ form_end(form) }}
         </div>

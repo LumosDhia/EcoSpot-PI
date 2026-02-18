@@ -1,7 +1,7 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'common.edit'|trans }} - Admin EcoSpot{% endblock %}
-{% block page_title %}{{ 'common.edit'|trans }} {{ 'common.sponsor'|trans }}{% endblock %}
+{% block title %}Edit sponsor - Admin EcoSpot{% endblock %}
+{% block page_title %}Edit sponsor{% endblock %}
 
 {% block body %}
     <div class="card">
@@ -34,13 +34,13 @@
                 {{ form_widget(form.imageFile) }}
                 {{ form_errors(form.imageFile) }}
                 {% if sponsor.image %}
-                    <p class="small text-muted mt-1">{{ 'form.current'|default('Current')|translate }}: <a href="{{ asset(sponsor.image) }}" target="_blank">{{ 'common.view'|trans }}</a></p>
+                    <p class="small text-muted mt-1">Current: <a href="{{ asset(sponsor.image) }}" target="_blank">{{ sponsor.image }}</a></p>
                 {% endif %}
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
-                <a href="{{ path('admin_sponsors_index') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
-                <a href="{{ path('admin_sponsors_show', { id: sponsor.id }) }}" class="btn btn-outline-info">{{ 'common.view'|trans }}</a>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ path('admin_sponsors_index') }}" class="btn btn-outline-secondary">Cancel</a>
+                <a href="{{ path('admin_sponsors_show', { id: sponsor.id }) }}" class="btn btn-outline-info">View</a>
             </div>
             {{ form_end(form) }}
         </div>

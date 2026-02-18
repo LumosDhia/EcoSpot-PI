@@ -1,45 +1,45 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'common.sponsors'|trans }} - Admin EcoSpot{% endblock %}
-{% block page_title %}{{ 'common.sponsors'|trans }}{% endblock %}
+{% block title %}Sponsors - Admin EcoSpot{% endblock %}
+{% block page_title %}Sponsors{% endblock %}
 
 {% block body %}
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-            <span>{{ 'admin.sponsors.list'|trans }}</span>
-            <a href="{{ path('admin_sponsors_new') }}" class="btn btn-primary btn-sm">{{ 'admin.sponsors.new'|trans }}</a>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>Sponsor list</span>
+            <a href="{{ path('admin_sponsors_new') }}" class="btn btn-primary btn-sm">New sponsor</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>{{ 'common.id'|trans }}</th>
-                            <th>{{ 'common.title'|default('Name')|translate }}</th>
-                            <th>{{ 'events.sector'|default('Sector')|translate }}</th>
-                            <th>{{ 'events.location'|trans }}</th>
-                            <th width="180">{{ 'common.actions'|trans }}</th>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Sector</th>
+                            <th>Location</th>
+                            <th width="180">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for sponsor in sponsors %}
                             <tr>
                                 <td>{{ sponsor.id }}</td>
-                                <td>{{ sponsor.nom|translate }}</td>
-                                <td>{{ sponsor.secteur|translate }}</td>
-                                <td>{{ sponsor.localisation|translate }}</td>
+                                <td>{{ sponsor.nom }}</td>
+                                <td>{{ sponsor.secteur }}</td>
+                                <td>{{ sponsor.localisation }}</td>
                                 <td>
-                                    <a href="{{ path('admin_sponsors_show', { id: sponsor.id }) }}" class="btn btn-outline-secondary btn-sm">{{ 'common.view'|trans }}</a>
-                                    <a href="{{ path('admin_sponsors_edit', { id: sponsor.id }) }}" class="btn btn-outline-primary btn-sm">{{ 'common.edit'|trans }}</a>
-                                    <form method="post" action="{{ path('admin_sponsors_delete', { id: sponsor.id }) }}" class="d-inline" onsubmit="return confirm('{{ 'admin.sponsors.delete_confirm'|trans }}');">
+                                    <a href="{{ path('admin_sponsors_show', { id: sponsor.id }) }}" class="btn btn-outline-secondary btn-sm">View</a>
+                                    <a href="{{ path('admin_sponsors_edit', { id: sponsor.id }) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                    <form method="post" action="{{ path('admin_sponsors_delete', { id: sponsor.id }) }}" class="d-inline" onsubmit="return confirm('Delete this sponsor?');">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sponsor.id) }}">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">{{ 'common.delete'|trans }}</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                     </form>
                                 </td>
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">{{ 'admin.sponsors.no_sponsors'|trans }}</td>
+                                <td colspan="5" class="text-center text-muted py-4">No sponsors yet.</td>
                             </tr>
                         {% endfor %}
                     </tbody>

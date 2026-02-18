@@ -19,23 +19,23 @@ class SponsorType extends AbstractType
     {
         $builder
             ->add('nom', TextType::class, [
-                'label' => 'form.sponsor.name',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.sponsor.name_placeholder'],
+                'label' => 'Name',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Sponsor name'],
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'form.sponsor.description',
-                'attr' => ['class' => 'form-control', 'rows' => 4, 'placeholder' => 'form.sponsor.description_placeholder'],
+                'label' => 'Description',
+                'attr' => ['class' => 'form-control', 'rows' => 4, 'placeholder' => 'Description'],
             ])
             ->add('secteur', TextType::class, [
-                'label' => 'form.sponsor.sector',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.sponsor.sector_placeholder'],
+                'label' => 'Sector',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'e.g. Energy, Recycling'],
             ])
             ->add('localisation', TextType::class, [
-                'label' => 'form.sponsor.location',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.sponsor.location_placeholder'],
+                'label' => 'Location',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'City or region'],
             ])
             ->add('imageFile', FileType::class, [
-                'label' => 'form.sponsor.image',
+                'label' => 'Logo / Image',
                 'mapped' => false,
                 'required' => false,
                 'constraints' => [

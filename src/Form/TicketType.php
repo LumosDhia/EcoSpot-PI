@@ -22,19 +22,19 @@ class TicketType extends AbstractType
     {
         $builder
             ->add('title', TextType::class, [
-                'label' => 'form.ticket.title',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.ticket.title_placeholder'],
+                'label' => 'Title',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Short title (min 5 characters)'],
             ])
             ->add('description', TextareaType::class, [
-                'label' => 'form.ticket.description',
-                'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'form.ticket.description_placeholder'],
+                'label' => 'Description',
+                'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'Describe the issue in detail (min 20 characters)'],
             ])
             ->add('location', TextType::class, [
-                'label' => 'form.ticket.location',
-                'attr' => ['class' => 'form-control', 'placeholder' => 'form.ticket.location_placeholder', 'autocomplete' => 'off'],
+                'label' => 'Location',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Search for a place or type an address', 'autocomplete' => 'off'],
             ])
             ->add('imageFile', FileType::class, [
-                'label' => 'form.ticket.picture',
+                'label' => 'Picture (optional)',
                 'mapped' => false,
                 'required' => false,
                 'attr' => ['class' => 'form-control', 'accept' => 'image/*'],
@@ -43,13 +43,13 @@ class TicketType extends AbstractType
             ->add('longitude', HiddenType::class, ['required' => false])
             ->add('priority', EnumType::class, [
                 'class' => TicketPriority::class,
-                'label' => 'form.ticket.priority',
+                'label' => 'Priority',
                 'choice_label' => fn (TicketPriority $p) => $p->getLabel(),
                 'attr' => ['class' => 'form-select'],
             ])
             ->add('domain', EnumType::class, [
                 'class' => ActionDomain::class,
-                'label' => 'form.ticket.domain',
+                'label' => 'Domain',
                 'choice_label' => fn (ActionDomain $d) => $d->getLabel(),
                 'attr' => ['class' => 'form-select'],
             ]);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ 'tests.title'|trans }} - EcoSpot</title>
+    <title>Test results - EcoSpot</title>
     <link href="{{ asset('environs/css/bootstrap.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
     <style>
@@ -20,7 +20,7 @@
 </head>
 <body>
     <div class="container-fluid">
-        <h1 class="mb-4"><i class="fas fa-vial text-primary me-2"></i>{{ 'tests.phpunit_results'|trans }}</h1>
+        <h1 class="mb-4"><i class="fas fa-vial text-primary me-2"></i>PHPUnit test results</h1>
 
         {% set success = results.exit_code == 0 and results.failures == 0 and results.errors == 0 %}
         <div class="card mb-4">
@@ -29,23 +29,23 @@
                     <div class="col-md-8">
                         <h2 class="h5 mb-2">
                             {% if success %}
-                                <i class="fas fa-check-circle text-success me-2"></i>{{ 'tests.all_passed'|trans }}
+                                <i class="fas fa-check-circle text-success me-2"></i>All tests passed
                             {% else %}
-                                <i class="fas fa-times-circle text-danger me-2"></i>{{ 'tests.some_failed'|trans }}
+                                <i class="fas fa-times-circle text-danger me-2"></i>Some tests failed
                             {% endif %}
                         </h2>
                         <p class="text-muted mb-0">
-                            <strong>{{ results.tests }}</strong> {{ 'tests.count'|trans }},
-                            <strong>{{ results.assertions }}</strong> {{ 'tests.assertions'|trans }},
-                            <strong>{{ results.failures }}</strong> {{ 'tests.failures'|trans }},
-                            <strong>{{ results.errors }}</strong> {{ 'tests.errors'|trans }}
+                            <strong>{{ results.tests }}</strong> tests,
+                            <strong>{{ results.assertions }}</strong> assertions,
+                            <strong>{{ results.failures }}</strong> failures,
+                            <strong>{{ results.errors }}</strong> errors
                             — <strong>{{ results.time|number_format(2) }}s</strong>
                         </p>
                     </div>
                     <div class="col-md-4 text-md-end mt-2 mt-md-0">
-                        <a href="{{ path('test_results') }}" class="btn btn-primary"><i class="fas fa-sync-alt me-1"></i> {{ 'tests.run_again'|trans }}</a>
-                        <a href="{{ path('blog_index') }}" class="btn btn-outline-secondary">{{ 'common.blog'|trans }}</a>
-                        <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">{{ 'common.admin'|trans }}</a>
+                        <a href="{{ path('test_results') }}" class="btn btn-primary"><i class="fas fa-sync-alt me-1"></i> Run again</a>
+                        <a href="{{ path('blog_index') }}" class="btn btn-outline-secondary">Blog</a>
+                        <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Admin</a>
                     </div>
                 </div>
             </div>
@@ -53,16 +53,16 @@
 
         {% for suite in results.suites %}
             <div class="card mb-4">
-                <div class="card-header bg-white fw-bold">{{ suite.name|translate }}</div>
+                <div class="card-header bg-white fw-bold">{{ suite.name }}</div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-hover mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th style="width: 3rem;">{{ 'common.status'|trans }}</th>
-                                    <th>{{ 'common.test'|trans }}</th>
-                                    <th>{{ 'common.class'|trans }}</th>
-                                    <th style="width: 6rem;">{{ 'common.time'|trans }}</th>
+                                    <th style="width: 3rem;">Status</th>
+                                    <th>Test</th>
+                                    <th>Class</th>
+                                    <th style="width: 6rem;">Time</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -84,7 +84,7 @@
                                     {% if case.message %}
                                         <tr class="test-{{ case.status }}">
                                             <td></td>
-                                            <td colspan="3"><div class="failure-msg">{{ case.message|translate }}</div></td>
+                                            <td colspan="3"><div class="failure-msg">{{ case.message }}</div></td>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}
@@ -97,7 +97,7 @@
 
         {% if results.output %}
             <div class="card">
-                <div class="card-header bg-white fw-bold">{{ 'tests.raw_output'|trans }}</div>
+                <div class="card-header bg-white fw-bold">Raw PHPUnit output</div>
                 <div class="card-body p-0">
                     <pre class="mb-0">{{ results.output }}</pre>
                 </div>

@@ -1,7 +1,7 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'common.edit'|trans }} - Admin EcoSpot{% endblock %}
-{% block page_title %}{{ 'common.edit'|trans }} {{ 'common.event'|trans }}{% endblock %}
+{% block title %}Edit event - Admin EcoSpot{% endblock %}
+{% block page_title %}Edit event{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -52,9 +52,9 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">{{ 'admin.event_precise_location'|trans }}</label>
+                        <label class="form-label">Precise location (click on map)</label>
                         <div id="event-map"></div>
-                        <p class="small text-muted mt-1 mb-2">{{ 'admin.event_map_help'|trans }}</p>
+                        <p class="small text-muted mt-1 mb-2">Click on the map to set the marker; the location name will be filled above.</p>
                         {{ form_widget(form.latitude) }}
                         {{ form_widget(form.longitude) }}
                     </div>
@@ -63,14 +63,14 @@
                         {{ form_widget(form.imageFile) }}
                         {{ form_errors(form.imageFile) }}
                         {% if event.image %}
-                            <p class="small text-muted mt-1">{{ 'form.current'|default('Current')|translate }}: <a href="{{ asset(event.image) }}" target="_blank">{{ 'common.view'|trans }}</a></p>
+                            <p class="small text-muted mt-1">Current: <a href="{{ asset(event.image) }}" target="_blank">{{ event.image }}</a></p>
                         {% endif %}
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="mb-3">
                         {{ form_label(form.sponsors) }}
-                        <p class="small text-muted mb-2">{{ 'admin.event_select_sponsors'|trans }}</p>
+                        <p class="small text-muted mb-2">Select which sponsors are linked to this event. Full list below.</p>
                         <div class="border rounded p-3 bg-light" style="max-height: 420px; overflow-y: auto;">
                             {% for child in form.sponsors %}
                                 <div class="form-check mb-2">
@@ -78,17 +78,17 @@
                                     {{ form_label(child, null, { label_attr: { class: 'form-check-label' } }) }}
                                 </div>
                             {% else %}
-                                <p class="text-muted small mb-0">{{ 'admin.no_sponsors_create'|trans|raw }}</p>
+                                <p class="text-muted small mb-0">No sponsors yet. <a href="{{ path('admin_sponsors_new') }}">Create a sponsor</a> first.</p>
                             {% endfor %}
                         </div>
                         {{ form_errors(form.sponsors) }}
                     </div>
                 </div>
             </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
-                <a href="{{ path('admin_events_index') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
-                <a href="{{ path('admin_events_show', { id: event.id }) }}" class="btn btn-outline-info">{{ 'common.view'|trans }}</a>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{{ path('admin_events_index') }}" class="btn btn-outline-secondary">Cancel</a>
+                <a href="{{ path('admin_events_show', { id: event.id }) }}" class="btn btn-outline-info">View</a>
             </div>
             {{ form_end(form) }}
         </div>

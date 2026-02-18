@@ -1,22 +1,22 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ 'admin.users.title'|trans }} - EcoSpot Admin{% endblock %}
-{% block page_title %}{{ 'admin.users.title'|trans }}{% endblock %}
+{% block title %}Users - EcoSpot Admin{% endblock %}
+{% block page_title %}Users{% endblock %}
 
 {% block body %}
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <p class="text-muted mb-0">{{ 'admin.users.desc'|trans }}</p>
-        <a href="{{ path('admin_user_new') }}" class="btn btn-primary btn-sm">{{ 'admin.users.new_user'|trans }}</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="text-muted mb-0">Manage user accounts: create users, change their type, or remove them.</p>
+        <a href="{{ path('admin_user_new') }}" class="btn btn-primary btn-sm">New user</a>
     </div>
 
     <div class="table-responsive">
         <table class="table table-hover">
             <thead>
                 <tr>
-                    <th>{{ 'security.email'|trans }}</th>
-                    <th>{{ 'common.title'|trans }}</th>
-                    <th>{{ 'admin.users.type'|trans }}</th>
-                    <th class="text-end">{{ 'common.actions'|trans }}</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,19 +26,19 @@
                         <td>{{ user.firstname }} {{ user.lastname }}</td>
                         <td>
                             {% if 'ROLE_ADMIN' in user.roles %}
-                                <span class="badge bg-danger">{{ 'admin.users.admin'|trans }}</span>
+                                <span class="badge bg-danger">Administrator</span>
                             {% elseif 'ROLE_NGO' in user.roles %}
-                                <span class="badge bg-info">{{ 'admin.users.ngo'|trans }}</span>
+                                <span class="badge bg-info">NGO</span>
                             {% else %}
-                                <span class="badge bg-secondary">{{ 'admin.users.user'|trans }}</span>
+                                <span class="badge bg-secondary">Normal user</span>
                             {% endif %}
                         </td>
                         <td class="text-end">
-                            <a href="{{ path('admin_user_edit_role', { id: user.id }) }}" class="btn btn-sm btn-outline-primary">{{ 'admin.users.change_type'|trans }}</a>
+                            <a href="{{ path('admin_user_edit_role', { id: user.id }) }}" class="btn btn-sm btn-outline-primary">Change type</a>
                             {% if user.id != app.user.id %}
-                                <form method="post" action="{{ path('admin_user_delete', { id: user.id }) }}" class="d-inline" onsubmit="return confirm('{{ 'admin.users.delete_confirm'|trans }}');">
+                                <form method="post" action="{{ path('admin_user_delete', { id: user.id }) }}" class="d-inline" onsubmit="return confirm('Remove this user? This cannot be undone.');">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">{{ 'common.delete'|trans }}</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
                                 </form>
                             {% endif %}
                         </td>
