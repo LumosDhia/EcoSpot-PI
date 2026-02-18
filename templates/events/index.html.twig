@@ -58,8 +58,8 @@
                                 </div>
                             </div>
                             <div class="text-dark border p-4">
-                                <h4 class="mb-3">{{ event.nom }}</h4>
-                                <p class="mb-3">{{ event.description|length > 120 ? event.description|slice(0, 120) ~ '...' : event.description }}</p>
+                                <h4 class="mb-3">{{ event.nom|translate }}</h4>
+                                <p class="mb-3">{{ (event.description|translate)|length > 120 ? (event.description|translate)|slice(0, 120) ~ '...' : (event.description|translate) }}</p>
                                 <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
                                     <p class="text-muted small mb-0"><i class="fas fa-users me-1"></i> {{ event.capacite }} {{ 'events.capacity'|trans }}</p>
                                     {% if event.sponsors|length > 0 %}

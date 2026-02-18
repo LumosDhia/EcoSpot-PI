@@ -1,6 +1,6 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}{{ article.title }} - EcoSpot Blog{% endblock %}
+{% block title %}{{ article.title|translate }} - EcoSpot Blog{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -18,8 +18,8 @@
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">{{ article.title }}</h3>
-            <p class="fs-5 text-white mb-4">Published {{ (article.publishedAt ?? article.createdAt)|date('d/m/Y H:i') }}</p>
+            <h3 class="text-white display-3 mb-4">{{ article.title|translate }}</h3>
+            <p class="fs-5 text-white mb-4">{{ 'blog.published_on'|trans }} {{ (article.publishedAt ?? article.createdAt)|date('d/m/Y H:i') }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
                 <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Blog</a></li>
                 <li class="breadcrumb-item active text-white">Article</li>
@@ -36,7 +36,7 @@
                     <article class="blog-item mb-5">
                         {% if article.image %}
                             <div class="blog-img mb-4">
-                                <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100 rounded" alt="{{ article.title }}">
+                                <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100 rounded" alt="{{ article.title|translate }}">
                             </div>
                         {% endif %}
                         <div class="text-dark border p-4 p-md-5">
@@ -45,7 +45,7 @@
                                     {{ article.category.name }}
                                 </a>
                             {% endif %}
-                            <h1 class="mb-4">{{ article.title }}</h1>
+                            <h1 class="mb-4">{{ article.title|translate }}</h1>
                             {% if article.tags|length > 0 %}
                                 <div class="mb-3">
                                     {% for tag in article.tags %}
@@ -62,10 +62,10 @@
                                 <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
                                 <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1"></i>{{ article.dislikesCount }}</span>
                                 {% if article.writer %}
-                                    <span class="ms-3"><i class="fas fa-user-edit me-1"></i>Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</span>
+                                    <span class="ms-3"><i class="fas fa-user-edit me-1"></i>{{ 'common.writer'|trans }}: {{ article.writer.firstname }} {{ article.writer.lastname }}</span>
                                 {% endif %}
                             </p>
-                            <div class="article-content prose mb-4">{{ article.content|raw }}</div>
+                            <div class="article-content prose mb-4">{{ article.content|translate|raw }}</div>
 
                             {# Reactions section #}
                             <div class="border-top pt-4 mt-4 d-flex align-items-center gap-3">
@@ -92,7 +92,7 @@
                                 <p class="mb-0 mt-1">{{ comment.content|nl2br }}</p>
                             </div>
                         {% else %}
-                            <p class="text-muted mb-0">No comments yet. Be the first to comment!</p>
+                            <p class="text-muted mb-0">{{ 'blog.no_comments'|trans }}</p>
                         {% endfor %}
                     </section>
 

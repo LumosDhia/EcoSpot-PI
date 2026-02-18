@@ -80,9 +80,9 @@
                         <div class="blog-item">
                             <div class="blog-img">
                                 {% if article.image %}
-                                    <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100" alt="{{ article.title }}">
+                                    <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100" alt="{{ article.title|translate }}">
                                 {% else %}
-                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title }}" loading="lazy">
+                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title|translate }}" loading="lazy">
                                 {% endif %}
                                 <div class="blog-info">
                                     <span><i class="fa fa-clock"></i> {{ (article.publishedAt ?? article.createdAt)|date('d M Y') }}</span>
@@ -104,13 +104,13 @@
                                         {{ article.category.name }}
                                     </a>
                                 {% endif %}
-                                <h4 class="mb-4">{{ article.title }}</h4>
+                                <h4 class="mb-4">{{ article.title|translate }}</h4>
                                 {% if article.writer %}
-                                    <p class="text-muted small mb-2">Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>
+                                    <p class="text-muted small mb-2">{{ 'common.writer'|trans }}: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>
                                 {% endif %}
-                                {% set excerptText = article.content|striptags|decode_html_entities %}
+                                {% set excerptText = article.content|translate|striptags|decode_html_entities %}
                                 <p class="mb-4 article-excerpt">{{ excerptText|length > 120 ? excerptText|slice(0, 120) ~ '...' : excerptText }}</p>
-                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { slug: article.slug }) }}">Read more</a>
+                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { slug: article.slug }) }}">{{ 'common.read_more'|trans }}</a>
                             </div>
                         </div>
                     </div>

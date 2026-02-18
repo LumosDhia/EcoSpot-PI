@@ -1,16 +1,16 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}{{ event.nom }} - EcoSpot{% endblock %}
+{% block title %}{{ event.nom|translate }} - EcoSpot{% endblock %}
 
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-4 mb-4">{{ event.nom }}</h3>
-            <p class="fs-5 text-white mb-4">{{ event.dateDebut ? event.dateDebut|date('l d F Y \\a\\t H:i') : '—' }} · {{ event.lieu }}</p>
+            <h2 class="display-4 text-primary mb-4">{{ event.nom|translate }}</h2>
+            <p class="fs-5 text-white mb-4">{{ event.dateDebut ? event.dateDebut|date('l d F Y \\a\\t H:i') : '—' }} · {{ event.lieu|translate }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
                 <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ path('events_index') }}" class="text-white">Events</a></li>
-                <li class="breadcrumb-item active text-white">{{ event.nom|length > 30 ? event.nom|slice(0, 30) ~ '…' : event.nom }}</li>
+                <li class="breadcrumb-item active text-white">{{ event.nom|translate|length > 30 ? event.nom|translate|slice(0, 30) ~ '…' : event.nom|translate }}</li>
             </ol>
         </div>
     </div>
@@ -22,19 +22,19 @@
             <div class="row">
                 <div class="col-lg-8">
                     {% if event.image %}
-                        <img src="{{ asset(event.image) }}" class="img-fluid rounded mb-4 w-100" alt="{{ event.nom }}" style="max-height: 400px; object-fit: cover;">
+                        <img src="{{ asset(event.image) }}" class="img-fluid rounded mb-4 w-100" alt="{{ event.nom|translate }}" style="max-height: 400px; object-fit: cover;">
                     {% endif %}
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-4 p-lg-5">
                             <h2 class="h4 mb-4">About this event</h2>
-                            <div class="mb-4">{{ event.description|nl2br }}</div>
+                            <p class="lead mb-0 text-muted">{{ event.description|translate|nl2br }}</p>
                             <dl class="row mb-0">
                                 <dt class="col-sm-3 text-muted">Start</dt>
                                 <dd class="col-sm-9">{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</dd>
                                 <dt class="col-sm-3 text-muted">End</dt>
                                 <dd class="col-sm-9">{{ event.dateFin ? event.dateFin|date('d/m/Y H:i') : '—' }}</dd>
                                 <dt class="col-sm-3 text-muted">Location</dt>
-                                <dd class="col-sm-9">{{ event.lieu }}</dd>
+                                <dd class="col-sm-9">{{ event.lieu|translate }}</dd>
                                 <dt class="col-sm-3 text-muted">Capacity</dt>
                                 <dd class="col-sm-9">{{ event.capacite }} people</dd>
                             </dl>
