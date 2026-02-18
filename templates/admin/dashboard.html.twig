@@ -1,10 +1,10 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Admin Dashboard - EcoSpot{% endblock %}
-{% block page_title %}Admin Dashboard{% endblock %}
+{% block title %}{{ 'dashboard.admin_title'|trans }} - EcoSpot{% endblock %}
+{% block page_title %}{{ 'dashboard.admin_title'|trans }}{% endblock %}
 
 {% block body %}
-    <p class="text-muted mb-4">Manage content, users, and community tickets.</p>
+    <p class="text-muted mb-4">{{ 'dashboard.manage_desc'|trans }}</p>
 
     <div class="row g-4">
         <div class="col-md-6 col-lg-4">
@@ -12,8 +12,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-clock fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Pending tickets</h5>
-                        <p class="card-text small text-muted">Review, publish, refuse or send back tickets</p>
+                         <h5 class="card-title">{{ 'common.pending_tickets'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.pending_tickets_desc'|trans }}</p>
                         {% if pending_tickets_count is defined and pending_tickets_count > 0 %}<span class="badge bg-warning text-dark">{{ pending_tickets_count }}</span>{% endif %}
                     </div>
                 </div>
@@ -24,8 +24,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-check-double fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Completions</h5>
-                        <p class="card-text small text-muted">Mark ticket completions as achieved</p>
+                         <h5 class="card-title">{{ 'common.completions'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.completions_desc'|trans }}</p>
                         {% if pending_completions_count is defined and pending_completions_count > 0 %}<span class="badge bg-info">{{ pending_completions_count }}</span>{% endif %}
                     </div>
                 </div>
@@ -36,8 +36,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Articles</h5>
-                        <p class="card-text small text-muted">Manage blog articles (all authors)</p>
+                         <h5 class="card-title">{{ 'common.articles'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.articles_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
@@ -47,8 +47,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-comments fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Comments</h5>
-                        <p class="card-text small text-muted">View and manage blog comments</p>
+                         <h5 class="card-title">{{ 'common.comments'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.comments_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
@@ -58,8 +58,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-calendar-alt fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Events</h5>
-                        <p class="card-text small text-muted">Create and manage events</p>
+                         <h5 class="card-title">{{ 'common.events'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.events_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
@@ -69,8 +69,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-users fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Users</h5>
-                        <p class="card-text small text-muted">Create users and manage roles</p>
+                         <h5 class="card-title">{{ 'common.users'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.users_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
@@ -80,8 +80,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-hand-holding-heart fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Sponsors</h5>
-                        <p class="card-text small text-muted">Manage sponsors</p>
+                         <h5 class="card-title">{{ 'common.sponsors'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.sponsors_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
@@ -91,8 +91,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-folder-open fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Categories</h5>
-                        <p class="card-text small text-muted">Manage blog categories</p>
+                         <h5 class="card-title">{{ 'dashboard.categories'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.categories_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
@@ -102,8 +102,8 @@
                 <div class="card h-100 border-0 shadow-sm">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-tags fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Tags</h5>
-                        <p class="card-text small text-muted">Manage blog tags</p>
+                         <h5 class="card-title">{{ 'common.tags'|trans }}</h5>
+                         <p class="card-text small text-muted">{{ 'dashboard.tags_desc'|trans }}</p>
                     </div>
                 </div>
             </a>

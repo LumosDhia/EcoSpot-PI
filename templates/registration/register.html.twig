@@ -8,7 +8,7 @@
             <div class="col-md-6">
                 <div class="card shadow">
                     <div class="card-body p-4">
-                        <h1 class="h4 mb-4 text-center">Register</h1>
+                        <h1 class="h4 mb-4 text-center">{{ 'security.register'|trans }}</h1>
                         {{ form_start(registrationForm, { attr: { novalidate: 'novalidate' } }) }}
                         {{ form_row(registrationForm.email) }}
                         {{ form_row(registrationForm.firstname) }}
@@ -22,8 +22,8 @@
                             <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
                         </div>
                         <div class="d-grid gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary">Register</button>
-                            <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">Already have an account? Sign in</a>
+                            <button type="submit" class="btn btn-primary">{{ 'security.register'|trans }}</button>
+                            <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">{{ 'security.already_have_account'|trans }}</a>
                         </div>
                         {{ form_end(registrationForm) }}
                     </div>

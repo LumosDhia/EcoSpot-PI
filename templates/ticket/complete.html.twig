@@ -1,6 +1,6 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}I completed this ticket - EcoSpot{% endblock %}
+{% block title %}{{ 'tickets.i_completed'|trans }} - EcoSpot{% endblock %}
 
 {% block body %}
     <div class="container py-5">
@@ -8,20 +8,20 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h1 class="h5 mb-0">I completed this ticket</h1>
+                        <h1 class="h5 mb-0">{{ 'tickets.i_completed'|trans }}</h1>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted">Submit proof that you completed this task. An administrator will review and can mark it as achieved.</p>
+                        <p class="text-muted">{{ 'tickets.i_completed_desc'|trans }}</p>
                         <div class="mb-3 p-2 bg-light rounded">
-                            <strong>{{ ticket.title }}</strong><br>
-                            <small class="text-muted">{{ ticket.location }}</small>
+                            <strong>{{ ticket.title|translate }}</strong><br>
+                            <small class="text-muted">{{ ticket.location|translate }}</small>
                         </div>
                         {{ form_start(form, { attr: { enctype: 'multipart/form-data' } }) }}
                         {{ form_row(form.message) }}
                         {{ form_row(form.image) }}
                         <div class="d-flex gap-2 mt-3">
-                            <button type="submit" class="btn btn-primary">Submit completion</button>
-                            <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">{{ 'tickets.submit_completion'|trans }}</button>
+                            <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
                         </div>
                         {{ form_end(form) }}
                     </div>

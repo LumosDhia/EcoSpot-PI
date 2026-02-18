@@ -7,6 +7,7 @@ namespace App\Form\Blog\Article;
 use App\Entity\Blog\Article\Article;
 use App\Entity\Blog\Article\Category;
 use App\Entity\Blog\Article\Tag;
+use App\Service\TranslationService;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -18,52 +19,64 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class ArticleType extends AbstractType
 {
+    public function __construct(
+        private TranslationService $translationService,
+        private RequestStack $requestStack
+    ) {}
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $currentLocale = $this->requestStack->getCurrentRequest()?->getLocale() ?? 'en';
+
         $builder
             ->add('title', TextType::class, [
-                'label' => 'Title',
+                'label' => 'form.title_label',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Article title',
+                    'placeholder' => 'form.title_placeholder',
                 ],
             ])
             ->add('content', TextareaType::class, [
-                'label' => 'Content (rich text)',
+                'label' => 'form.content_label',
                 'attr' => [
                     'class' => 'form-control article-content-editor',
                     'rows' => 12,
-                    'placeholder' => 'Write your article...',
+                    'placeholder' => 'form.content_placeholder',
                 ],
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
-                'choice_label' => 'name',
-                'label' => 'Category',
+                'choice_label' => function (Category $category) use ($currentLocale) {
+                    return $this->translationService->translate($category->getName(), $currentLocale);
+                },
+                'label' => 'form.category_label',
                 'required' => false,
-                'placeholder' => 'Choose a category',
+                'placeholder' => 'form.category_placeholder',
                 'attr' => ['class' => 'form-select'],
             ])
             ->add('tags', EntityType::class, [
                 'class' => Tag::class,
-                'choice_label' => 'name',
-                'label' => 'Tags',
+                'choice_label' => function (Tag $tag) use ($currentLocale) {
+                    return $this->translationService->translate($tag->getName(), $currentLocale);
+                },
+                'label' => 'form.tags_label',
                 'multiple' => true,
-                'expanded' => false, // Set to true for checkboxes
+                'expanded' => false,
                 'required' => false,
                 'attr' => ['class' => 'form-select', 'size' => 5],
             ])
             ->add('imageFile', FileType::class, [
-                'label' => 'Thumbnail / hero image (upload)',
+                'label' => 'form.image_file_label',
                 'mapped' => false,
                 'required' => false,
                 'attr' => ['class' => 'form-control', 'accept' => 'image/*'],
             ])
             ->add('image', TextType::class, [
-                'label' => 'Or image URL',
+                'label' => 'form.image_url_label',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
@@ -71,17 +84,17 @@ class ArticleType extends AbstractType
                 ],
             ])
             ->add('publishMode', ChoiceType::class, [
-                'label' => 'Publication',
+                'label' => 'form.publication_label',
                 'mapped' => false,
                 'choices' => [
-                    'Save as draft' => 'draft',
-                    'Publish now' => 'publish_now',
-                    'Schedule publication' => 'schedule',
+                    'form.save_draft' => 'draft',
+                    'form.publish_now' => 'publish_now',
+                    'form.schedule_pub' => 'schedule',
                 ],
                 'attr' => ['class' => 'form-select'],
             ])
             ->add('scheduledAt', DateTimeType::class, [
-                'label' => 'Publish date & time',
+                'label' => 'form.publish_at',
                 'mapped' => false,
                 'required' => false,
                 'widget' => 'single_text',
@@ -93,7 +106,7 @@ class ArticleType extends AbstractType
             $mode = $form->get('publishMode')->getData();
             $scheduledAt = $form->get('scheduledAt')->getData();
             if ($mode === 'schedule' && $scheduledAt instanceof \DateTimeInterface && $scheduledAt < new \DateTimeImmutable()) {
-                $form->get('scheduledAt')->addError(new \Symfony\Component\Form\FormError('Scheduled date and time cannot be in the past.'));
+                $form->get('scheduledAt')->addError(new \Symfony\Component\Form\FormError('form.error_past_date'));
             }
         });
 

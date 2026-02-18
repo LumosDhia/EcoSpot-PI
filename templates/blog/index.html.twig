@@ -6,11 +6,11 @@
     <!-- Header (Environs breadcrumb) -->
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">Blog & News</h3>
-            <p class="fs-5 text-white mb-4">Discover our articles on the environment and nature.</p>
+            <h3 class="text-white display-3 mb-4">{{ 'blog.latest_news'|trans }}</h3>
+            <p class="fs-5 text-white mb-4">{{ 'blog.articles'|trans }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Home</a></li>
-                <li class="breadcrumb-item active text-white">Blog</li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">{{ 'nav.blog'|trans }}</li>
             </ol>
         </div>
     </div>
@@ -28,28 +28,27 @@
     <div class="container-fluid blog py-5">
         <div class="container py-5">
             <div class="text-center mx-auto pb-5" style="max-width: 800px;">
-                <h5 class="text-uppercase text-primary">Latest news</h5>
-                <h1 class="mb-4">EcoSpot blog articles</h1>
+                <h5 class="text-uppercase text-primary">{{ 'blog.latest_news'|trans }}</h5>
+                <h1 class="mb-4">{{ 'home.blog_desc'|trans }}</h1>
             </div>
 
             {# Search & Sort #}
             <div class="card mb-5">
                 <div class="card-body">
-                    <form method="get" action="{{ path('blog_index') }}" class="row g-2 align-items-end" novalidate="novalidate">
-                        <input type="hidden" name="order" value="{{ order }}">
-                        <div class="col-md-5">
-                            <label for="q" class="form-label">Search by title</label>
-                            <input type="text" name="q" id="q" class="form-control" value="{{ search }}" placeholder="Article title...">
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label d-block">Sort by date</label>
-                            <div class="btn-group" role="group">
-                                <a href="{{ path('blog_index', { q: search, order: 'DESC' }) }}" class="btn {{ order == 'DESC' ? 'btn-primary' : 'btn-outline-secondary' }}">Newest</a>
-                                <a href="{{ path('blog_index', { q: search, order: 'ASC' }) }}" class="btn {{ order == 'ASC' ? 'btn-primary' : 'btn-outline-secondary' }}">Oldest</a>
+                    <form method="get" action="{{ path('blog_index') }}" class="row g-3 align-items-end" novalidate="novalidate">
+                        <div class="col-md-7">
+                            <label for="search" class="form-label small text-muted mb-1">{{ 'blog.search_label'|trans }}</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+                                <input type="text" name="search" id="search" class="form-control border-start-0 ps-0" placeholder="{{ 'blog.search_placeholder'|trans }}" value="{{ app.request.query.get('search') }}">
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        <div class="col-md-5">
+                            <label for="order" class="form-label small text-muted mb-1">{{ 'blog.sort_label'|trans }}</label>
+                            <select name="order" id="order" class="form-select" onchange="this.form.submit()">
+                                <option value="desc" {{ app.request.query.get('order') == 'desc' ? 'selected' : '' }}>{{ 'blog.newest'|trans }}</option>
+                                <option value="asc" {{ app.request.query.get('order') == 'asc' ? 'selected' : '' }}>{{ 'blog.oldest'|trans }}</option>
+                            </select>
                         </div>
                     </form>
                 </div>
@@ -62,13 +61,13 @@
                         <div class="alert alert-info d-flex justify-content-between align-items-center mb-0">
                             <div>
                                 <i class="fas fa-filter me-2"></i>
-                                Showing articles 
-                                {% if selectedCategory %} in <strong>{{ selectedCategory.name }}</strong>{% endif %}
-                                {% if selectedTag %} with tag <strong>#{{ selectedTag.name }}</strong>{% endif %}
-                                {% if search %} matching <strong>"{{ search }}"</strong>{% endif %}
+                                {{ 'blog.showing_articles'|trans }} 
+                                {% if selectedCategory %} {{ 'blog.filter_in'|trans }} <strong>{{ selectedCategory.name|translate }}</strong>{% endif %}
+                                {% if selectedTag %} {{ 'blog.filter_with_tag'|trans }} <strong>#{{ selectedTag.name|translate }}</strong>{% endif %}
+                                {% if search %} {{ 'blog.filter_matching'|trans }} <strong>"{{ search }}"</strong>{% endif %}
                             </div>
                             <a href="{{ path('blog_index') }}" class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-times me-1"></i> Clear all
+                                <i class="fas fa-times me-1"></i> {{ 'blog.clear_all'|trans }}
                             </a>
                         </div>
                     </div>
@@ -81,9 +80,9 @@
                         <div class="blog-item">
                             <div class="blog-img">
                                 {% if article.image %}
-                                    <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100" alt="{{ article.title }}">
+                                    <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100" alt="{{ article.title|translate }}">
                                 {% else %}
-                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title }}" loading="lazy">
+                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title|translate }}" loading="lazy">
                                 {% endif %}
                                 <div class="blog-info">
                                     <span><i class="fa fa-clock"></i> {{ (article.publishedAt ?? article.createdAt)|date('d M Y') }}</span>
@@ -96,29 +95,29 @@
                                     </div>
                                 </div>
                                 <div class="search-icon">
-                                    <a href="{{ path('blog_show', { id: article.id }) }}" class="my-auto"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a>
+                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="btn btn-primary px-3">{{ 'common.read_more'|trans }}</a>
                                 </div>
                             </div>
                             <div class="text-dark border p-4">
                                 {% if article.category %}
                                     <a href="{{ path('blog_index', { 'category': article.category.id }) }}" class="badge bg-primary mb-2 text-decoration-none">
-                                        {{ article.category.name }}
+                                        {{ article.category.name|translate }}
                                     </a>
                                 {% endif %}
-                                <h4 class="mb-4">{{ article.title }}</h4>
+                                <h4 class="mb-4">{{ article.title|translate }}</h4>
                                 {% if article.writer %}
-                                    <p class="text-muted small mb-2">Writer: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>
+                                    <p class="text-muted small mb-2">{{ 'common.writer'|trans }}: {{ article.writer.firstname }} {{ article.writer.lastname }}</p>
                                 {% endif %}
-                                {% set excerptText = article.content|striptags|decode_html_entities %}
+                                {% set excerptText = article.content|translate|striptags|decode_html_entities %}
                                 <p class="mb-4 article-excerpt">{{ excerptText|length > 120 ? excerptText|slice(0, 120) ~ '...' : excerptText }}</p>
-                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { id: article.id }) }}">Read more</a>
+                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { slug: article.slug }) }}">{{ 'common.read_more'|trans }}</a>
                             </div>
                         </div>
                     </div>
                 {% else %}
                     <div class="col-12">
-                        <div class="text-center py-5 text-muted">
-                            <p class="fs-5">No articles found.</p>
+                        <div class="col-12 text-center py-5">
+                            <p class="text-muted">{{ 'blog.no_articles'|trans }}</p>
                         </div>
                     </div>
                 {% endfor %}

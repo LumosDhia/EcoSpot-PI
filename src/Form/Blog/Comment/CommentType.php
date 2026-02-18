@@ -19,26 +19,18 @@ class CommentType extends AbstractType
     {
         $builder
             ->add('author', TextType::class, [
-                'label' => 'Auteur',
+                'label' => 'form.comment_author',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Votre nom',
+                    'placeholder' => 'form.comment_author_placeholder',
                 ],
             ])
             ->add('content', TextareaType::class, [
-                'label' => 'Commentaire',
+                'label' => 'form.comment_content',
                 'attr' => [
                     'class' => 'form-control',
                     'rows' => 4,
-                    'placeholder' => 'Votre commentaire',
-                ],
-            ])
-            ->add('article', EntityType::class, [
-                'class' => Article::class,
-                'choice_label' => 'title',
-                'label' => 'Article',
-                'attr' => [
-                    'class' => 'form-select',
+                    'placeholder' => 'form.comment_placeholder',
                 ],
             ]);
     }

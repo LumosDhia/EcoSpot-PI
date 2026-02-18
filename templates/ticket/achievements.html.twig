@@ -5,11 +5,11 @@
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">Achievements</h3>
-            <p class="fs-5 text-white mb-4">Tickets completed by the community and approved by our team.</p>
+            <h3 class="text-white display-3 mb-4">{{ 'tickets.achievements'|trans }}</h3>
+            <p class="fs-5 text-white mb-4">{{ 'tickets.achievements_desc'|trans }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">Home</a></li>
-                <li class="breadcrumb-item active text-white">Achievements</li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">{{ 'tickets.achievements'|trans }}</li>
             </ol>
         </div>
     </div>
@@ -20,14 +20,14 @@
         <div class="container py-5">
 
         {% if tickets is empty %}
-            <div class="alert alert-info">No achievements yet. Complete a ticket and get it approved to appear here.</div>
+            <div class="alert alert-info">{{ 'tickets.no_achievements'|trans }}</div>
         {% else %}
             <div class="row">
                 {% for ticket in tickets %}
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card h-100 shadow-sm">
                             <div class="card-header bg-success text-white">
-                                <i class="bi bi-check-circle"></i> Achieved {{ ticket.achievedAt|date('d/m/Y') }}
+                                <i class="bi bi-check-circle"></i> {{ 'tickets.achieved_on'|trans({'%date%': ticket.achievedAt|date('d/m/Y')}) }}
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ ticket.title }}</h5>
@@ -35,7 +35,7 @@
                                     <i class="bi bi-geo-alt"></i> {{ ticket.location }}
                                 </p>
                                 <p class="card-text">
-                                    <strong>Completed by:</strong> {{ ticket.completedBy ? ticket.completedBy.firstname ~ ' ' ~ ticket.completedBy.lastname : '—' }}
+                                    <strong>{{ 'tickets.completed_by'|trans }}:</strong> {{ ticket.completedBy ? ticket.completedBy.firstname ~ ' ' ~ ticket.completedBy.lastname : '—' }}
                                 </p>
                                 {% if ticket.completionMessage %}
                                     <p class="card-text small">{{ ticket.completionMessage }}</p>
@@ -45,7 +45,7 @@
                                 {% endif %}
                             </div>
                             <div class="card-footer bg-transparent">
-                                <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">View ticket</a>
+                                <a href="{{ path('public_ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary">{{ 'tickets.view_ticket'|trans }}</a>
                             </div>
                         </div>
                     </div>

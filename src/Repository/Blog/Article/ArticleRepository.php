@@ -69,6 +69,21 @@ class ArticleRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findOnePublishedBySlug(string $slug): ?Article
+    {
+        return $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->leftJoin('a.category', 'c')->addSelect('c')
+            ->leftJoin('a.tags', 't')->addSelect('t')
+            ->andWhere('a.slug = :slug')
+            ->andWhere('a.publishedAt IS NOT NULL')
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('slug', $slug)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     /**
      * All articles for admin/NGO (drafts, scheduled, published). Order by createdAt.
      * @return Article[]

@@ -1,13 +1,13 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Manage Categories - EcoSpot Admin{% endblock %}
-{% block page_title %}Categories{% endblock %}
+{% block title %}{{ 'admin.manage_categories'|trans }} - EcoSpot {{ 'common.admin'|trans }}{% endblock %}
+{% block page_title %}{{ 'dashboard.categories'|trans }}{% endblock %}
 
 {% block body %}
     <div class="mb-4 d-flex justify-content-between align-items-center">
-        <h5 class="text-muted mb-0">List of all blog categories</h5>
+        <h5 class="text-muted mb-0">{{ 'admin.list_categories'|trans }}</h5>
         <a href="{{ path('admin_blog_category_new') }}" class="btn btn-primary shadow-sm">
-            <i class="fas fa-plus me-1"></i> New Category
+            <i class="fas fa-plus me-1"></i> {{ 'admin.new_category'|trans }}
         </a>
     </div>
 
@@ -16,25 +16,25 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Articles count</th>
-                        <th class="text-end">Actions</th>
+                        <th>{{ 'common.id'|trans|upper }}</th>
+                        <th>{{ 'common.name'|trans }}</th>
+                        <th>{{ 'admin.articles_count'|trans }}</th>
+                        <th class="text-end">{{ 'common.actions'|trans }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for category in categories %}
                         <tr>
                             <td>#{{ category.id }}</td>
-                            <td><strong>{{ category.name }}</strong></td>
+                            <td><strong>{{ category.name|translate }}</strong></td>
                             <td><span class="badge bg-info">{{ category.articles|length }}</span></td>
                             <td class="text-end">
-                                <a href="{{ path('admin_blog_category_edit', {id: category.id}) }}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                <a href="{{ path('admin_blog_category_edit', {id: category.id}) }}" class="btn btn-sm btn-outline-primary me-1" title="{{ 'common.edit'|trans }}">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form method="post" action="{{ path('admin_blog_category_delete', {id: category.id}) }}" style="display:inline-block;" onsubmit="return confirm('Are you sure you want to delete this category?');">
+                                <form method="post" action="{{ path('admin_blog_category_delete', {id: category.id}) }}" style="display:inline-block;" onsubmit="return confirm('{{ 'admin.delete_category_confirm'|trans|escape('js') }}');">
                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
-                                    <button class="btn btn-sm btn-outline-danger" title="Delete">
+                                    <button class="btn btn-sm btn-outline-danger" title="{{ 'common.delete'|trans }}">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -42,7 +42,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="4" class="text-center py-4 text-muted">No categories found.</td>
+                            <td colspan="4" class="text-center py-4 text-muted">{{ 'admin.no_categories'|trans }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -51,6 +51,6 @@
     </div>
 
     <p class="mt-4">
-        <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i> Back to Dashboard</a>
+        <a href="{{ path('admin_dashboard') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-left me-1"></i> {{ 'admin.back_to_dashboard'|trans }}</a>
     </p>
 {% endblock %}

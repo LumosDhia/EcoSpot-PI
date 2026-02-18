@@ -1,43 +1,43 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}My Articles - EcoSpot{% endblock %}
-{% block page_title %}My Articles{% endblock %}
+{% block title %}{{ 'common.my_articles'|trans }} - EcoSpot{% endblock %}
+{% block page_title %}{{ 'common.my_articles'|trans }}{% endblock %}
 
 {% block body %}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span>Articles</span>
-            <a href="{{ path('ngo_article_new') }}" class="btn btn-primary btn-sm">New article</a>
+            <span>{{ 'common.articles'|trans }}</span>
+            <a href="{{ path('ngo_article_new') }}" class="btn btn-primary btn-sm">{{ 'admin.new_article'|trans }}</a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Title</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                            <th>Published</th>
-                            <th width="240">Actions</th>
+                            <th>{{ 'common.title'|trans }}</th>
+                            <th>{{ 'common.status'|trans }}</th>
+                            <th>{{ 'common.created'|trans }}</th>
+                            <th>{{ 'common.published'|trans }}</th>
+                            <th width="240">{{ 'common.actions'|trans }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for article in articles %}
                             <tr>
-                                <td>{{ article.title }}</td>
+                                <td>{{ article.title|translate }}</td>
                                 <td>
                                     {% if article.publicationStatus == 'draft' %}
-                                        <span class="badge bg-secondary">Draft</span>
+                                        <span class="badge bg-secondary">{{ 'common.draft'|trans }}</span>
                                     {% elseif article.publicationStatus == 'scheduled' %}
-                                        <span class="badge bg-info">Scheduled</span>
+                                        <span class="badge bg-info">{{ 'common.scheduled'|trans }}</span>
                                     {% else %}
-                                        <span class="badge bg-success">Published</span>
+                                        <span class="badge bg-success">{{ 'common.published'|trans }}</span>
                                     {% endif %}
                                 </td>
                                 <td>{{ article.createdAt|date('d/m/Y H:i') }}</td>
                                 <td>
                                     {% if article.publicationStatus == 'scheduled' and article.publishedAt %}
-                                        <span class="text-info">Scheduled for {{ article.publishedAt|date('d/m/Y H:i') }}</span>
+                                        <span class="text-info">{{ 'admin.scheduled_for'|trans({'%date%': article.publishedAt|date('d/m/Y H:i')}) }}</span>
                                     {% elseif article.publishedAt %}
                                         {{ article.publishedAt|date('d/m/Y H:i') }}
                                     {% else %}
@@ -45,21 +45,21 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <a href="{{ path('ngo_article_edit', { id: article.id }) }}" class="btn btn-outline-primary btn-sm">Edit</a>
+                                    <a href="{{ path('ngo_article_edit', { id: article.id }) }}" class="btn btn-outline-primary btn-sm">{{ 'common.edit'|trans }}</a>
                                     {% if article.publicationStatus == 'draft' %}
                                         <form method="post" action="{{ path('ngo_article_publish', { id: article.id }) }}" class="d-inline">
                                             <input type="hidden" name="_token" value="{{ csrf_token('publish' ~ article.id) }}">
-                                            <button type="submit" class="btn btn-success btn-sm">Publish</button>
+                                            <button type="submit" class="btn btn-success btn-sm">{{ 'common.publish'|trans }}</button>
                                         </form>
                                     {% endif %}
-                                    <form method="post" action="{{ path('ngo_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this article?');">
+                                    <form method="post" action="{{ path('ngo_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('{{ 'admin.delete_confirm'|trans|escape('js') }}');">
                                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">{{ 'common.delete'|trans }}</button>
                                     </form>
                                 </td>
                             </tr>
                         {% else %}
-                            <tr><td colspan="5" class="text-center text-muted py-4">No articles yet.</td></tr>
+                            <tr><td colspan="5" class="text-center text-muted py-4">{{ 'admin.no_articles_yet'|trans }}</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
