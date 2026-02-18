@@ -1,60 +1,60 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}{{ article.title }} - Admin EcoSpot{% endblock %}
-{% block page_title %}Article: {{ article.title }}{% endblock %}
+{% block title %}{{ article.title|translate }} - Admin EcoSpot{% endblock %}
+{% block page_title %}{{ 'common.article'|trans }}: {{ article.title|translate }}{% endblock %}
 
 {% block body %}
     <div class="card mb-3">
         <div class="card-body">
             <dl class="row mb-0">
-                <dt class="col-sm-2">Id</dt>
+                <dt class="col-sm-2">{{ 'common.id'|trans }}</dt>
                 <dd class="col-sm-10">{{ article.id }}</dd>
-                <dt class="col-sm-2">Title</dt>
-                <dd class="col-sm-10">{{ article.title }}</dd>
-                <dt class="col-sm-2">Content</dt>
-                <dd class="col-sm-10">{{ article.content|nl2br }}</dd>
-                <dt class="col-sm-2">Image</dt>
+                <dt class="col-sm-2">{{ 'common.title'|trans }}</dt>
+                <dd class="col-sm-10">{{ article.title|translate }}</dd>
+                <dt class="col-sm-2">{{ 'common.content'|trans }}</dt>
+                <dd class="col-sm-10">{{ article.content|translate|nl2br }}</dd>
+                <dt class="col-sm-2">{{ 'common.image'|trans }}</dt>
                 <dd class="col-sm-10">{{ article.image ?? '—' }}</dd>
-                <dt class="col-sm-2">Created at</dt>
+                <dt class="col-sm-2">{{ 'common.created'|trans }}</dt>
                 <dd class="col-sm-10">{{ article.createdAt|date('d/m/Y H:i') }}</dd>
             </dl>
         </div>
     </div>
     {% if article.adminRevisionNote %}
         <div class="alert alert-info mb-3">
-            <strong>Admin revision note (for NGO):</strong><br>{{ article.adminRevisionNote|nl2br }}
+            <strong>{{ 'admin.admin_revision_note_label'|trans }}:</strong><br>{{ article.adminRevisionNote|translate|nl2br }}
         </div>
     {% endif %}
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap">
         {% if is_ngo_article %}
-            <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Back to list</a>
+            <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">{{ 'common.back_to_list'|trans }}</a>
             {% if article.publicationStatus == 'published' %}
-                <a href="{{ path('admin_blog_article_return_revision', { id: article.id }) }}" class="btn btn-warning">Return for revision</a>
+                <a href="{{ path('admin_blog_article_return_revision', { id: article.id }) }}" class="btn btn-warning">{{ 'common.return_revision'|trans }}</a>
             {% endif %}
-            <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this NGO article?');">
+            <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('{{ 'admin.delete_ngo_confirm'|trans }}');">
                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                <button type="submit" class="btn btn-outline-danger">{{ 'common.delete'|trans }}</button>
             </form>
         {% else %}
-            <a href="{{ path('admin_blog_article_edit', { id: article.id }) }}" class="btn btn-primary">Edit</a>
-            <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Back to list</a>
-            <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('Delete this article?');">
+            <a href="{{ path('admin_blog_article_edit', { id: article.id }) }}" class="btn btn-primary">{{ 'common.edit'|trans }}</a>
+            <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">{{ 'common.back_to_list'|trans }}</a>
+            <form method="post" action="{{ path('admin_blog_article_delete', { id: article.id }) }}" class="d-inline" onsubmit="return confirm('{{ 'admin.delete_confirm'|trans }}');">
                 <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                <button type="submit" class="btn btn-outline-danger">{{ 'common.delete'|trans }}</button>
             </form>
         {% endif %}
     </div>
     {% if article.comments|length > 0 %}
         <div class="card mt-4">
-            <div class="card-header">Comments ({{ article.comments|length }})</div>
+            <div class="card-header">{{ 'common.comments'|trans }} ({{ article.comments|length }})</div>
             <ul class="list-group list-group-flush">
                 {% for comment in article.comments %}
                     <li class="list-group-item d-flex justify-content-between align-items-start">
                         <div>
                             <strong>{{ comment.author }}</strong> — {{ comment.createdAt|date('d/m/Y H:i') }}
-                            <p class="mb-0 mt-1">{{ comment.content }}</p>
+                            <p class="mb-0 mt-1">{{ comment.content|translate }}</p>
                         </div>
-                        <a href="{{ path('admin_blog_comment_show', { id: comment.id }) }}" class="btn btn-outline-secondary btn-sm">View</a>
+                        <a href="{{ path('admin_blog_comment_show', { id: comment.id }) }}" class="btn btn-outline-secondary btn-sm">{{ 'common.view'|trans }}</a>
                     </li>
                 {% endfor %}
             </ul>

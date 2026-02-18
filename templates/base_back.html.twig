@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr" style="background-color: #f0f7f4">
+<html lang="{{ app.request.locale }}" {{ app.request.locale == 'ar' ? 'dir="rtl"' : '' }} style="background-color: #f0f7f4">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,37 +44,37 @@
         <div class="d-flex">
             <aside class="admin-sidebar" style="width: 240px;">
                 <div class="admin-brand">
-                    EcoSpot <small>{% set _route = app.request.attributes.get('_route') ?? '' %}{% if is_granted('ROLE_ADMIN') and 'admin_' in _route %}Admin{% elseif is_granted('ROLE_NGO') and 'ngo_' in _route %}NGO{% elseif _route == 'dashboard' or 'ticket_' in _route %}Dashboard{% else %}Admin{% endif %}</small>
+                    EcoSpot <small>{% set _route = app.request.attributes.get('_route') ?? '' %}{% if is_granted('ROLE_ADMIN') and 'admin_' in _route %}{{ 'common.admin'|trans }}{% elseif is_granted('ROLE_NGO') and 'ngo_' in _route %}{{ 'common.ngo'|trans }}{% elseif _route == 'dashboard' or 'ticket_' in _route %}{{ 'common.dashboard'|trans }}{% else %}{{ 'common.admin'|trans }}{% endif %}</small>
                 </div>
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ path('home') }}">← Public site</a>
+                        <a class="nav-link" href="{{ path('home') }}"><i class="fas fa-arrow-{{ app.request.locale == 'ar' ? 'right' : 'left' }} me-2"></i> {{ 'common.public_site'|trans }}</a>
                     </li>
                     {% if is_granted('ROLE_ADMIN') and (app.request.attributes.get('_route') is not defined or 'admin_' in (app.request.attributes.get('_route') ?? '')) %}
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}" href="{{ path('admin_dashboard') }}">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_blog_article' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_blog_article_index') }}">Articles</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_blog_comment' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_blog_comment_index') }}">Comments</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_events' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_events_index') }}">Events</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_pending_tickets' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_pending_tickets') }}">Pending tickets</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_completions' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_completions_index') }}">Completions</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_users' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_users_index') }}">Users</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_sponsors' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_sponsors_index') }}">Sponsors</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and app.request.attributes.get('_route') == 'admin_dashboard' ? 'active' : '' }}" href="{{ path('admin_dashboard') }}">{{ 'common.dashboard'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_blog_article' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_blog_article_index') }}">{{ 'common.articles'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_blog_comment' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_blog_comment_index') }}">{{ 'common.comments'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_events' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_events_index') }}">{{ 'common.events'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_pending_tickets' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_pending_tickets') }}">{{ 'common.pending_tickets'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_completions' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_completions_index') }}">{{ 'common.completions'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_users' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_users_index') }}">{{ 'common.users'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_sponsors' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_sponsors_index') }}">{{ 'common.sponsors'|trans }}</a></li>
                     {% elseif is_granted('ROLE_NGO') and (app.request.attributes.get('_route') is not defined or 'ngo_' in (app.request.attributes.get('_route') ?? '')) %}
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'ngo_dashboard' ? 'active' : '' }}" href="{{ path('ngo_dashboard') }}">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ngo_article' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('ngo_articles_index') }}">My articles</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ngo_comment' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('ngo_comments_index') }}">Comments</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ngo_event' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('ngo_events_index') }}">My events</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'ngo_dashboard' ? 'active' : '' }}" href="{{ path('ngo_dashboard') }}">{{ 'common.dashboard'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ngo_article' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('ngo_articles_index') }}">{{ 'common.my_articles'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ngo_comment' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('ngo_comments_index') }}">{{ 'common.comments'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ngo_event' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('ngo_events_index') }}">{{ 'common.my_events'|trans }}</a></li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'dashboard' ? 'active' : '' }}" href="{{ path('dashboard') }}">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ticket_my' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('ticket_my_list') }}">My tickets</a></li>
-                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ticket_create' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('ticket_create') }}">New ticket</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ path('public_tickets') }}">Community tickets</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ path('public_achievements') }}">Achievements</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') == 'dashboard' ? 'active' : '' }}" href="{{ path('dashboard') }}">{{ 'common.dashboard'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ticket_my' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('ticket_my_list') }}">{{ 'common.my_tickets'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'ticket_create' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('ticket_create') }}">{{ 'common.new_ticket'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('public_tickets') }}">{{ 'common.community_tickets'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ path('public_achievements') }}">{{ 'common.achievements'|trans }}</a></li>
                     {% endif %}
                 </ul>
             </aside>
             <div class="flex-grow-1 p-4">
-                <h1 class="h4 mb-4">{% block page_title %}Administration{% endblock %}</h1>
+                <h1 class="h4 mb-4">{% block page_title %}{{ 'common.administration'|trans }}{% endblock %}</h1>
                 {% for label, messages in app.flashes %}
                     {% for message in messages %}
                         <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">

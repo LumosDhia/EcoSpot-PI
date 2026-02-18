@@ -18,17 +18,17 @@ class TicketCompletionType extends AbstractType
     {
         $builder
             ->add('message', TextareaType::class, [
-                'label' => 'How did you complete it?',
-                'attr' => ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'Describe what you did…'],
-                'constraints' => [new NotBlank(['message' => 'Please describe how you completed this.'])],
+                'label' => 'form.completion.message',
+                'attr' => ['class' => 'form-control', 'rows' => 3, 'placeholder' => 'form.completion.message_placeholder'],
+                'constraints' => [new NotBlank(['message' => 'form.completion.not_blank'])],
             ])
             ->add('image', FileType::class, [
-                'label' => 'Proof image',
+                'label' => 'form.completion.image',
                 'mapped' => false,
                 'required' => true,
                 'attr' => ['class' => 'form-control', 'accept' => 'image/*'],
                 'constraints' => [
-                    new NotBlank(['message' => 'Please upload an image as proof.']),
+                    new NotBlank(['message' => 'form.completion.image_not_blank']),
                     new File([
                         'maxSize' => '5M',
                         'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],

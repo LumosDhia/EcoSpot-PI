@@ -1,24 +1,24 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Return for revision - {{ article.title }}{% endblock %}
-{% block page_title %}Return article for revision{% endblock %}
+{% block title %}{{ 'admin.return_revision'|trans }} - {{ article.title|translate }}{% endblock %}
+{% block page_title %}{{ 'admin.return_revision_title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="card mb-3">
         <div class="card-body">
-            <p class="mb-2"><strong>{{ article.title }}</strong> (by {{ article.writer ? article.writer.firstname ~ ' ' ~ article.writer.lastname : '—' }})</p>
-            <p class="text-muted small mb-0">The article will be set back to draft. The NGO can see your note and edit the article.</p>
+            <p class="mb-2"><strong>{{ article.title|translate }}</strong> ({{ 'common.author'|trans }} {{ article.writer ? article.writer.firstname ~ ' ' ~ article.writer.lastname : '—' }})</p>
+            <p class="text-muted small mb-0">{{ 'admin.return_revision_desc'|trans }}</p>
         </div>
     </div>
     <form method="post" action="{{ path('admin_blog_article_return_revision', { id: article.id }) }}">
         <input type="hidden" name="_token" value="{{ csrf_token('return_revision_' ~ article.id) }}">
         <div class="mb-3">
-            <label for="revision_note" class="form-label">Note for the NGO (optional)</label>
-            <textarea name="revision_note" id="revision_note" class="form-control" rows="3" placeholder="e.g. Please add sources for the statistics.">{{ article.adminRevisionNote }}</textarea>
+            <label for="revision_note" class="form-label">{{ 'admin.revision_note_label'|trans }}</label>
+            <textarea name="revision_note" id="revision_note" class="form-control" rows="3" placeholder="{{ 'admin.revision_note_placeholder'|trans }}">{{ article.adminRevisionNote }}</textarea>
         </div>
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-warning">Return for revision</button>
-            <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-secondary">Cancel</a>
+        <div class="d-flex gap-2 flex-wrap">
+            <button type="submit" class="btn btn-warning">{{ 'admin.return_revision'|trans }}</button>
+            <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
         </div>
     </form>
 {% endblock %}

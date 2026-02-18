@@ -28,8 +28,8 @@
     <div class="container-fluid blog py-5">
         <div class="container py-5">
             <div class="text-center mx-auto pb-5" style="max-width: 800px;">
-                <h5 class="text-uppercase text-primary">Latest news</h5>
-                <h1 class="mb-4">EcoSpot blog articles</h1>
+                <h5 class="text-uppercase text-primary">{{ 'blog.latest_news'|trans }}</h5>
+                <h1 class="mb-4">{{ 'home.blog_desc'|trans }}</h1>
             </div>
 
             {# Search & Sort #}
@@ -61,13 +61,13 @@
                         <div class="alert alert-info d-flex justify-content-between align-items-center mb-0">
                             <div>
                                 <i class="fas fa-filter me-2"></i>
-                                Showing articles 
-                                {% if selectedCategory %} in <strong>{{ selectedCategory.name }}</strong>{% endif %}
-                                {% if selectedTag %} with tag <strong>#{{ selectedTag.name }}</strong>{% endif %}
-                                {% if search %} matching <strong>"{{ search }}"</strong>{% endif %}
+                                {{ 'blog.showing_articles'|trans }} 
+                                {% if selectedCategory %} {{ 'blog.filter_in'|trans }} <strong>{{ selectedCategory.name|translate }}</strong>{% endif %}
+                                {% if selectedTag %} {{ 'blog.filter_with_tag'|trans }} <strong>#{{ selectedTag.name|translate }}</strong>{% endif %}
+                                {% if search %} {{ 'blog.filter_matching'|trans }} <strong>"{{ search }}"</strong>{% endif %}
                             </div>
                             <a href="{{ path('blog_index') }}" class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-times me-1"></i> Clear all
+                                <i class="fas fa-times me-1"></i> {{ 'blog.clear_all'|trans }}
                             </a>
                         </div>
                     </div>
@@ -101,7 +101,7 @@
                             <div class="text-dark border p-4">
                                 {% if article.category %}
                                     <a href="{{ path('blog_index', { 'category': article.category.id }) }}" class="badge bg-primary mb-2 text-decoration-none">
-                                        {{ article.category.name }}
+                                        {{ article.category.name|translate }}
                                     </a>
                                 {% endif %}
                                 <h4 class="mb-4">{{ article.title|translate }}</h4>

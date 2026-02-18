@@ -1,7 +1,7 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Edit article - Admin EcoSpot{% endblock %}
-{% block page_title %}Edit article{% endblock %}
+{% block title %}{{ 'common.edit'|trans }} - Admin EcoSpot{% endblock %}
+{% block page_title %}{{ 'common.edit'|trans }} {{ 'common.article'|trans }}{% endblock %}
 
 {% block body %}
     <div class="card">
@@ -22,16 +22,16 @@
                 {{ form_widget(form.imageFile) }}
                 {{ form_errors(form.imageFile) }}
                 {% if article.image %}
-                    <small class="text-muted d-block">Current: {% if article.image starts with 'http' %}<a href="{{ article.image }}" target="_blank" rel="noopener">image</a>{% else %}{{ article.image }}{% endif %}. Upload a new file to replace.</small>
+                    <small class="text-muted d-block">{{ 'form.current'|default('Current')|translate }}: {% if article.image starts with 'http' %}<a href="{{ article.image }}" target="_blank" rel="noopener">{{ 'common.view'|trans }}</a>{% else %}{{ article.image }}{% endif %}. {{ 'form.upload_new'|default('Upload new to replace')|translate }}.</small>
                 {% else %}
-                    <small class="text-muted">Upload a thumbnail or hero image (JPEG, PNG, GIF, WebP).</small>
+                    <small class="text-muted">{{ 'form.image_file_help'|default('Upload a thumbnail or hero image (JPEG, PNG, GIF, WebP).')|translate }}</small>
                 {% endif %}
             </div>
             <div class="mb-3">
                 {{ form_label(form.image) }}
                 {{ form_widget(form.image) }}
                 {{ form_errors(form.image) }}
-                <small class="text-muted">Or paste an image URL.</small>
+                <small class="text-muted">{{ 'form.image_url_help'|default('Or paste an image URL.')|translate }}</small>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -45,10 +45,10 @@
                     {{ form_errors(form.scheduledAt) }}
                 </div>
             </div>
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Cancel</a>
-                <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-info">View</a>
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
+                <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
+                <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-info">{{ 'common.view'|trans }}</a>
             </div>
             {{ form_end(form) }}
         </div>

@@ -1,33 +1,33 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Create ticket - EcoSpot{% endblock %}
-{% block page_title %}Create a ticket{% endblock %}
+{% block title %}{{ 'tickets.create_ticket'|trans }} - EcoSpot{% endblock %}
+{% block page_title %}{{ 'tickets.create_ticket'|trans }}{% endblock %}
 
 {% block body %}
     <div class="card">
         <div class="card-body">
-            <p class="text-muted mb-3">Describe an environmental issue or suggestion. You must <strong>search and select a location</strong> from the list so we can show the 7-day weather on the ticket (only places supported by the weather API are accepted).</p>
+            <p class="text-muted mb-3">{{ 'tickets.create_desc'|trans|raw }}</p>
             {{ form_start(form) }}
             {{ form_errors(form) }}
             {{ form_row(form.title) }}
             {{ form_row(form.description) }}
             {{ form_row(form.imageFile) }}
             <div class="mb-3">
-                <label class="form-label">Location <span class="text-danger">*</span></label>
+                <label class="form-label">{{ 'tickets.location_label'|trans }} <span class="text-danger">*</span></label>
                 <div id="ticket-location-search-wrap" class="mb-2 position-relative">
                     <div class="input-group">
-                        <input type="text" id="ticket-place-search" class="form-control" placeholder="Search for a place (e.g. Paris, London, 10 Downing Street)" autocomplete="off">
-                        <button type="button" class="btn btn-outline-primary" id="ticket-location-search-btn">Search</button>
+                        <input type="text" id="ticket-place-search" class="form-control" placeholder="{{ 'form.search_place_placeholder'|trans }}" autocomplete="off">
+                        <button type="button" class="btn btn-outline-primary" id="ticket-location-search-btn">{{ 'common.search'|trans }}</button>
                     </div>
                     <div id="ticket-geocode-results" class="list-group mt-1 position-absolute start-0 w-100" style="z-index: 1050; display: none; max-height: 220px; overflow-y: auto; background: #fff;"></div>
                 </div>
                 <div id="ticket-location-selected" class="d-none">
                     <div class="input-group">
-                        <input type="text" id="ticket_location_display" class="form-control bg-light" readonly placeholder="No location selected">
-                        <button type="button" class="btn btn-outline-secondary" id="ticket-location-clear">Change location</button>
+                        <input type="text" id="ticket_location_display" class="form-control bg-light" readonly placeholder="{{ 'form.no_location'|trans }}">
+                        <button type="button" class="btn btn-outline-secondary" id="ticket-location-clear">{{ 'common.change_location'|trans }}</button>
                     </div>
                 </div>
-                <div class="form-text">Choose a place from the search results. This ensures the weather API can show the 7-day forecast for the ticket.</div>
+                <div class="form-text">{{ 'tickets.location_help'|trans }}</div>
                 {{ form_widget(form.location, { attr: { class: 'd-none' } }) }}
                 {{ form_widget(form.latitude) }}
                 {{ form_widget(form.longitude) }}
@@ -35,9 +35,9 @@
             </div>
             {{ form_row(form.priority) }}
             {{ form_row(form.domain) }}
-            <div class="d-flex gap-2 mt-3">
-                <button type="submit" class="btn btn-primary">Submit ticket</button>
-                <a href="{{ path('ticket_my_list') }}" class="btn btn-outline-secondary">Cancel</a>
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+                <button type="submit" class="btn btn-primary">{{ 'tickets.submit_ticket'|trans }}</button>
+                <a href="{{ path('ticket_my_list') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
             </div>
             {{ form_end(form) }}
         </div>
@@ -62,7 +62,7 @@
         function doSearch() {
             const q = searchInput && searchInput.value ? searchInput.value.trim() : '';
             if (q.length < 2) { resultsEl.style.display = 'none'; return; }
-            resultsEl.innerHTML = '<div class="list-group-item">Searching…</div>';
+            resultsEl.innerHTML = '<div class="list-group-item">{{ 'tickets.searching'|trans }}</div>';
             resultsEl.style.display = 'block';
             const url = '{{ path('api_geocode') }}?q=' + encodeURIComponent(q);
             fetch(url, { credentials: 'same-origin' })
@@ -71,15 +71,15 @@
                     return r.json();
                 })
                 .then(function(data) {
-                    if (!Array.isArray(data)) { resultsEl.innerHTML = '<div class="list-group-item text-danger">Invalid response</div>'; return; }
-                    if (!data.length) { resultsEl.innerHTML = '<div class="list-group-item">No results. Try another search (e.g. city name or address).</div>'; return; }
+                    if (!Array.isArray(data)) { resultsEl.innerHTML = '<div class="list-group-item text-danger">{{ 'tickets.invalid_response'|trans }}</div>'; return; }
+                    if (!data.length) { resultsEl.innerHTML = '<div class="list-group-item">{{ 'tickets.no_results'|trans }}</div>'; return; }
                     resultsEl.innerHTML = data.map(function(r) {
                         var name = (r.display_name || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
                         return '<a href="#" class="list-group-item list-group-item-action" data-name="' + name + '" data-lat="' + (r.lat || '') + '" data-lon="' + (r.lon || '') + '">' + (r.display_name || '') + '</a>';
                     }).join('');
                 })
                 .catch(function(err) {
-                    resultsEl.innerHTML = '<div class="list-group-item text-danger">Search failed: ' + (err.message || 'check connection') + '. Try again later.</div>';
+                    resultsEl.innerHTML = '<div class="list-group-item text-danger">{{ 'tickets.search_failed'|trans }}: ' + (err.message || 'check connection') + '. {{ 'common.try_again'|trans }}.</div>';
                 });
         }
 

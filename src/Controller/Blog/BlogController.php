@@ -86,13 +86,13 @@ class BlogController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$this->getUser()) {
-                $this->addFlash('error', 'You must be signed in to leave a comment.');
+                $this->addFlash('error', 'blog.sign_in_flash');
                 return $this->redirectToRoute('app_login', ['_target_path' => $request->getRequestUri()]);
             }
             $comment->setAuthor(trim($this->getUser()->getFirstname() . ' ' . $this->getUser()->getLastname()) ?: $this->getUser()->getUserIdentifier());
             $comment->setAuthorUser($this->getUser());
             $this->commentRepository->save($comment, true);
-            $this->addFlash('success', 'Your comment has been published.');
+            $this->addFlash('success', 'blog.comment_success_flash');
 
             return $this->redirectToRoute('blog_show', ['slug' => $article->getSlug()], Response::HTTP_SEE_OTHER);
         }

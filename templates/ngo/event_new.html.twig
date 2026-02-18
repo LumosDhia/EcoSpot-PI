@@ -1,7 +1,7 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}New event - EcoSpot{% endblock %}
-{% block page_title %}New event{% endblock %}
+{% block title %}{{ 'admin.ngo.create_event'|trans }} - EcoSpot{% endblock %}
+{% block page_title %}{{ 'admin.ngo.create_event'|trans }}{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -26,9 +26,9 @@
                         <div class="col-md-6 mb-3">{{ form_row(form.capacite) }}</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Precise location (click on map)</label>
+                        <label class="form-label">{{ 'events.precise_location'|default('Precise location (click on map)')|translate }}</label>
                         <div id="event-map"></div>
-                        <p class="small text-muted mt-1 mb-2">Click on the map to set the marker; the location name will be filled above.</p>
+                        <p class="small text-muted mt-1 mb-2">{{ 'events.map_help'|default('Click on the map to set the marker; the location name will be filled above.')|translate }}</p>
                         {{ form_widget(form.latitude) }}{{ form_widget(form.longitude) }}
                     </div>
                     <div class="mb-3">{{ form_row(form.imageFile) }}</div>
@@ -36,7 +36,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         {{ form_label(form.sponsors) }}
-                        <p class="small text-muted mb-2">Select sponsors for this event.</p>
+                        <p class="small text-muted mb-2">{{ 'events.select_sponsors'|default('Select sponsors for this event.')|translate }}</p>
                         <div class="border rounded p-3 bg-light" style="max-height: 420px; overflow-y: auto;">
                             {% for child in form.sponsors %}
                                 <div class="form-check mb-2">
@@ -44,16 +44,16 @@
                                     {{ form_label(child, null, { label_attr: { class: 'form-check-label' } }) }}
                                 </div>
                             {% else %}
-                                <p class="text-muted small mb-0">No sponsors yet.</p>
+                                <p class="text-muted small mb-0">{{ 'common.no_sponsors'|trans }}</p>
                             {% endfor %}
                         </div>
                         {{ form_errors(form.sponsors) }}
                     </div>
                 </div>
             </div>
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ path('ngo_events_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
+                <a href="{{ path('ngo_events_index') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
             </div>
             {{ form_end(form) }}
         </div>

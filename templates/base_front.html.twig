@@ -61,6 +61,11 @@
             [dir="rtl"] .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
             [dir="rtl"] .me-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
             [dir="rtl"] .ms-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+            [dir="rtl"] .me-1 { margin-left: .25rem !important; margin-right: 0 !important; }
+
+            /* Breadcrumb RTL Fix */
+            [dir="rtl"] .breadcrumb-item + .breadcrumb-item { padding-right: .5rem; padding-left: 0; }
+            [dir="rtl"] .breadcrumb-item + .breadcrumb-item::before { float: right; padding-left: .5rem; padding-right: 0; }
             [dir="rtl"] .text-md-end { text-align: left !important; }
             [dir="rtl"] .text-md-start { text-align: right !important; }
             [dir="rtl"] .float-end { float: left !important; }

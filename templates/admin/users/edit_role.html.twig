@@ -1,23 +1,28 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Change user type - EcoSpot Admin{% endblock %}
-{% block page_title %}Change user type{% endblock %}
+{% block title %}{{ 'admin.edit_user_role'|trans }} - EcoSpot{% endblock %}
+{% block page_title %}{{ 'admin.edit_user_role'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <p class="mb-0"><strong>{{ user.email }}</strong> — {{ user.firstname }} {{ user.lastname }}</p>
-        </div>
-    </div>
     <div class="card">
         <div class="card-body">
-            {{ form_start(form) }}
-            {{ form_row(form.userType) }}
-            <div class="mt-3">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ path('admin_users_index') }}" class="btn btn-outline-secondary">Cancel</a>
-            </div>
-            {{ form_end(form) }}
+            <h5 class="card-title mb-4">{{ 'common.user'|trans }}: {{ user.firstname }} {{ user.lastname }}</h5>
+
+            <form method="post">
+                <div class="mb-3">
+                    <label for="role" class="form-label">{{ 'admin.role_label'|trans }}</label>
+                    <select name="role" id="role" class="form-select">
+                        <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in user.roles %}selected{% endif %}>{{ 'admin.role_admin'|trans }}</option>
+                        <option value="ROLE_NGO" {% if 'ROLE_NGO' in user.roles %}selected{% endif %}>{{ 'admin.role_ngo'|trans }}</option>
+                        <option value="ROLE_USER" {% if user.roles|length == 1 and 'ROLE_USER' in user.roles %}selected{% endif %}>{{ 'admin.role_user'|trans }}</option>
+                    </select>
+                </div>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">{{ 'common.save'|trans }}</button>
+                    <a href="{{ path('admin_users_index') }}" class="btn btn-outline-secondary">{{ 'common.cancel'|trans }}</a>
+                </div>
+            </form>
         </div>
     </div>
 {% endblock %}

@@ -21,8 +21,9 @@
             <h3 class="text-white display-3 mb-4">{{ article.title|translate }}</h3>
             <p class="fs-5 text-white mb-4">{{ 'blog.published_on'|trans }} {{ (article.publishedAt ?? article.createdAt)|date('d/m/Y H:i') }}</p>
             <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">Blog</a></li>
-                <li class="breadcrumb-item active text-white">Article</li>
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">{{ 'blog.article_breadcrumb'|trans }}</li>
             </ol>
         </div>
     </div>
@@ -42,7 +43,7 @@
                         <div class="text-dark border p-4 p-md-5">
                             {% if article.category %}
                                 <a href="{{ path('blog_index', { 'category': article.category.id }) }}" class="badge bg-primary mb-2 text-decoration-none">
-                                    {{ article.category.name }}
+                                    {{ article.category.name|translate }}
                                 </a>
                             {% endif %}
                             <h1 class="mb-4">{{ article.title|translate }}</h1>
@@ -50,15 +51,15 @@
                                 <div class="mb-3">
                                     {% for tag in article.tags %}
                                         <a href="{{ path('blog_index', { 'tag': tag.id }) }}" class="badge border border-primary text-primary small me-1 text-decoration-none">
-                                            #{{ tag.name }}
+                                            #{{ tag.name|translate }}
                                         </a>
                                     {% endfor %}
                                 </div>
                             {% endif %}
                             <p class="text-muted small mb-4">
                                 <i class="fa fa-clock me-2"></i>{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : article.createdAt|date('d/m/Y H:i') }}
-                                <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ article.readingTime }} min read</span>
-                                <span class="ms-3"><i class="fa fa-eye me-1"></i>{{ article.views }} views</span>
+                                <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ 'blog.min_read'|trans({'%count%': article.readingTime}) }}</span>
+                                <span class="ms-3"><i class="fa fa-eye me-1"></i>{{ 'blog.views'|trans({'%count%': article.views}) }}</span>
                                 <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
                                 <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1"></i>{{ article.dislikesCount }}</span>
                                 {% if article.writer %}
@@ -69,15 +70,15 @@
 
                             {# Reactions section #}
                             <div class="border-top pt-4 mt-4 d-flex align-items-center gap-3">
-                                <span class="fw-bold me-2">Rate this article:</span>
+                                <span class="fw-bold me-2">{{ 'blog.rate_article'|trans }}:</span>
                                 {% set userReaction = app.user ? article.userReaction(app.user) : null %}
                                 <button class="btn {{ userReaction and userReaction.type == 'like' ? 'btn-primary' : 'btn-outline-primary' }} reaction-btn" 
                                         data-type="like" data-url="{{ path('blog_react', {slug: article.slug, type: 'like'}) }}">
-                                    <i class="fa fa-thumbs-up me-1"></i> Like
+                                    <i class="fa fa-thumbs-up me-1"></i> {{ 'blog.like'|trans }}
                                 </button>
                                 <button class="btn {{ userReaction and userReaction.type == 'dislike' ? 'btn-danger' : 'btn-outline-danger' }} reaction-btn" 
                                         data-type="dislike" data-url="{{ path('blog_react', {slug: article.slug, type: 'dislike'}) }}">
-                                    <i class="fa fa-thumbs-down me-1"></i> Dislike
+                                    <i class="fa fa-thumbs-down me-1"></i> {{ 'blog.dislike'|trans }}
                                 </button>
                             </div>
                         </div>
@@ -89,7 +90,7 @@
                             <div class="border-bottom pb-3 mb-3 {% if not loop.last %}{% else %}border-0 mb-0{% endif %}">
                                 <strong class="text-primary">{{ comment.author }}</strong>
                                 <span class="text-muted small"> — {{ comment.createdAt|date('d/m/Y H:i') }}</span>
-                                <p class="mb-0 mt-1">{{ comment.content|nl2br }}</p>
+                                <p class="mb-0 mt-1">{{ comment.content|translate|nl2br }}</p>
                             </div>
                         {% else %}
                             <p class="text-muted mb-0">{{ 'blog.no_comments'|trans }}</p>
@@ -105,7 +106,7 @@
                             </div>
                             <button type="submit" class="btn-hover-bg btn btn-primary text-white py-2 px-4">{{ 'blog.submit_comment'|trans }}</button>
                             {{ form_end(form) }}
-                            <p class="text-muted small mt-2 mb-0">Comment will appear as {{ app.user.firstname }} {{ app.user.lastname }}.</p>
+                            <p class="text-muted small mt-2 mb-0">{{ 'blog.comment_as'|trans({'%name%': app.user.firstname ~ ' ' ~ app.user.lastname}) }}</p>
                         {% else %}
                             <p class="text-muted mb-0">{{ 'blog.sign_in_to_comment'|trans({'%url%': path('app_login', { _target_path: app.request.requestUri })})|raw }}</p>
                         {% endif %}
