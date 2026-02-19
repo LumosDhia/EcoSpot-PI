@@ -41,7 +41,7 @@
                 <ol class="breadcrumb justify-content-center mb-0">
                     <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
-                    <li class="breadcrumb-item active text-white" aria-current="page">{{ 'blog.article_breadcrumb'|trans }}</li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ article.title|translate }}</li>
                 </ol>
             </nav>
         </div>
@@ -111,13 +111,13 @@
                                     </div>
                                 </div>
                                 <div class="btn-group shadow-sm">
-                                    <button id="ai-play" class="btn btn-primary" title="Play">
+                                    <button id="ai-play" class="btn btn-primary" title="{{ 'blog.ai_play'|trans|default('Play (Alt+P)') }}" aria-label="{{ 'blog.ai_play_label'|trans|default('Start AI Reading') }}">
                                         <i class="fas fa-play"></i>
                                     </button>
-                                    <button id="ai-pause" class="btn btn-outline-primary" title="Pause" disabled>
+                                    <button id="ai-pause" class="btn btn-outline-primary" title="{{ 'blog.ai_pause_btn'|trans|default('Pause') }}" aria-label="{{ 'blog.ai_pause_label'|trans|default('Pause AI Reading') }}" disabled>
                                         <i class="fas fa-pause"></i>
                                     </button>
-                                    <button id="ai-stop" class="btn btn-outline-danger" title="Stop">
+                                    <button id="ai-stop" class="btn btn-outline-danger" title="{{ 'blog.ai_stop_btn'|trans|default('Stop (Alt+S)') }}" aria-label="{{ 'blog.ai_stop_label'|trans|default('Stop AI Reading') }}">
                                         <i class="fas fa-stop"></i>
                                     </button>
                                 </div>
@@ -235,24 +235,56 @@
         if (locale === 'fr') voice = "French Female";
         if (locale === 'ar') voice = "Arabic Female";
 
+        // Keyboard Shortcuts (Alt + P = Play, Alt + S = Stop)
+        window.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                btnPlay.click();
+            }
+            if (e.altKey && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                btnStop.click();
+            }
+        });
+
+        // Aria-live announcement for arrival
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.classList.add('visually-hidden');
+        document.body.appendChild(announcement);
+        
+        setTimeout(() => {
+            announcement.innerText = "{{ 'blog.ai_instruction'|trans|default('Press Alt plus P to have the AI read this article aloud.') }}";
+        }, 1000);
+
+        let isPaused = false;
+        const transReading = "{{ 'blog.ai_reading'|trans|escape('js') }}";
+        const transFinished = "{{ 'blog.ai_finished'|trans|escape('js') }}";
+        const transPaused = "{{ 'blog.ai_paused'|trans|escape('js') }}";
+        const transReady = "{{ 'blog.ai_ready'|trans|escape('js') }}";
+
         btnPlay.addEventListener('click', function() {
             const text = speakableContent.innerText;
             
-            if (responsiveVoice.isPlaying()) {
+            if (isPaused) {
                 responsiveVoice.resume();
+                isPaused = false;
+                statusText.innerText = transReading;
+                aiPanel.classList.add('ai-reading');
             } else {
                 responsiveVoice.speak(text, voice, {
                     onstart: function() {
-                        statusText.innerText = "Reading article...";
+                        statusText.innerText = transReading;
                         aiPanel.classList.add('ai-reading');
                         btnPlay.disabled = true;
                         btnPause.disabled = false;
                     },
                     onend: function() {
-                        statusText.innerText = "Finished reading";
+                        statusText.innerText = transFinished;
                         aiPanel.classList.remove('ai-reading');
                         btnPlay.disabled = false;
                         btnPause.disabled = true;
+                        isPaused = false;
                     }
                 });
             }
@@ -262,14 +294,16 @@
 
         btnPause.addEventListener('click', function() {
             responsiveVoice.pause();
-            statusText.innerText = "Paused";
+            isPaused = true;
+            statusText.innerText = transPaused;
             btnPlay.disabled = false;
             btnPause.disabled = true;
         });
 
         btnStop.addEventListener('click', function() {
             responsiveVoice.cancel();
-            statusText.innerText = "Ready to read aloud";
+            isPaused = false;
+            statusText.innerText = transReady;
             aiPanel.classList.remove('ai-reading');
             btnPlay.disabled = false;
             btnPause.disabled = true;
