@@ -12,6 +12,15 @@
         .article-content.prose h2 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; }
         .article-content.prose table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
         .article-content.prose table td, .article-content.prose table th { border: 1px solid #dee2e6; padding: 0.5rem; }
+
+        /* AI Reader Styling */
+        .ai-icon-container { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 50%; border: 2px solid var(--eco-forest); }
+        .ai-pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--eco-forest); opacity: 0; }
+        .ai-reading .ai-pulse-ring { animation: ai-pulse 2s infinite; }
+        @keyframes ai-pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
     </style>
 {% endblock %}
 
@@ -88,7 +97,33 @@
                                     </span>
                                 {% endif %}
                             </p>
-                            <div class="article-content prose mb-4">{{ article.content|translate|raw }}</div>
+
+                            {# AI Reader Panel #}
+                            <div class="ai-reader-panel mb-4 p-3 border rounded-3 bg-light shadow-sm d-flex flex-wrap align-items-center justify-content-between" style="border-left: 5px solid var(--eco-forest) !important;">
+                                <div class="d-flex align-items-center mb-2 mb-sm-0">
+                                    <div class="ai-icon-container me-3 position-relative">
+                                        <div class="ai-pulse-ring"></div>
+                                        <i class="fas fa-robot text-primary fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold d-block text-dark">{{ 'blog.ai_voice'|trans|default('EcoSpot AI Assistant') }}</span>
+                                        <small class="text-muted" id="ai-status">{{ 'blog.ai_ready'|trans|default('Ready to read aloud') }}</small>
+                                    </div>
+                                </div>
+                                <div class="btn-group shadow-sm">
+                                    <button id="ai-play" class="btn btn-primary" title="Play">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button id="ai-pause" class="btn btn-outline-primary" title="Pause" disabled>
+                                        <i class="fas fa-pause"></i>
+                                    </button>
+                                    <button id="ai-stop" class="btn btn-outline-danger" title="Stop">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="article-content prose mb-4" id="speakable-content">{{ article.content|translate|raw }}</div>
 
                             {# Reactions section #}
                             <div class="border-top pt-4 mt-4 d-flex align-items-center gap-3">
@@ -152,17 +187,15 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- Reaction Logic ---
         const reactionBtns = document.querySelectorAll('.reaction-btn');
         reactionBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const url = this.getAttribute('data-url');
-                const type = this.getAttribute('data-type');
                 
                 fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => {
                     if (response.status === 401) {
@@ -173,8 +206,8 @@
                 })
                 .then(data => {
                     if (data) {
-                        document.getElementById('article-likes-count').innerHTML = '<i class="fa fa-thumbs-up me-1"></i>' + data.likes;
-                        document.getElementById('article-dislikes-count').innerHTML = '<i class="fa fa-thumbs-down me-1"></i>' + data.dislikes;
+                        document.getElementById('article-likes-count').innerHTML = '<i class="fa fa-thumbs-up me-1" aria-hidden="true"></i>' + data.likes;
+                        document.getElementById('article-dislikes-count').innerHTML = '<i class="fa fa-thumbs-down me-1" aria-hidden="true"></i>' + data.dislikes;
                         
                         reactionBtns.forEach(b => {
                             const bType = b.getAttribute('data-type');
@@ -187,6 +220,59 @@
                     }
                 });
             });
+        });
+        
+        // --- AI Voice (ResponsiveVoice) Logic ---
+        const btnPlay = document.getElementById('ai-play');
+        const btnPause = document.getElementById('ai-pause');
+        const btnStop = document.getElementById('ai-stop');
+        const statusText = document.getElementById('ai-status');
+        const aiPanel = document.querySelector('.ai-reader-panel');
+        const speakableContent = document.getElementById('speakable-content');
+
+        const locale = document.documentElement.lang || 'en';
+        let voice = "UK English Female";
+        if (locale === 'fr') voice = "French Female";
+        if (locale === 'ar') voice = "Arabic Female";
+
+        btnPlay.addEventListener('click', function() {
+            const text = speakableContent.innerText;
+            
+            if (responsiveVoice.isPlaying()) {
+                responsiveVoice.resume();
+            } else {
+                responsiveVoice.speak(text, voice, {
+                    onstart: function() {
+                        statusText.innerText = "Reading article...";
+                        aiPanel.classList.add('ai-reading');
+                        btnPlay.disabled = true;
+                        btnPause.disabled = false;
+                    },
+                    onend: function() {
+                        statusText.innerText = "Finished reading";
+                        aiPanel.classList.remove('ai-reading');
+                        btnPlay.disabled = false;
+                        btnPause.disabled = true;
+                    }
+                });
+            }
+            btnPlay.disabled = true;
+            btnPause.disabled = false;
+        });
+
+        btnPause.addEventListener('click', function() {
+            responsiveVoice.pause();
+            statusText.innerText = "Paused";
+            btnPlay.disabled = false;
+            btnPause.disabled = true;
+        });
+
+        btnStop.addEventListener('click', function() {
+            responsiveVoice.cancel();
+            statusText.innerText = "Ready to read aloud";
+            aiPanel.classList.remove('ai-reading');
+            btnPlay.disabled = false;
+            btnPause.disabled = true;
         });
     });
     </script>
