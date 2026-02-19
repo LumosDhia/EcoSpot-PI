@@ -56,6 +56,25 @@
             .lang-dropdown .dropdown-item:hover { background-color: var(--eco-cream); color: var(--eco-forest); }
             .lang-dropdown .dropdown-item.active { background-color: var(--eco-forest); color: white; }
 
+            /* Accessibility */
+            .skip-link {
+                position: absolute;
+                top: -100px;
+                left: 0;
+                background: var(--eco-forest);
+                color: white;
+                padding: 10px 20px;
+                z-index: 10001;
+                text-decoration: none;
+                transition: top 0.2s;
+                font-weight: bold;
+                border-radius: 0 0 5px 0;
+            }
+            .skip-link:focus {
+                top: 0;
+                outline: 3px solid var(--eco-mint);
+            }
+
             [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
             [dir="rtl"] .me-4 { margin-left: 1.5rem !important; margin-right: 0 !important; }
             [dir="rtl"] .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
@@ -73,7 +92,8 @@
         </style>
         {% block stylesheets %}{% endblock %}
     </head>
-    <body>
+    <body id="top">
+        <a href="#main-content" class="skip-link">{{ 'common.skip_to_content'|trans|default('Skip to main content') }}</a>
         <!-- Spinner -->
         <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center" style="z-index: 99999;">
             <div class="spinner-grow text-primary" role="status"></div>
@@ -143,7 +163,7 @@
 
         {% block breadcrumb %}{% endblock %}
 
-        <main>
+        <main id="main-content">
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
                     <div class="container py-2">

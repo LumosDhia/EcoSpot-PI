@@ -18,7 +18,7 @@
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">{{ article.title|translate }}</h3>
+            <h1 class="text-white display-3 mb-4">{{ article.title|translate }}</h1>
             <p class="fs-5 text-white mb-4">
                 {{ 'blog.published_on'|trans }} 
                 {% set articleDate = article.publishedAt ?? article.createdAt %}
@@ -28,11 +28,13 @@
                     {{ articleDate|date('d/m/Y H:i') }}
                 {% endif %}
             </p>
-            <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
-                <li class="breadcrumb-item active text-white">{{ 'blog.article_breadcrumb'|trans }}</li>
-            </ol>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ 'blog.article_breadcrumb'|trans }}</li>
+                </ol>
+            </nav>
         </div>
     </div>
 {% endblock %}
@@ -54,9 +56,9 @@
                                     {{ article.category.name|translate }}
                                 </a>
                             {% endif %}
-                            <h1 class="mb-4">{{ article.title|translate }}</h1>
+                            <h1 class="mb-4 h2">{{ article.title|translate }}</h1>
                             {% if article.tags|length > 0 %}
-                                <div class="mb-3">
+                                <div class="mb-3" role="group" aria-label="Article tags">
                                     {% for tag in article.tags %}
                                         <a href="{{ path('blog_index', { 'tag': tag.id }) }}" class="badge border border-primary text-primary small me-1 text-decoration-none">
                                             #{{ tag.name|translate }}
@@ -65,20 +67,20 @@
                                 </div>
                             {% endif %}
                             <p class="text-muted small mb-4">
-                                <i class="fa fa-clock me-2"></i>
+                                <i class="fa fa-clock me-2" aria-hidden="true"></i>
                                 {% set articleDate = article.publishedAt ?? article.createdAt %}
                                 {% if articleDate > date('-1 month') %}
                                     {{ articleDate|ago }}
                                 {% else %}
                                     {{ articleDate|date('d/m/Y H:i') }}
                                 {% endif %}
-                                <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ 'blog.min_read'|trans({'%count%': article.readingTime}) }}</span>
-                                <span class="ms-3"><i class="fa fa-eye me-1"></i>{{ 'blog.views'|trans({'%count%': article.views}) }}</span>
-                                <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
-                                <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1"></i>{{ article.dislikesCount }}</span>
+                                <span class="ms-3"><i class="fa fa-book-reader me-1" aria-hidden="true"></i>{{ 'blog.min_read'|trans({'%count%': article.readingTime}) }}</span>
+                                <span class="ms-3"><i class="fa fa-eye me-1" aria-hidden="true"></i>{{ 'blog.views'|trans({'%count%': article.views}) }}</span>
+                                <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1" aria-hidden="true"></i>{{ article.likesCount }}</span>
+                                <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1" aria-hidden="true"></i>{{ article.dislikesCount }}</span>
                                 {% if article.writer %}
                                     <span class="ms-3">
-                                        <i class="fas fa-user-edit me-1"></i>
+                                        <i class="fas fa-user-edit me-1" aria-hidden="true"></i>
                                         {{ 'common.writer'|trans }}: 
                                         <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-primary">
                                             {{ article.writer.firstname }} {{ article.writer.lastname }}
@@ -93,19 +95,21 @@
                                 <span class="fw-bold me-2">{{ 'blog.rate_article'|trans }}:</span>
                                 {% set userReaction = app.user ? article.userReaction(app.user) : null %}
                                 <button class="btn {{ userReaction and userReaction.type == 'like' ? 'btn-primary' : 'btn-outline-primary' }} reaction-btn" 
-                                        data-type="like" data-url="{{ path('blog_react', {slug: article.slug, type: 'like'}) }}">
-                                    <i class="fa fa-thumbs-up me-1"></i> {{ 'blog.like'|trans }}
+                                        data-type="like" data-url="{{ path('blog_react', {slug: article.slug, type: 'like'}) }}"
+                                        aria-label="{{ 'blog.like'|trans }}">
+                                    <i class="fa fa-thumbs-up me-1" aria-hidden="true"></i> {{ 'blog.like'|trans }}
                                 </button>
                                 <button class="btn {{ userReaction and userReaction.type == 'dislike' ? 'btn-danger' : 'btn-outline-danger' }} reaction-btn" 
-                                        data-type="dislike" data-url="{{ path('blog_react', {slug: article.slug, type: 'dislike'}) }}">
-                                    <i class="fa fa-thumbs-down me-1"></i> {{ 'blog.dislike'|trans }}
+                                        data-type="dislike" data-url="{{ path('blog_react', {slug: article.slug, type: 'dislike'}) }}"
+                                        aria-label="{{ 'blog.dislike'|trans }}">
+                                    <i class="fa fa-thumbs-down me-1" aria-hidden="true"></i> {{ 'blog.dislike'|trans }}
                                 </button>
                             </div>
                         </div>
                     </article>
 
-                    <section class="border p-4 p-md-5 mb-5">
-                        <h4 class="mb-4">{{ 'blog.comments'|trans }} ({{ comments|length }})</h4>
+                    <section class="border p-4 p-md-5 mb-5" aria-labelledby="comments-title">
+                        <h2 id="comments-title" class="h4 mb-4">{{ 'blog.comments'|trans }} ({{ comments|length }})</h2>
                         {% for comment in comments %}
                             <div class="border-bottom pb-3 mb-3 {% if not loop.last %}{% else %}border-0 mb-0{% endif %}">
                                 <strong class="text-primary">{{ comment.author }}</strong>
@@ -123,8 +127,8 @@
                         {% endfor %}
                     </section>
 
-                    <section class="border p-4 p-md-5">
-                        <h4 class="mb-4">{{ 'blog.leave_comment'|trans }}</h4>
+                    <section class="border p-4 p-md-5" aria-labelledby="leave-comment-title">
+                        <h2 id="leave-comment-title" class="h4 mb-4">{{ 'blog.leave_comment'|trans }}</h2>
                         {% if app.user %}
                             {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
                             <div class="mb-3">
@@ -139,7 +143,7 @@
                     </section>
 
                     <p class="mt-4">
-                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i>{{ 'blog.back_to_blog'|trans }}</a>
+                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary" aria-label="{{ 'blog.back_to_blog'|trans }}"><i class="fas fa-arrow-left me-2" aria-hidden="true"></i>{{ 'blog.back_to_blog'|trans }}</a>
                     </p>
                 </div>
             </div>
