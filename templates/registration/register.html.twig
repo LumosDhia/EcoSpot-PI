@@ -18,9 +18,6 @@
                         {{ form_row(registrationForm.city) }}
                         {{ form_row(registrationForm.plainPassword) }}
                         {{ form_row(registrationForm.agreeTerms) }}
-                        <div class="mb-3 d-flex justify-content-center">
-                            <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
-                        </div>
                         <div class="d-grid gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">{{ 'security.register'|trans }}</button>
                             <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">{{ 'security.already_have_account'|trans }}</a>
@@ -35,5 +32,4 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {% endblock %}

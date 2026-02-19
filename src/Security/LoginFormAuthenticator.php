@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Security;
 
-use App\Service\TurnstileVerifier;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,18 +26,12 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
     public const LOGIN_ROUTE = 'app_login';
 
     public function __construct(
-        private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly TurnstileVerifier $turnstileVerifier
+        private readonly UrlGeneratorInterface $urlGenerator
     ) {
     }
 
     public function authenticate(Request $request): Passport
     {
-        $token = $request->request->getString('cf-turnstile-response', '');
-        if (!$this->turnstileVerifier->verify($token)) {
-            throw new CustomUserMessageAuthenticationException('Please complete the captcha verification.');
-        }
-
         $email = $request->getPayload()->getString('email');
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 

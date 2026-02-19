@@ -21,10 +21,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Service\TurnstileVerifier:
-        arguments:
-            $secretKey: '%env(TURNSTILE_SECRET_KEY)%'
-
     App\Controller\Blog\Article\ArticleImageUploadController:
         arguments:
             $projectDir: '%kernel.project_dir%'
