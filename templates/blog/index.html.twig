@@ -6,12 +6,14 @@
     <!-- Header (Environs breadcrumb) -->
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">{{ 'blog.latest_news'|trans }}</h3>
+            <h1 class="text-white display-3 mb-4">{{ 'blog.latest_news'|trans }}</h1>
             <p class="fs-5 text-white mb-4">{{ 'blog.articles'|trans }}</p>
-            <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
-                <li class="breadcrumb-item active text-white">{{ 'nav.blog'|trans }}</li>
-            </ol>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ 'nav.blog'|trans }}</li>
+                </ol>
+            </nav>
         </div>
     </div>
 {% endblock %}
@@ -39,8 +41,8 @@
                         <div class="col-md-7">
                             <label for="search" class="form-label small text-muted mb-1">{{ 'blog.search_label'|trans }}</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" name="search" id="search" class="form-control border-start-0 ps-0" placeholder="{{ 'blog.search_placeholder'|trans }}" value="{{ app.request.query.get('search') }}">
+                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted" aria-hidden="true"></i></span>
+                                <input type="text" name="search" id="search" class="form-control border-start-0 ps-0" placeholder="{{ 'blog.search_placeholder'|trans }}" value="{{ app.request.query.get('search') }}" aria-label="{{ 'blog.search_placeholder'|trans }}">
                             </div>
                         </div>
                         <div class="col-md-5">
@@ -86,8 +88,9 @@
                                     <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title|translate }}" loading="lazy">
                                 {% endif %}
                                 <div class="blog-info">
-                                    <span>
-                                        <i class="fa fa-clock"></i> 
+                                    <span class="me-3">
+                                        <i class="fa fa-clock" aria-hidden="true"></i> 
+                                        <span class="visually-hidden">{{ 'blog.published_at'|trans }}:</span>
                                         {% set articleDate = article.publishedAt ?? article.createdAt %}
                                         {% if articleDate > date('-1 month') %}
                                             {{ articleDate|ago }}
@@ -95,16 +98,16 @@
                                             {{ articleDate|date('d/m/Y') }}
                                         {% endif %}
                                     </span>
-                                    <div class="d-flex">
-                                        <span class="me-3">{{ article.comments|length }} <i class="fa fa-comment"></i></span>
-                                        <span class="me-3"><i class="fa fa-book-reader"></i> {{ article.readingTime }} min read</span>
-                                        <span class="me-3"><i class="fa fa-eye"></i> {{ article.views }}</span>
-                                        <span class="me-3"><i class="fa fa-thumbs-up"></i> {{ article.likesCount }}</span>
-                                        <span><i class="fa fa-thumbs-down"></i> {{ article.dislikesCount }}</span>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span class="me-2" title="{{ 'blog.comments'|trans }}"><i class="fa fa-comment" aria-hidden="true"></i> {{ article.comments|length }} <span class="visually-hidden">{{ 'blog.comments'|trans }}</span></span>
+                                        <span class="me-2" title="{{ 'blog.reading_time'|trans }}"><i class="fa fa-book-reader" aria-hidden="true"></i> {{ article.readingTime }} min <span class="visually-hidden">{{ 'blog.min_read'|trans }}</span></span>
+                                        <span class="me-2" title="{{ 'blog.views'|trans }}"><i class="fa fa-eye" aria-hidden="true"></i> {{ article.views }} <span class="visually-hidden">{{ 'blog.views'|trans }}</span></span>
+                                        <span class="me-2 text-success" title="{{ 'blog.likes'|trans }}"><i class="fa fa-thumbs-up" aria-hidden="true"></i> {{ article.likesCount }} <span class="visually-hidden">{{ 'blog.likes'|trans }}</span></span>
+                                        <span class="text-danger" title="{{ 'blog.dislikes'|trans }}"><i class="fa fa-thumbs-down" aria-hidden="true"></i> {{ article.dislikesCount }} <span class="visually-hidden">{{ 'blog.dislikes'|trans }}</span></span>
                                     </div>
                                 </div>
                                 <div class="search-icon">
-                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="btn btn-primary px-3">{{ 'common.read_more'|trans }}</a>
+                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="btn btn-primary px-3" aria-label="{{ 'common.read_more'|trans }} about {{ article.title|translate }}">{{ 'common.read_more'|trans }}</a>
                                 </div>
                             </div>
                             <div class="text-dark border p-4">
@@ -113,18 +116,18 @@
                                         {{ article.category.name|translate }}
                                     </a>
                                 {% endif %}
-                                <h4 class="mb-4">{{ article.title|translate }}</h4>
+                                <h2 class="h4 mb-4">{{ article.title|translate }}</h2>
                                 {% if article.writer %}
                                     <p class="text-muted small mb-2">
                                         {{ 'common.writer'|trans }}: 
-                                        <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-primary">
+                                        <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-primary" aria-label="{{ 'blog.filter_by'|trans }} {{ article.writer.firstname }} {{ article.writer.lastname }}">
                                             {{ article.writer.firstname }} {{ article.writer.lastname }}
                                         </a>
                                     </p>
                                 {% endif %}
                                 {% set excerptText = article.content|translate|striptags|decode_html_entities %}
                                 <p class="mb-4 article-excerpt">{{ excerptText|length > 120 ? excerptText|slice(0, 120) ~ '...' : excerptText }}</p>
-                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { slug: article.slug }) }}">{{ 'common.read_more'|trans }}</a>
+                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('blog_show', { slug: article.slug }) }}" aria-label="{{ 'common.read_more'|trans }} about {{ article.title|translate }}">{{ 'common.read_more'|trans }}</a>
                             </div>
                         </div>
                     </div>

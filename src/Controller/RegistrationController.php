@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
-use App\Service\TurnstileVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -19,7 +18,6 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     public function __construct(
-        private readonly TurnstileVerifier $turnstileVerifier
     ) {
     }
 
@@ -39,14 +37,6 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $token = $request->request->getString('cf-turnstile-response', '');
-            if (!$this->turnstileVerifier->verify($token)) {
-                $this->addFlash('error', 'Please complete the captcha verification.');
-                return $this->render('registration/register.html.twig', [
-                    'registrationForm' => $form,
-                ]);
-            }
-
             $user->setPassword(
                 $userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData())
             );

@@ -25,9 +25,26 @@
             </div>
             <div class="mb-3">
                 {{ form_label(form.image) }}
-                {{ form_widget(form.image) }}
+                <div class="input-group">
+                    {{ form_widget(form.image, { attr: { class: 'form-control js-image-url-field' } }) }}
+                    <button type="button" class="btn btn-outline-primary" id="js-search-unsplash-btn">
+                        <i class="fas fa-search me-1"></i> Search Unsplash
+                    </button>
+                </div>
                 {{ form_errors(form.image) }}
-                <small class="text-muted">Or paste an image URL if you prefer.</small>
+                <small class="text-muted">Or paste an image URL. Use the button to search Unsplash!</small>
+
+                {# Unsplash Search Panel #}
+                <div id="unsplash-search-panel" class="mt-3 p-3 border rounded bg-light" style="display: none;">
+                    <div class="d-flex gap-2 mb-3">
+                        <input type="text" id="unsplash-search-input" class="form-control" placeholder="Search photos (e.g. nature Tunisia)...">
+                        <button type="button" id="unsplash-search-submit" class="btn btn-primary">Search</button>
+                    </div>
+                    <div id="unsplash-results" class="row g-2" style="max-height: 300px; overflow-y: auto;">
+                        <p class="text-muted text-center py-3">Search for something to see results...</p>
+                    </div>
+                    <div id="unsplash-pagination" class="mt-2 d-flex justify-content-center gap-2"></div>
+                </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -73,6 +90,82 @@
           automatic_uploads: true,
           images_reuse_filename: true,
         });
+
+        // Unsplash Search JS
+        const searchBtn = document.querySelector('#js-search-unsplash-btn');
+        const searchPanel = document.querySelector('#unsplash-search-panel');
+        const searchInput = document.querySelector('#unsplash-search-input');
+        const searchSubmit = document.querySelector('#unsplash-search-submit');
+        const resultsContainer = document.querySelector('#unsplash-results');
+        const paginationContainer = document.querySelector('#unsplash-pagination');
+        const urlField = document.querySelector('.js-image-url-field');
+
+        if (searchBtn) {
+          searchBtn.addEventListener('click', () => {
+            searchPanel.style.display = searchPanel.style.display === 'none' ? 'block' : 'none';
+          });
+        }
+
+        const performSearch = (page = 1) => {
+          const query = searchInput.value.trim();
+          if (!query) return;
+
+          resultsContainer.innerHTML = '<div class="col-12 text-center py-3"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Searching Unsplash...</p></div>';
+          paginationContainer.innerHTML = '';
+
+          fetch(`{{ path('blog_api_unsplash_search') }}?q=${encodeURIComponent(query)}&page=${page}`)
+            .then(res => res.json())
+            .then(data => {
+              resultsContainer.innerHTML = '';
+              if (!data.results || data.results.length === 0) {
+                resultsContainer.innerHTML = '<p class="text-muted text-center py-3">No results found.</p>';
+                return;
+              }
+
+              data.results.forEach(photo => {
+                const col = document.createElement('div');
+                col.className = 'col-4 col-md-3';
+                col.innerHTML = `
+                  <div class="unsplash-item" style="cursor: pointer; position: relative;">
+                    <img src="${photo.urls.thumb}" class="img-fluid rounded border" alt="${photo.alt_description}" style="height: 100px; width: 100%; object-fit: cover;">
+                    <div class="small text-muted" style="font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">by ${photo.user.name}</div>
+                  </div>
+                `;
+                col.querySelector('.unsplash-item').addEventListener('click', () => {
+                  urlField.value = photo.urls.regular;
+                  searchPanel.style.display = 'none';
+                });
+                resultsContainer.appendChild(col);
+              });
+
+              // Pagination
+              if (data.total_pages > 1) {
+                const maxPages = Math.min(data.total_pages, 5);
+                for (let i = 1; i <= maxPages; i++) {
+                  const pBtn = document.createElement('button');
+                  pBtn.type = 'button';
+                  pBtn.className = `btn btn-sm ${i === page ? 'btn-primary' : 'btn-outline-primary'}`;
+                  pBtn.innerText = i;
+                  pBtn.addEventListener('click', () => performSearch(i));
+                  paginationContainer.appendChild(pBtn);
+                }
+              }
+            })
+            .catch(err => {
+              resultsContainer.innerHTML = '<p class="text-danger text-center py-3">Failed to fetch results.</p>';
+              console.error(err);
+            });
+        };
+
+        if (searchSubmit) {
+          searchSubmit.addEventListener('click', () => performSearch(1));
+          searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              performSearch(1);
+            }
+          });
+        }
 
         document.querySelector('.js-article-form')?.closest('form')?.addEventListener('submit', function() {
           if (window.tinymce) {
