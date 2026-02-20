@@ -144,6 +144,8 @@ form:
     seo_keywords_label: "Keywords (AI Generated if empty)"
     seo_keywords_help: "Comma-separated list of relevant keywords."
     seo_keywords_placeholder: "ecology, nature, environment"
+    generate_seo_btn: "Generate SEO with AI"
+    generating_seo: "Generating..."
 home:
     welcome: "Welcome to EcoSpot"
     hero_text: "Your place for environmental news, events, and action."

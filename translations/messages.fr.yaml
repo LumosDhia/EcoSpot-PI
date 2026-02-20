@@ -143,6 +143,8 @@ form:
     seo_keywords_label: "Mots-clés (Générés par IA si vide)"
     seo_keywords_help: "Liste de mots-clés pertinents séparés par des virgules."
     seo_keywords_placeholder: "écologie, nature, environnement"
+    generate_seo_btn: "Générer le SEO avec l'IA"
+    generating_seo: "Génération..."
 home:
     welcome: "Bienvenue sur EcoSpot"
     hero_text: "Votre espace pour les actualités, événements et actions environnementales."

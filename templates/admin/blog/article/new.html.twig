@@ -46,6 +46,7 @@
                     <div id="unsplash-pagination" class="mt-2 d-flex justify-content-center gap-2"></div>
                 </div>
             </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     {{ form_label(form.publishMode) }}
@@ -58,6 +59,36 @@
                     {{ form_errors(form.scheduledAt) }}
                 </div>
             </div>
+            
+            <div class="card mb-4 border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fs-6"><i class="fas fa-search me-2"></i> SEO Settings</h5>
+                    <button type="button" id="js-generate-seo-btn" class="btn btn-light btn-sm">
+                        <i class="fas fa-robot me-1"></i> {{ 'form.generate_seo_btn'|trans }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        {{ form_label(form.seoTitle) }}
+                        {{ form_widget(form.seoTitle) }}
+                        {{ form_errors(form.seoTitle) }}
+                        <small class="text-muted">{{ 'form.seo_title_help'|trans }}</small>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.seoDescription) }}
+                        {{ form_widget(form.seoDescription) }}
+                        {{ form_errors(form.seoDescription) }}
+                        <small class="text-muted">{{ 'form.seo_description_help'|trans }}</small>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.seoKeywords) }}
+                        {{ form_widget(form.seoKeywords) }}
+                        {{ form_errors(form.seoKeywords) }}
+                        <small class="text-muted">{{ 'form.seo_keywords_help'|trans }}</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="d-flex gap-2 js-article-form">
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Cancel</a>
@@ -172,6 +203,56 @@
             window.tinymce.triggerSave();
           }
         });
+
+        // AI SEO Generation JS
+        const generateSeoBtn = document.querySelector('#js-generate-seo-btn');
+        const seoTitleField = document.querySelector('#article_seoTitle');
+        const seoDescField = document.querySelector('#article_seoDescription');
+        const seoKeysField = document.querySelector('#article_seoKeywords');
+        const titleField = document.querySelector('#article_title');
+
+        if (generateSeoBtn) {
+            generateSeoBtn.addEventListener('click', function() {
+                const title = titleField.value.trim();
+                if (window.tinymce) window.tinymce.triggerSave();
+                const content = document.querySelector('.article-content-editor').value.trim();
+
+                if (!title || !content) {
+                    alert('Please enter a title and some content first.');
+                    return;
+                }
+
+                generateSeoBtn.disabled = true;
+                const originalHtml = generateSeoBtn.innerHTML;
+                generateSeoBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> {{ "form.generating_seo"|trans }}';
+
+                fetch('{{ path("blog_api_seo_generate") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, content })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        if (data.title) seoTitleField.value = data.title;
+                        if (data.description) seoDescField.value = data.description;
+                        if (data.keywords) seoKeysField.value = data.keywords;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Failed to generate SEO. Check console for details.');
+                })
+                .finally(() => {
+                    generateSeoBtn.disabled = false;
+                    generateSeoBtn.innerHTML = originalHtml;
+                });
+            });
+        }
       });
     </script>
 {% endblock %}
