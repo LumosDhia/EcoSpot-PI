@@ -99,6 +99,34 @@ class ArticleType extends AbstractType
                 'required' => false,
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
+            ])
+            ->add('seoTitle', TextType::class, [
+                'label' => 'form.seo_title_label',
+                'required' => false,
+                'help' => 'form.seo_title_help',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'form.seo_title_placeholder',
+                ],
+            ])
+            ->add('seoDescription', TextareaType::class, [
+                'label' => 'form.seo_description_label',
+                'required' => false,
+                'help' => 'form.seo_description_help',
+                'attr' => [
+                    'class' => 'form-control',
+                    'rows' => 3,
+                    'placeholder' => 'form.seo_description_placeholder',
+                ],
+            ])
+            ->add('seoKeywords', TextType::class, [
+                'label' => 'form.seo_keywords_label',
+                'required' => false,
+                'help' => 'form.seo_keywords_help',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'form.seo_keywords_placeholder',
+                ],
             ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {

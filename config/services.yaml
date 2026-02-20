@@ -41,6 +41,10 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    App\Service\AiSeoService:
+        arguments:
+            $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'
+
     App\Service\Blog\UnsplashImageService:
         arguments:
             $unsplashAccessKey: '%env(UNSPLASH_ACCESS_KEY)%'
