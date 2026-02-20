@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Service;
+
+use App\Entity\Blog\Article\Article;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Psr\Log\LoggerInterface;
+
+class AiSeoService
+{
+    private const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
+
+    public function __construct(
+        private HttpClientInterface $httpClient,
+        private LoggerInterface $logger,
+        private string $openRouterApiKey
+    ) {
+    }
+
+    /**
+     * Generates SEO elements for an article using OpenRouter (Free Models available).
+     * Returns an array with 'title', 'description', and 'keywords'.
+     */
+    public function generateSeoElements(Article $article): array
+    {
+        if (empty($this->openRouterApiKey) || str_contains($this->openRouterApiKey, 'your_')) {
+            $this->logger->warning('OpenRouter API key is not configured. Skipping AI SEO generation.');
+            return [];
+        }
+
+        $title = $article->getTitle();
+        $content = strip_tags($article->getContent());
+        $contentChunk = mb_substr($content, 0, 3000);
+
+        $prompt = <<<EOT
+You are an SEO expert. Analyze the following article title and content to generate SEO metadata.
+Reply ONLY with a JSON object containing carefully crafted:
+- "title": A catchy SEO title (max 60 chars).
+- "description": A compelling meta description (max 160 chars).
+- "keywords": A comma-separated list of 5-10 relevant keywords.
+
+Article Title: $title
+Article Content: $contentChunk
+EOT;
+
+        try {
+            $response = $this->httpClient->request('POST', self::API_URL, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->openRouterApiKey,
+                    'Content-Type' => 'application/json',
+                    'HTTP-Referer' => 'http://localhost:8000', // Required by OpenRouter
+                    'X-Title' => 'EcoSpot Project', // Optional identification
+                ],
+                'json' => [
+                    'model' => 'openrouter/auto', 
+                    'messages' => [
+                        [
+                            'role' => 'system',
+                            'content' => 'You are an SEO assistant. You must output ONLY valid JSON.'
+                        ],
+                        [
+                            'role' => 'user',
+                            'content' => $prompt
+                        ]
+                    ],
+                    'response_format' => ['type' => 'json_object']
+                ]
+            ]);
+
+            if ($response->getStatusCode() !== 200) {
+                $this->logger->error('OpenRouter API error: ' . $response->getStatusCode() . ' ' . $response->getContent(false));
+                return [];
+            }
+
+            $data = $response->toArray();
+            $textResponse = $data['choices'][0]['message']['content'] ?? '';
+            
+            if (empty($textResponse)) {
+                return [];
+            }
+
+            return json_decode($textResponse, true) ?? [];
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to generate SEO elements via OpenRouter: ' . $e->getMessage());
+            return [];
+        }
+    }
+}

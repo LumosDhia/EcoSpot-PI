@@ -90,6 +90,15 @@ class Article
     #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $reactions;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $seoTitle = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $seoDescription = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $seoKeywords = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -322,6 +331,39 @@ class Article
             }
         }
         return null;
+    }
+
+    public function getSeoTitle(): ?string
+    {
+        return $this->seoTitle;
+    }
+
+    public function setSeoTitle(?string $seoTitle): static
+    {
+        $this->seoTitle = $seoTitle;
+        return $this;
+    }
+
+    public function getSeoDescription(): ?string
+    {
+        return $this->seoDescription;
+    }
+
+    public function setSeoDescription(?string $seoDescription): static
+    {
+        $this->seoDescription = $seoDescription;
+        return $this;
+    }
+
+    public function getSeoKeywords(): ?string
+    {
+        return $this->seoKeywords;
+    }
+
+    public function setSeoKeywords(?string $seoKeywords): static
+    {
+        $this->seoKeywords = $seoKeywords;
+        return $this;
     }
 
     public function getSlug(): ?string
