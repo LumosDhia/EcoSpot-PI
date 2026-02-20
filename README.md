@@ -35,30 +35,7 @@ cd EcoSpot-PI
 composer install
 ```
 
-### 3. Configure Environment Variables
-
-Create a `.env.local` file by copying the default `.env`:
-
-```bash
-cp .env .env.local
-```
-
-Update your `.env.local` with your database credentials and API keys:
-
-```env
-# Example DATABASE_URL for MariaDB/MySQL
-DATABASE_URL="mysql://username:password@127.0.0.1:3306/ecospot?charset=utf8mb4"
-
-# API Keys (Get your own at the respective platforms)
-GUARDIAN_API_KEY=your_key_here
-UNSPLASH_ACCESS_KEY=your_key_here
-OPENROUTER_API_KEY=your_key_here
-TINYMCE_API_KEY=your_key_here
-TURNSTILE_SITE_KEY=your_key_here
-TURNSTILE_SECRET_KEY=your_key_here
-```
-
-### 4. Setup the Database
+### 3. Setup the Database
 
 Run the following commands to create the database and apply the schema:
 
@@ -70,7 +47,7 @@ php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate --no-interaction
 ```
 
-### 5. Create Initial Users
+### 4. Create Initial Users
 
 EcoSpot comes with a built-in command to create default Admin and NGO users for testing:
 
