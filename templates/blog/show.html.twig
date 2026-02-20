@@ -1,6 +1,20 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}{{ article.title|translate }} - EcoSpot Blog{% endblock %}
+{% block title %}{{ article.seoTitle ?: article.title|translate }} - EcoSpot Blog{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ article.seoDescription ?: (article.content|striptags|slice(0, 160)) }}">
+    {% if article.seoKeywords %}
+        <meta name="keywords" content="{{ article.seoKeywords }}">
+    {% endif %}
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ article.seoTitle ?: article.title|translate }}">
+    <meta property="og:description" content="{{ article.seoDescription ?: (article.content|striptags|slice(0, 160)) }}">
+    {% if article.image %}
+        <meta property="og:image" content="{{ article.image starts with 'http' ? article.image : absolute_url(asset(article.image)) }}">
+    {% endif %}
+{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
