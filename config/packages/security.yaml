@@ -27,4 +27,5 @@ security:
         - { path: ^/dashboard, roles: ROLE_USER }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/api/geocode, roles: PUBLIC_ACCESS }

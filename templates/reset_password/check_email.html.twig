@@ -1,0 +1,29 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Password Reset Email Sent{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body p-4 text-center">
+                        <div class="mb-4">
+                            <i class="bi bi-envelope-check text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h1 class="h4 mb-4">Email Sent</h1>
+                        <p>
+                            If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
+                            This link will expire in <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+                        </p>
+                        <p class="text-muted">If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
+                        
+                        <div class="mt-4">
+                            <a class="btn btn-primary" href="{{ path('app_login') }}">Return to Login</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

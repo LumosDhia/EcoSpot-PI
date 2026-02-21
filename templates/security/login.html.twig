@@ -28,6 +28,9 @@
                                     <label for="inputPassword" class="form-label">{{ 'security.password'|trans }}</label>
                                     <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
                                 </div>
+                                <div class="mb-3 text-end">
+                                    <a href="{{ path('app_forgot_password_request') }}">{{ 'security.forgot_password'|trans|default('Forgot password?') }}</a>
+                                </div>
                                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                                 <div class="d-grid gap-2">
                                     <button class="btn btn-primary" type="submit">{{ 'security.sign_in'|trans }}</button>
