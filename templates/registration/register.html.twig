@@ -15,12 +15,16 @@
                         {{ form_row(registrationForm.lastname) }}
                         {{ form_row(registrationForm.address) }}
                         {{ form_row(registrationForm.zipcode) }}
-                        {{ form_row(registrationForm.city) }}
+                        {{ form_label(registrationForm.city) }}
+                        <div class="input-group mb-2">
+                            <input type="text" id="city_search_input" class="form-control" placeholder="Search for your city (e.g. Paris)">
+                            <button class="btn btn-outline-secondary" type="button" id="city_search_button">Search</button>
+                        </div>
+                        <div id="city_suggestions" class="list-group mb-3 d-none" style="max-height: 200px; overflow-y: auto;"></div>
+                        {{ form_widget(registrationForm.city) }}
+                        {{ form_errors(registrationForm.city) }}
                         {{ form_row(registrationForm.plainPassword) }}
                         {{ form_row(registrationForm.agreeTerms) }}
-                        <div class="mb-3 d-flex justify-content-center">
-                            <div class="cf-turnstile" data-sitekey="{{ turnstile_site_key }}"></div>
-                        </div>
                         <div class="d-grid gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">{{ 'security.register'|trans }}</button>
                             <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">{{ 'security.already_have_account'|trans }}</a>
@@ -35,5 +39,71 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('city_search_input');
+            const searchButton = document.getElementById('city_search_button');
+            const suggestionsContainer = document.getElementById('city_suggestions');
+            const hiddenCityInput = document.getElementById('registration_form_city');
+
+            searchButton.addEventListener('click', function() {
+                const query = searchInput.value.trim();
+                if (query.length < 2) {
+                    suggestionsContainer.innerHTML = '<div class="list-group-item text-danger">Please enter at least 2 characters.</div>';
+                    suggestionsContainer.classList.remove('d-none');
+                    return;
+                }
+
+                suggestionsContainer.innerHTML = '<div class="list-group-item text-muted">Searching...</div>';
+                suggestionsContainer.classList.remove('d-none');
+
+                fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en&format=json`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsContainer.innerHTML = '';
+                        if (!data.results || data.results.length === 0) {
+                            suggestionsContainer.innerHTML = '<div class="list-group-item text-muted">No cities found. Try another search.</div>';
+                            return;
+                        }
+
+                        data.results.forEach(cityData => {
+                            const option = document.createElement('button');
+                            option.type = 'button';
+                            option.className = 'list-group-item list-group-item-action';
+                            
+                            // Format: City Name, Region, Country
+                            let displayName = cityData.name;
+                            if (cityData.admin1) {
+                                displayName += `, ${cityData.admin1}`;
+                            }
+                            if (cityData.country) {
+                                displayName += `, ${cityData.country}`;
+                            }
+
+                            option.textContent = displayName;
+                            
+                            option.addEventListener('click', function() {
+                                hiddenCityInput.value = cityData.name; // Use only the city name for the form value
+                                searchInput.value = displayName; // Show full display name in search box
+                                suggestionsContainer.classList.add('d-none');
+                            });
+                            
+                            suggestionsContainer.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching cities:', error);
+                        suggestionsContainer.innerHTML = '<div class="list-group-item text-danger">Error communicating with search service. Please try again.</div>';
+                    });
+            });
+
+            // Prevent form submission when pressing enter in the search input
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchButton.click();
+                }
+            });
+        });
+    </script>
 {% endblock %}

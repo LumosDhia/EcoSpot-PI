@@ -29,9 +29,26 @@
             </div>
             <div class="mb-3">
                 {{ form_label(form.image) }}
-                {{ form_widget(form.image) }}
+                <div class="input-group">
+                    {{ form_widget(form.image, { attr: { class: 'form-control js-image-url-field' } }) }}
+                    <button type="button" class="btn btn-outline-primary" id="js-search-unsplash-btn">
+                        <i class="fas fa-search me-1"></i> Search Unsplash
+                    </button>
+                </div>
                 {{ form_errors(form.image) }}
-                <small class="text-muted">Or paste an image URL.</small>
+                <small class="text-muted">Or paste an image URL. Use the button to search Unsplash!</small>
+
+                {# Unsplash Search Panel #}
+                <div id="unsplash-search-panel" class="mt-3 p-3 border rounded bg-light" style="display: none;">
+                    <div class="d-flex gap-2 mb-3">
+                        <input type="text" id="unsplash-search-input" class="form-control" placeholder="Search photos (e.g. nature Tunisia)...">
+                        <button type="button" id="unsplash-search-submit" class="btn btn-primary">Search</button>
+                    </div>
+                    <div id="unsplash-results" class="row g-2" style="max-height: 300px; overflow-y: auto;">
+                        <p class="text-muted text-center py-3">Search for something to see results...</p>
+                    </div>
+                    <div id="unsplash-pagination" class="mt-2 d-flex justify-content-center gap-2"></div>
+                </div>
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
@@ -45,6 +62,36 @@
                     {{ form_errors(form.scheduledAt) }}
                 </div>
             </div>
+            
+            <div class="card mb-4 border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 fs-6"><i class="fas fa-search me-2"></i> SEO Settings</h5>
+                    <button type="button" id="js-generate-seo-btn" class="btn btn-light btn-sm">
+                        <i class="fas fa-robot me-1"></i> {{ 'form.generate_seo_btn'|trans }}
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        {{ form_label(form.seoTitle) }}
+                        {{ form_widget(form.seoTitle) }}
+                        {{ form_errors(form.seoTitle) }}
+                        <small class="text-muted">{{ 'form.seo_title_help'|trans }}</small>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.seoDescription) }}
+                        {{ form_widget(form.seoDescription) }}
+                        {{ form_errors(form.seoDescription) }}
+                        <small class="text-muted">{{ 'form.seo_description_help'|trans }}</small>
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(form.seoKeywords) }}
+                        {{ form_widget(form.seoKeywords) }}
+                        {{ form_errors(form.seoKeywords) }}
+                        <small class="text-muted">{{ 'form.seo_keywords_help'|trans }}</small>
+                    </div>
+                </div>
+            </div>
+
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Save</button>
                 <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Cancel</a>
@@ -79,9 +126,135 @@
           images_reuse_filename: true,
         });
 
+        // Unsplash Search JS
+        const searchBtn = document.querySelector('#js-search-unsplash-btn');
+        const searchPanel = document.querySelector('#unsplash-search-panel');
+        const searchInput = document.querySelector('#unsplash-search-input');
+        const searchSubmit = document.querySelector('#unsplash-search-submit');
+        const resultsContainer = document.querySelector('#unsplash-results');
+        const paginationContainer = document.querySelector('#unsplash-pagination');
+        const urlField = document.querySelector('.js-image-url-field');
+
+        if (searchBtn) {
+          searchBtn.addEventListener('click', () => {
+            searchPanel.style.display = searchPanel.style.display === 'none' ? 'block' : 'none';
+          });
+        }
+
+        const performSearch = (page = 1) => {
+          const query = searchInput.value.trim();
+          if (!query) return;
+
+          resultsContainer.innerHTML = '<div class="col-12 text-center py-3"><div class="spinner-border text-primary" role="status"></div><p class="mt-2">Searching Unsplash...</p></div>';
+          paginationContainer.innerHTML = '';
+
+          fetch(`{{ path('blog_api_unsplash_search') }}?q=${encodeURIComponent(query)}&page=${page}`)
+            .then(res => res.json())
+            .then(data => {
+              resultsContainer.innerHTML = '';
+              if (!data.results || data.results.length === 0) {
+                resultsContainer.innerHTML = '<p class="text-muted text-center py-3">No results found.</p>';
+                return;
+              }
+
+              data.results.forEach(photo => {
+                const col = document.createElement('div');
+                col.className = 'col-4 col-md-3';
+                col.innerHTML = `
+                  <div class="unsplash-item" style="cursor: pointer; position: relative;">
+                    <img src="${photo.urls.thumb}" class="img-fluid rounded border" alt="${photo.alt_description}" style="height: 100px; width: 100%; object-fit: cover;">
+                    <div class="small text-muted" style="font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">by ${photo.user.name}</div>
+                  </div>
+                `;
+                col.querySelector('.unsplash-item').addEventListener('click', () => {
+                  urlField.value = photo.urls.regular;
+                  searchPanel.style.display = 'none';
+                });
+                resultsContainer.appendChild(col);
+              });
+
+              // Pagination
+              if (data.total_pages > 1) {
+                const maxPages = Math.min(data.total_pages, 5);
+                for (let i = 1; i <= maxPages; i++) {
+                  const pBtn = document.createElement('button');
+                  pBtn.type = 'button';
+                  pBtn.className = `btn btn-sm ${i === page ? 'btn-primary' : 'btn-outline-primary'}`;
+                  pBtn.innerText = i;
+                  pBtn.addEventListener('click', () => performSearch(i));
+                  paginationContainer.appendChild(pBtn);
+                }
+              }
+            })
+            .catch(err => {
+              resultsContainer.innerHTML = '<p class="text-danger text-center py-3">Failed to fetch results.</p>';
+              console.error(err);
+            });
+        };
+
+        if (searchSubmit) {
+          searchSubmit.addEventListener('click', () => performSearch(1));
+          searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              performSearch(1);
+            }
+          });
+        }
+
         document.querySelector('form')?.addEventListener('submit', function() {
           if (window.tinymce) window.tinymce.triggerSave();
         });
+
+        // AI SEO Generation JS
+        const generateSeoBtn = document.querySelector('#js-generate-seo-btn');
+        const seoTitleField = document.querySelector('#article_seoTitle');
+        const seoDescField = document.querySelector('#article_seoDescription');
+        const seoKeysField = document.querySelector('#article_seoKeywords');
+        const titleField = document.querySelector('#article_title');
+
+        if (generateSeoBtn) {
+            generateSeoBtn.addEventListener('click', function() {
+                const title = titleField.value.trim();
+                if (window.tinymce) window.tinymce.triggerSave();
+                const content = document.querySelector('.article-content-editor').value.trim();
+
+                if (!title || !content) {
+                    alert('Please enter a title and some content first.');
+                    return;
+                }
+
+                generateSeoBtn.disabled = true;
+                const originalHtml = generateSeoBtn.innerHTML;
+                generateSeoBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> {{ "form.generating_seo"|trans }}';
+
+                fetch('{{ path("blog_api_seo_generate") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ title, content })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                    } else {
+                        if (data.title) seoTitleField.value = data.title;
+                        if (data.description) seoDescField.value = data.description;
+                        if (data.keywords) seoKeysField.value = data.keywords;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('Failed to generate SEO. Check console for details.');
+                })
+                .finally(() => {
+                    generateSeoBtn.disabled = false;
+                    generateSeoBtn.innerHTML = originalHtml;
+                });
+            });
+        }
       });
     </script>
 {% endblock %}

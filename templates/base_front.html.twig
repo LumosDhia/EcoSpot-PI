@@ -5,6 +5,10 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}EcoSpot - Blog{% endblock %}</title>
+        {% block meta %}
+            <meta name="description" content="EcoSpot - Leading the way in ecological conservation and community awareness.">
+            <meta name="keywords" content="ecology, environment, conservation, EcoSpot">
+        {% endblock %}
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>🌿</text></svg>">
 
         <!-- Google Web Fonts (Environs) -->
@@ -67,6 +71,25 @@
             .lang-dropdown .dropdown-item { font-size: 0.85rem; padding: 0.25rem 1rem; color: #333; }
             .lang-dropdown .dropdown-item:hover { background-color: var(--eco-cream); color: var(--eco-forest); }
             .lang-dropdown .dropdown-item.active { background-color: var(--eco-forest); color: white; }
+
+            /* Accessibility */
+            .skip-link {
+                position: absolute;
+                top: -100px;
+                left: 0;
+                background: var(--eco-forest);
+                color: white;
+                padding: 10px 20px;
+                z-index: 10001;
+                text-decoration: none;
+                transition: top 0.2s;
+                font-weight: bold;
+                border-radius: 0 0 5px 0;
+            }
+            .skip-link:focus {
+                top: 0;
+                outline: 3px solid var(--eco-mint);
+            }
 
             [dir="rtl"] .ms-auto { margin-right: auto !important; margin-left: 0 !important; }
             [dir="rtl"] .me-4 { margin-left: 1.5rem !important; margin-right: 0 !important; }
@@ -151,7 +174,8 @@
         </style>
         {% block stylesheets %}{% endblock %}
     </head>
-    <body>
+    <body id="top">
+        <a href="#main-content" class="skip-link">{{ 'common.skip_to_content'|trans|default('Skip to main content') }}</a>
         <!-- Spinner -->
         <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center" style="z-index: 99999;">
             <div class="spinner-grow text-primary" role="status"></div>
@@ -223,7 +247,7 @@
 
         {% block breadcrumb %}{% endblock %}
 
-        <main>
+        <main id="main-content">
             {% for label, messages in app.flashes %}
                 {% for message in messages %}
                     <div class="container py-2">
@@ -280,6 +304,9 @@
 
         <!-- Back to Top -->
         <a href="#" class="btn btn-primary btn-primary-outline-0 btn-md-square back-to-top"><i class="fa fa-arrow-up"></i></a>
+
+        <!-- AI Voice Assistant (ResponsiveVoice) -->
+        <script src="https://code.responsivevoice.org/responsivevoice.js?key=U7UGHPF8"></script>
 
         <!-- JavaScript Libraries (Environs) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>

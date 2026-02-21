@@ -22,12 +22,12 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @return Article[]
      */
-    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): array
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): array
     {
-        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId)->getResult();
+        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId, $writerId)->getResult();
     }
 
-    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null): \Doctrine\ORM\Query
+    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
@@ -51,6 +51,11 @@ class ArticleRepository extends ServiceEntityRepository
         if ($tagId !== null) {
             $qb->andWhere('t.id = :tagId')
                 ->setParameter('tagId', $tagId);
+        }
+
+        if ($writerId !== null) {
+            $qb->andWhere('w.id = :writerId')
+                ->setParameter('writerId', $writerId);
         }
 
         return $qb->getQuery();

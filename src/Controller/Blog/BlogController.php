@@ -23,6 +23,7 @@ class BlogController extends AbstractController
         private readonly \App\Repository\Blog\Article\CategoryRepository $categoryRepository,
         private readonly \App\Repository\Blog\Article\TagRepository $tagRepository,
         private readonly \App\Repository\Blog\Article\ArticleReactionRepository $reactionRepository,
+        private readonly \App\Repository\UserRepository $userRepository,
         private readonly \Knp\Component\Pager\PaginatorInterface $paginator
     ) {
     }
@@ -38,12 +39,14 @@ class BlogController extends AbstractController
 
         $categoryId = $request->query->get('category') ? (int) $request->query->get('category') : null;
         $tagId = $request->query->get('tag') ? (int) $request->query->get('tag') : null;
+        $writerId = $request->query->get('writer') ? (int) $request->query->get('writer') : null;
 
         $query = $this->articleRepository->getQueryPublishedBySearchAndOrder(
             $search === '' ? null : $search,
             $order,
             $categoryId,
-            $tagId
+            $tagId,
+            $writerId
         );
 
         $pagination = $this->paginator->paginate(
@@ -54,6 +57,7 @@ class BlogController extends AbstractController
 
         $selectedCategory = $categoryId ? $this->categoryRepository->find($categoryId) : null;
         $selectedTag = $tagId ? $this->tagRepository->find($tagId) : null;
+        $selectedWriter = $writerId ? $this->userRepository->find($writerId) : null;
 
         return $this->render('blog/index.html.twig', [
             'pagination' => $pagination,
@@ -61,6 +65,7 @@ class BlogController extends AbstractController
             'order' => $order,
             'selectedCategory' => $selectedCategory,
             'selectedTag' => $selectedTag,
+            'selectedWriter' => $selectedWriter,
         ]);
     }
 

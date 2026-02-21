@@ -21,10 +21,6 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    App\Service\TurnstileVerifier:
-        arguments:
-            $secretKey: '%env(TURNSTILE_SECRET_KEY)%'
-
     App\Controller\Blog\Article\ArticleImageUploadController:
         arguments:
             $projectDir: '%kernel.project_dir%'
@@ -44,6 +40,14 @@ services:
     App\Controller\Ngo\NgoDashboardController:
         arguments:
             $projectDir: '%kernel.project_dir%'
+
+    App\Service\AiSeoService:
+        arguments:
+            $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'
+
+    App\Service\Blog\UnsplashImageService:
+        arguments:
+            $unsplashAccessKey: '%env(UNSPLASH_ACCESS_KEY)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

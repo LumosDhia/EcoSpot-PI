@@ -1,6 +1,20 @@
 {% extends 'base_front.html.twig' %}
 
-{% block title %}{{ article.title|translate }} - EcoSpot Blog{% endblock %}
+{% block title %}{{ article.seoTitle ?: article.title|translate }} - EcoSpot Blog{% endblock %}
+
+{% block meta %}
+    <meta name="description" content="{{ article.seoDescription ?: (article.content|striptags|slice(0, 160)) }}">
+    {% if article.seoKeywords %}
+        <meta name="keywords" content="{{ article.seoKeywords }}">
+    {% endif %}
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{ article.seoTitle ?: article.title|translate }}">
+    <meta property="og:description" content="{{ article.seoDescription ?: (article.content|striptags|slice(0, 160)) }}">
+    {% if article.image %}
+        <meta property="og:image" content="{{ article.image starts with 'http' ? article.image : absolute_url(asset(article.image)) }}">
+    {% endif %}
+{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -12,19 +26,38 @@
         .article-content.prose h2 { margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.25rem; }
         .article-content.prose table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
         .article-content.prose table td, .article-content.prose table th { border: 1px solid #dee2e6; padding: 0.5rem; }
+
+        /* AI Reader Styling */
+        .ai-icon-container { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 50%; border: 2px solid var(--eco-forest); }
+        .ai-pulse-ring { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--eco-forest); opacity: 0; }
+        .ai-reading .ai-pulse-ring { animation: ai-pulse 2s infinite; }
+        @keyframes ai-pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
     </style>
 {% endblock %}
 
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">{{ article.title|translate }}</h3>
-            <p class="fs-5 text-white mb-4">{{ 'blog.published_on'|trans }} {{ (article.publishedAt ?? article.createdAt)|date('d/m/Y H:i') }}</p>
-            <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
-                <li class="breadcrumb-item active text-white">{{ 'blog.article_breadcrumb'|trans }}</li>
-            </ol>
+            <h1 class="text-white display-3 mb-4">{{ article.title|translate }}</h1>
+            <p class="fs-5 text-white mb-4">
+                {{ 'blog.published_on'|trans }} 
+                {% set articleDate = article.publishedAt ?? article.createdAt %}
+                {% if articleDate > date('-1 month') %}
+                    {{ articleDate|ago }}
+                {% else %}
+                    {{ articleDate|date('d/m/Y H:i') }}
+                {% endif %}
+            </p>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb justify-content-center mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('blog_index') }}">{{ 'nav.blog'|trans }}</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">{{ article.title|translate }}</li>
+                </ol>
+            </nav>
         </div>
     </div>
 {% endblock %}
@@ -46,9 +79,9 @@
                                     {{ article.category.name|translate }}
                                 </a>
                             {% endif %}
-                            <h1 class="mb-4">{{ article.title|translate }}</h1>
+                            <h1 class="mb-4 h2">{{ article.title|translate }}</h1>
                             {% if article.tags|length > 0 %}
-                                <div class="mb-3">
+                                <div class="mb-3" role="group" aria-label="Article tags">
                                     {% for tag in article.tags %}
                                         <a href="{{ path('blog_index', { 'tag': tag.id }) }}" class="badge border border-primary text-primary small me-1 text-decoration-none">
                                             #{{ tag.name|translate }}
@@ -57,39 +90,85 @@
                                 </div>
                             {% endif %}
                             <p class="text-muted small mb-4">
-                                <i class="fa fa-clock me-2"></i>{{ article.publishedAt ? article.publishedAt|date('d/m/Y H:i') : article.createdAt|date('d/m/Y H:i') }}
-                                <span class="ms-3"><i class="fa fa-book-reader me-1"></i>{{ 'blog.min_read'|trans({'%count%': article.readingTime}) }}</span>
-                                <span class="ms-3"><i class="fa fa-eye me-1"></i>{{ 'blog.views'|trans({'%count%': article.views}) }}</span>
-                                <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1"></i>{{ article.likesCount }}</span>
-                                <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1"></i>{{ article.dislikesCount }}</span>
+                                <i class="fa fa-clock me-2" aria-hidden="true"></i>
+                                {% set articleDate = article.publishedAt ?? article.createdAt %}
+                                {% if articleDate > date('-1 month') %}
+                                    {{ articleDate|ago }}
+                                {% else %}
+                                    {{ articleDate|date('d/m/Y H:i') }}
+                                {% endif %}
+                                <span class="ms-3"><i class="fa fa-book-reader me-1" aria-hidden="true"></i>{{ 'blog.min_read'|trans({'%count%': article.readingTime}) }}</span>
+                                <span class="ms-3"><i class="fa fa-eye me-1" aria-hidden="true"></i>{{ 'blog.views'|trans({'%count%': article.views}) }}</span>
+                                <span class="ms-3" id="article-likes-count"><i class="fa fa-thumbs-up me-1" aria-hidden="true"></i>{{ article.likesCount }}</span>
+                                <span class="ms-3" id="article-dislikes-count"><i class="fa fa-thumbs-down me-1" aria-hidden="true"></i>{{ article.dislikesCount }}</span>
                                 {% if article.writer %}
-                                    <span class="ms-3"><i class="fas fa-user-edit me-1"></i>{{ 'common.writer'|trans }}: {{ article.writer.firstname }} {{ article.writer.lastname }}</span>
+                                    <span class="ms-3">
+                                        <i class="fas fa-user-edit me-1" aria-hidden="true"></i>
+                                        {{ 'common.writer'|trans }}: 
+                                        <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-primary">
+                                            {{ article.writer.firstname }} {{ article.writer.lastname }}
+                                        </a>
+                                    </span>
                                 {% endif %}
                             </p>
-                            <div class="article-content prose mb-4">{{ article.content|translate|raw }}</div>
+
+                            {# AI Reader Panel #}
+                            <div class="ai-reader-panel mb-4 p-3 border rounded-3 bg-light shadow-sm d-flex flex-wrap align-items-center justify-content-between" style="border-left: 5px solid var(--eco-forest) !important;">
+                                <div class="d-flex align-items-center mb-2 mb-sm-0">
+                                    <div class="ai-icon-container me-3 position-relative">
+                                        <div class="ai-pulse-ring"></div>
+                                        <i class="fas fa-robot text-primary fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <span class="fw-bold d-block text-dark">{{ 'blog.ai_voice'|trans|default('EcoSpot AI Assistant') }}</span>
+                                        <small class="text-muted" id="ai-status">{{ 'blog.ai_ready'|trans|default('Ready to read aloud') }}</small>
+                                    </div>
+                                </div>
+                                <div class="btn-group shadow-sm">
+                                    <button id="ai-play" class="btn btn-primary" title="{{ 'blog.ai_play'|trans|default('Play (Alt+P)') }}" aria-label="{{ 'blog.ai_play_label'|trans|default('Start AI Reading') }}">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button id="ai-pause" class="btn btn-outline-primary" title="{{ 'blog.ai_pause_btn'|trans|default('Pause') }}" aria-label="{{ 'blog.ai_pause_label'|trans|default('Pause AI Reading') }}" disabled>
+                                        <i class="fas fa-pause"></i>
+                                    </button>
+                                    <button id="ai-stop" class="btn btn-outline-danger" title="{{ 'blog.ai_stop_btn'|trans|default('Stop (Alt+S)') }}" aria-label="{{ 'blog.ai_stop_label'|trans|default('Stop AI Reading') }}">
+                                        <i class="fas fa-stop"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="article-content prose mb-4" id="speakable-content">{{ article.content|translate|raw }}</div>
 
                             {# Reactions section #}
                             <div class="border-top pt-4 mt-4 d-flex align-items-center gap-3">
                                 <span class="fw-bold me-2">{{ 'blog.rate_article'|trans }}:</span>
                                 {% set userReaction = app.user ? article.userReaction(app.user) : null %}
                                 <button class="btn {{ userReaction and userReaction.type == 'like' ? 'btn-primary' : 'btn-outline-primary' }} reaction-btn" 
-                                        data-type="like" data-url="{{ path('blog_react', {slug: article.slug, type: 'like'}) }}">
-                                    <i class="fa fa-thumbs-up me-1"></i> {{ 'blog.like'|trans }}
+                                        data-type="like" data-url="{{ path('blog_react', {slug: article.slug, type: 'like'}) }}"
+                                        aria-label="{{ 'blog.like'|trans }}">
+                                    <i class="fa fa-thumbs-up me-1" aria-hidden="true"></i> {{ 'blog.like'|trans }}
                                 </button>
                                 <button class="btn {{ userReaction and userReaction.type == 'dislike' ? 'btn-danger' : 'btn-outline-danger' }} reaction-btn" 
-                                        data-type="dislike" data-url="{{ path('blog_react', {slug: article.slug, type: 'dislike'}) }}">
-                                    <i class="fa fa-thumbs-down me-1"></i> {{ 'blog.dislike'|trans }}
+                                        data-type="dislike" data-url="{{ path('blog_react', {slug: article.slug, type: 'dislike'}) }}"
+                                        aria-label="{{ 'blog.dislike'|trans }}">
+                                    <i class="fa fa-thumbs-down me-1" aria-hidden="true"></i> {{ 'blog.dislike'|trans }}
                                 </button>
                             </div>
                         </div>
                     </article>
 
-                    <section class="border p-4 p-md-5 mb-5">
-                        <h4 class="mb-4">{{ 'blog.comments'|trans }} ({{ comments|length }})</h4>
+                    <section class="border p-4 p-md-5 mb-5" aria-labelledby="comments-title">
+                        <h2 id="comments-title" class="h4 mb-4">{{ 'blog.comments'|trans }} ({{ comments|length }})</h2>
                         {% for comment in comments %}
                             <div class="border-bottom pb-3 mb-3 {% if not loop.last %}{% else %}border-0 mb-0{% endif %}">
                                 <strong class="text-primary">{{ comment.author }}</strong>
-                                <span class="text-muted small"> — {{ comment.createdAt|date('d/m/Y H:i') }}</span>
+                                <span class="text-muted small"> — 
+                                    {% if comment.createdAt > date('-1 month') %}
+                                        {{ comment.createdAt|ago }}
+                                    {% else %}
+                                        {{ comment.createdAt|date('d/m/Y H:i') }}
+                                    {% endif %}
+                                </span>
                                 <p class="mb-0 mt-1">{{ comment.content|translate|nl2br }}</p>
                             </div>
                         {% else %}
@@ -97,8 +176,8 @@
                         {% endfor %}
                     </section>
 
-                    <section class="border p-4 p-md-5">
-                        <h4 class="mb-4">{{ 'blog.leave_comment'|trans }}</h4>
+                    <section class="border p-4 p-md-5" aria-labelledby="leave-comment-title">
+                        <h2 id="leave-comment-title" class="h4 mb-4">{{ 'blog.leave_comment'|trans }}</h2>
                         {% if app.user %}
                             {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
                             <div class="mb-3">
@@ -113,7 +192,7 @@
                     </section>
 
                     <p class="mt-4">
-                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary"><i class="fas fa-arrow-left me-2"></i>{{ 'blog.back_to_blog'|trans }}</a>
+                        <a href="{{ path('blog_index') }}" class="btn btn-outline-primary" aria-label="{{ 'blog.back_to_blog'|trans }}"><i class="fas fa-arrow-left me-2" aria-hidden="true"></i>{{ 'blog.back_to_blog'|trans }}</a>
                     </p>
                 </div>
             </div>
@@ -122,17 +201,15 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // --- Reaction Logic ---
         const reactionBtns = document.querySelectorAll('.reaction-btn');
         reactionBtns.forEach(btn => {
             btn.addEventListener('click', function() {
                 const url = this.getAttribute('data-url');
-                const type = this.getAttribute('data-type');
                 
                 fetch(url, {
                     method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 })
                 .then(response => {
                     if (response.status === 401) {
@@ -143,8 +220,8 @@
                 })
                 .then(data => {
                     if (data) {
-                        document.getElementById('article-likes-count').innerHTML = '<i class="fa fa-thumbs-up me-1"></i>' + data.likes;
-                        document.getElementById('article-dislikes-count').innerHTML = '<i class="fa fa-thumbs-down me-1"></i>' + data.dislikes;
+                        document.getElementById('article-likes-count').innerHTML = '<i class="fa fa-thumbs-up me-1" aria-hidden="true"></i>' + data.likes;
+                        document.getElementById('article-dislikes-count').innerHTML = '<i class="fa fa-thumbs-down me-1" aria-hidden="true"></i>' + data.dislikes;
                         
                         reactionBtns.forEach(b => {
                             const bType = b.getAttribute('data-type');
@@ -157,6 +234,93 @@
                     }
                 });
             });
+        });
+        
+        // --- AI Voice (ResponsiveVoice) Logic ---
+        const btnPlay = document.getElementById('ai-play');
+        const btnPause = document.getElementById('ai-pause');
+        const btnStop = document.getElementById('ai-stop');
+        const statusText = document.getElementById('ai-status');
+        const aiPanel = document.querySelector('.ai-reader-panel');
+        const speakableContent = document.getElementById('speakable-content');
+
+        const locale = document.documentElement.lang || 'en';
+        let voice = "UK English Female";
+        if (locale === 'fr') voice = "French Female";
+        if (locale === 'ar') voice = "Arabic Female";
+
+        // Keyboard Shortcuts (Alt + P = Play, Alt + S = Stop)
+        window.addEventListener('keydown', function(e) {
+            if (e.altKey && e.key.toLowerCase() === 'p') {
+                e.preventDefault();
+                btnPlay.click();
+            }
+            if (e.altKey && e.key.toLowerCase() === 's') {
+                e.preventDefault();
+                btnStop.click();
+            }
+        });
+
+        // Aria-live announcement for arrival
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.classList.add('visually-hidden');
+        document.body.appendChild(announcement);
+        
+        setTimeout(() => {
+            announcement.innerText = "{{ 'blog.ai_instruction'|trans|default('Press Alt plus P to have the AI read this article aloud.') }}";
+        }, 1000);
+
+        let isPaused = false;
+        const transReading = "{{ 'blog.ai_reading'|trans|escape('js') }}";
+        const transFinished = "{{ 'blog.ai_finished'|trans|escape('js') }}";
+        const transPaused = "{{ 'blog.ai_paused'|trans|escape('js') }}";
+        const transReady = "{{ 'blog.ai_ready'|trans|escape('js') }}";
+
+        btnPlay.addEventListener('click', function() {
+            const text = speakableContent.innerText;
+            
+            if (isPaused) {
+                responsiveVoice.resume();
+                isPaused = false;
+                statusText.innerText = transReading;
+                aiPanel.classList.add('ai-reading');
+            } else {
+                responsiveVoice.speak(text, voice, {
+                    onstart: function() {
+                        statusText.innerText = transReading;
+                        aiPanel.classList.add('ai-reading');
+                        btnPlay.disabled = true;
+                        btnPause.disabled = false;
+                    },
+                    onend: function() {
+                        statusText.innerText = transFinished;
+                        aiPanel.classList.remove('ai-reading');
+                        btnPlay.disabled = false;
+                        btnPause.disabled = true;
+                        isPaused = false;
+                    }
+                });
+            }
+            btnPlay.disabled = true;
+            btnPause.disabled = false;
+        });
+
+        btnPause.addEventListener('click', function() {
+            responsiveVoice.pause();
+            isPaused = true;
+            statusText.innerText = transPaused;
+            btnPlay.disabled = false;
+            btnPause.disabled = true;
+        });
+
+        btnStop.addEventListener('click', function() {
+            responsiveVoice.cancel();
+            isPaused = false;
+            statusText.innerText = transReady;
+            aiPanel.classList.remove('ai-reading');
+            btnPlay.disabled = false;
+            btnPause.disabled = true;
         });
     });
     </script>
