@@ -30,4 +30,14 @@ enum TicketStatus: string
             self::PUBLISHED => 'success',
         };
     }
+
+    public function getIcon(): string
+    {
+        return match ($this) {
+            self::PENDING => 'fas fa-hourglass-half',
+            self::SENT_BACK => 'fas fa-undo-alt',
+            self::REFUSED => 'fas fa-times-circle',
+            self::PUBLISHED => 'fas fa-check-circle',
+        };
+    }
 }

@@ -45,7 +45,19 @@
             .copyright { background: var(--eco-dark-green) !important; }
             .back-to-top { background-color: var(--eco-forest) !important; border-color: var(--eco-forest) !important; }
             .back-to-top:hover { background-color: var(--eco-leaf) !important; }
-            body { background-color: #f0f7f4; }
+            body {
+                background-color: #f0f7f4;
+                padding-top: 135px; /* Account for fixed topbar and navbar */
+            }
+            
+            @media (max-width: 1199.98px) {
+                body { padding-top: 100px; }
+            }
+            
+            @media (max-width: 767.98px) {
+                body { padding-top: 75px; } /* Topbar is hidden on mobile */
+            }
+
             .form-error-list, .invalid-feedback { color: #b02a37; font-size: 0.875rem; margin-top: 0.25rem; }
             .form-error-list { list-style: none; padding-left: 0; }
             
@@ -70,6 +82,72 @@
             [dir="rtl"] .text-md-start { text-align: right !important; }
             [dir="rtl"] .float-end { float: left !important; }
             [dir="rtl"] .navbar-brand { margin-left: 1rem; margin-right: 0; }
+
+            /* Shiny Glass Ticket Link Effect */
+            .glass-ticket-link {
+                display: inline-flex;
+                align-items: center;
+                background: linear-gradient(135deg, rgba(82, 183, 136, 0.15) 0%, rgba(45, 106, 79, 0.05) 100%);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                border: 1px solid rgba(82, 183, 136, 0.4);
+                border-radius: 25px;
+                padding: 0.4rem 1.2rem !important;
+                margin: 0.2rem 0.5rem;
+                color: var(--eco-forest) !important;
+                font-weight: 700;
+                box-shadow: 0 4px 15px rgba(45, 106, 79, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .glass-ticket-link::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 50%;
+                height: 100%;
+                background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0) 100%);
+                transform: skewX(-25deg);
+                animation: slideShine 4s infinite;
+            }
+
+            @keyframes slideShine {
+                0% { left: -100%; }
+                20% { left: 200%; }
+                100% { left: 200%; }
+            }
+
+            .glass-ticket-link i {
+                color: var(--eco-forest);
+                transition: transform 0.3s ease;
+            }
+
+            .glass-ticket-link:hover {
+                background: linear-gradient(135deg, rgba(82, 183, 136, 0.3) 0%, rgba(45, 106, 79, 0.15) 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(45, 106, 79, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+                color: var(--eco-dark-green) !important;
+                border-color: rgba(82, 183, 136, 0.8);
+            }
+
+            .glass-ticket-link:hover i {
+                transform: scale(1.15) rotate(-10deg);
+                color: var(--eco-dark-green);
+            }
+
+            .glass-ticket-link.active {
+                background: linear-gradient(135deg, var(--eco-forest) 0%, var(--eco-dark-green) 100%);
+                color: white !important;
+                border-color: var(--eco-dark-green);
+                box-shadow: 0 6px 20px rgba(27, 67, 50, 0.4);
+            }
+
+            .glass-ticket-link.active i {
+                color: white;
+            }
         </style>
         {% block stylesheets %}{% endblock %}
     </head>
@@ -130,7 +208,9 @@
                         <div class="navbar-nav ms-auto">
                             <a href="{{ path('home') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">{{ 'nav.home'|trans }}</a>
                             <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and 'events_' in app.request.attributes.get('_route') ? 'active' : '' }}">{{ 'nav.events'|trans }}</a>
-                            <a href="{{ path('public_tickets') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">{{ 'nav.tickets'|trans }}</a>
+                            <a href="{{ path('public_tickets') }}" class="nav-item nav-link glass-ticket-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">
+                                <i class="fas fa-ticket-alt me-2" style="font-size: 1.1em; line-height: 1;"></i>{{ 'nav.tickets'|trans }}
+                            </a>
                             <a href="{{ path('public_achievements') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'public_achievements' ? 'active' : '' }}">{{ 'nav.achievements'|trans }}</a>
                         </div>
                         <div class="d-flex align-items-center flex-nowrap pt-xl-0" style="margin-left: 15px;">

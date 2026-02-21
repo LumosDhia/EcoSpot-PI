@@ -74,8 +74,8 @@ class TicketController extends AbstractController
             return $this->redirectToRoute('ticket_my_list');
         }
 
-        if ($ticket->getStatus() !== TicketStatus::SENT_BACK) {
-            $this->addFlash('error', 'This ticket can only be edited when sent back for modification.');
+        if (!in_array($ticket->getStatus(), [TicketStatus::PENDING, TicketStatus::SENT_BACK], true)) {
+            $this->addFlash('error', 'This ticket can only be edited when pending or sent back for modification.');
             return $this->redirectToRoute('ticket_my_list');
         }
 
@@ -141,5 +141,26 @@ class TicketController extends AbstractController
         } catch (\Symfony\Component\HttpFoundation\File\Exception\FileException $e) {
             // leave ticket.image unchanged
         }
+    }
+
+    #[Route('/{id}/delete', name: 'ticket_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(Request $request, Ticket $ticket): Response
+    {
+        if ($ticket->getUser() !== $this->getUser()) {
+            $this->addFlash('error', 'You cannot delete this ticket.');
+            return $this->redirectToRoute('ticket_my_list');
+        }
+
+        if (!in_array($ticket->getStatus(), [TicketStatus::PENDING, TicketStatus::SENT_BACK], true)) {
+            $this->addFlash('error', 'You can only delete tickets that are pending or sent back.');
+            return $this->redirectToRoute('ticket_my_list');
+        }
+
+        if ($this->isCsrfTokenValid('delete_ticket_' . $ticket->getId(), $request->request->get('_token'))) {
+            $this->ticketRepository->remove($ticket);
+            $this->addFlash('success', 'Ticket successfully deleted.');
+        }
+
+        return $this->redirectToRoute('ticket_my_list');
     }
 }

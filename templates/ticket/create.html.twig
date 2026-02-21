@@ -3,43 +3,204 @@
 {% block title %}Create ticket - EcoSpot{% endblock %}
 {% block page_title %}Create a ticket{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .eco-form-card {
+            border-radius: 16px;
+            border: 1px solid rgba(45, 106, 79, 0.1);
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .eco-form-header {
+            background: linear-gradient(135deg, var(--eco-forest) 0%, var(--eco-leaf) 100%);
+            padding: 1.5rem 2rem;
+            color: white;
+            border-bottom: 3px solid var(--eco-mint);
+        }
+
+        .eco-form-header h4 {
+            color: white;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .eco-form-body {
+            padding: 2rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--eco-dark-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 0.6rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--eco-mint);
+            box-shadow: 0 0 0 0.25rem rgba(82, 183, 136, 0.25);
+        }
+
+        .eco-btn-submit {
+            background: linear-gradient(135deg, var(--eco-forest) 0%, var(--eco-leaf) 100%);
+            color: white !important;
+            border: none;
+            border-radius: 8px;
+            padding: 0.7rem 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(45, 106, 79, 0.2);
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .eco-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(45, 106, 79, 0.3);
+            background: linear-gradient(135deg, var(--eco-dark-green) 0%, var(--eco-forest) 100%);
+        }
+
+        .location-search-wrap .input-group-text {
+            background-color: var(--eco-cream);
+            color: var(--eco-forest);
+            border-color: #ced4da;
+            border-right: none;
+        }
+
+        .location-search-wrap input.form-control {
+            border-left: none;
+        }
+
+        .location-search-wrap input.form-control:focus {
+            border-color: var(--eco-mint);
+            box-shadow: none;
+        }
+        
+        .location-search-wrap:focus-within {
+            box-shadow: 0 0 0 0.25rem rgba(82, 183, 136, 0.25);
+            border-radius: 8px;
+        }
+        
+        .location-search-wrap:focus-within .input-group-text,
+        .location-search-wrap:focus-within input.form-control {
+            border-color: var(--eco-mint);
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
-    <div class="card">
-        <div class="card-body">
-            <p class="text-muted mb-3">Describe an environmental issue or suggestion. You must <strong>search and select a location</strong> from the list so we can show the 7-day weather on the ticket (only places supported by the weather API are accepted).</p>
-            {{ form_start(form) }}
-            {{ form_errors(form) }}
-            {{ form_row(form.title) }}
-            {{ form_row(form.description) }}
-            {{ form_row(form.imageFile) }}
-            <div class="mb-3">
-                <label class="form-label">Location <span class="text-danger">*</span></label>
-                <div id="ticket-location-search-wrap" class="mb-2 position-relative">
-                    <div class="input-group">
-                        <input type="text" id="ticket-place-search" class="form-control" placeholder="Search for a place (e.g. Paris, London, 10 Downing Street)" autocomplete="off">
-                        <button type="button" class="btn btn-outline-primary" id="ticket-location-search-btn">Search</button>
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="card eco-form-card">
+                <div class="eco-form-header d-flex align-items-center">
+                    <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                        <i class="fas fa-leaf text-success fs-4"></i>
                     </div>
-                    <div id="ticket-geocode-results" class="list-group mt-1 position-absolute start-0 w-100" style="z-index: 1050; display: none; max-height: 220px; overflow-y: auto; background: #fff;"></div>
-                </div>
-                <div id="ticket-location-selected" class="d-none">
-                    <div class="input-group">
-                        <input type="text" id="ticket_location_display" class="form-control bg-light" readonly placeholder="No location selected">
-                        <button type="button" class="btn btn-outline-secondary" id="ticket-location-clear">Change location</button>
+                    <div>
+                        <h4>Submit an Environmental Ticket</h4>
+                        <p class="mb-0 text-white-50 small">Report an issue or suggest an improvement</p>
                     </div>
                 </div>
-                <div class="form-text">Choose a place from the search results. This ensures the weather API can show the 7-day forecast for the ticket.</div>
-                {{ form_widget(form.location, { attr: { class: 'd-none' } }) }}
-                {{ form_widget(form.latitude) }}
-                {{ form_widget(form.longitude) }}
-                {{ form_errors(form.location) }}
+
+                <div class="card-body eco-form-body">
+                    <div class="alert alert-light border-start border-4 border-success bg-light mb-4 text-muted">
+                        <i class="fas fa-info-circle text-success me-2"></i> Describe your environmental observation. You must <strong>search and select a location</strong> so we can show the 7-day weather forecast on your ticket.
+                    </div>
+
+                    {{ form_start(form) }}
+                    {{ form_errors(form) }}
+                    
+                    <div class="row g-4 mb-4">
+                        <div class="col-12">
+                            {{ form_label(form.title, 'Ticket Title', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.title) }}
+                            <div class="form-text text-muted small"><i class="fas fa-pen-nib me-1"></i> Give your report a clear, concise name.</div>
+                            {{ form_errors(form.title) }}
+                        </div>
+
+                        <div class="col-12">
+                            {{ form_label(form.description, 'Details & Description', {'label_attr': {'class': 'form-label'}}) }}
+                            {{ form_widget(form.description) }}
+                            {{ form_errors(form.description) }}
+                        </div>
+
+                        <div class="col-12">
+                            {{ form_label(form.imageFile, 'Upload Photo (Optional)', {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-camera text-muted"></i></span>
+                                {{ form_widget(form.imageFile) }}
+                            </div>
+                            {{ form_errors(form.imageFile) }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label">Location <span class="text-danger">*</span></label>
+                            
+                            <div id="ticket-location-search-wrap" class="mb-2 position-relative">
+                                <div class="input-group location-search-wrap">
+                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                    <input type="text" id="ticket-place-search" class="form-control" placeholder="Search for a place (e.g. Paris, Central Park)" autocomplete="off">
+                                    <button type="button" class="btn btn-outline-success px-4" id="ticket-location-search-btn">Search</button>
+                                </div>
+                                <div id="ticket-geocode-results" class="list-group mt-1 position-absolute start-0 w-100 shadow-lg rounded-3 border-0" style="z-index: 1050; display: none; max-height: 250px; overflow-y: auto; background: #fff;"></div>
+                            </div>
+                            
+                            <div id="ticket-location-selected" class="d-none">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-success text-white border-success"><i class="fas fa-check-circle"></i></span>
+                                    <input type="text" id="ticket_location_display" class="form-control bg-light fw-semibold text-success" readonly placeholder="No location selected">
+                                    <button type="button" class="btn btn-outline-secondary" id="ticket-location-clear"><i class="fas fa-times me-1"></i> Change</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-text text-muted small mt-2"><i class="fas fa-cloud-sun me-1"></i> Selecting a precise location enables the real-time weather integration.</div>
+                            
+                            {{ form_widget(form.location, { attr: { class: 'd-none' } }) }}
+                            {{ form_widget(form.latitude) }}
+                            {{ form_widget(form.longitude) }}
+                            {{ form_errors(form.location) }}
+                        </div>
+
+                        <div class="col-md-6">
+                            {{ form_label(form.priority, 'Priority Level', {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-exclamation-triangle text-warning"></i></span>
+                                {{ form_widget(form.priority) }}
+                            </div>
+                            {{ form_errors(form.priority) }}
+                        </div>
+
+                        <div class="col-md-6">
+                            {{ form_label(form.domain, 'Action Domain', {'label_attr': {'class': 'form-label'}}) }}
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-layer-group text-primary"></i></span>
+                                {{ form_widget(form.domain) }}
+                            </div>
+                            {{ form_errors(form.domain) }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted opacity-25">
+
+                    <div class="d-flex justify-content-end gap-3 mt-4">
+                        <a href="{{ path('ticket_my_list') }}" class="btn btn-light border text-muted px-4 fw-semibold rounded-3">Cancel</a>
+                        <button type="submit" class="eco-btn-submit">
+                            <i class="fas fa-paper-plane me-2"></i> Submit Ticket
+                        </button>
+                    </div>
+                    
+                    {{ form_end(form) }}
+                </div>
             </div>
-            {{ form_row(form.priority) }}
-            {{ form_row(form.domain) }}
-            <div class="d-flex gap-2 mt-3">
-                <button type="submit" class="btn btn-primary">Submit ticket</button>
-                <a href="{{ path('ticket_my_list') }}" class="btn btn-outline-secondary">Cancel</a>
-            </div>
-            {{ form_end(form) }}
         </div>
     </div>
 {% endblock %}
