@@ -41,6 +41,62 @@
             </div>
             {{ form_row(form.priority) }}
             {{ form_row(form.domain) }}
+
+            <div class="mb-4 mt-4">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="mb-0 text-info"><i class="fas fa-tasks me-2"></i> Tasks & Instructions</h5>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" id="ai-suggest-tasks">
+                            <i class="fas fa-magic me-1"></i> AI Suggest
+                        </button>
+                        <button type="button" class="btn btn-outline-info btn-sm rounded-pill px-3" id="add-consigne">
+                            <i class="fas fa-plus me-1"></i> Add Task
+                        </button>
+                    </div>
+                </div>
+                
+                {% set task_prototype %}
+                    <div class="consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm">
+                        <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;"></div>
+                        <div class="flex-grow-1">
+                            <div class="row g-2">
+                                <div class="col-8">{{ form_widget(form.consignes.vars.prototype.description) }}</div>
+                                <div class="col-4">{{ form_widget(form.consignes.vars.prototype.difficulty) }}</div>
+                            </div>
+                            {{ form_widget(form.consignes.vars.prototype.position) }}
+                        </div>
+                        <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
+                            <i class="fas fa-times-circle fs-5"></i>
+                        </button>
+                    </div>
+                {% endset %}
+
+                <div id="consignes-list" class="consignes-container p-3 border rounded bg-light" 
+                     data-prototype="{{ task_prototype|e('html_attr') }}"
+                     data-index="{{ form.consignes|length }}">
+                    
+                    {% for consigne in form.consignes %}
+                        <div class="consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm">
+                            <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;">{{ loop.index }}</div>
+                            <div class="flex-grow-1">
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        {{ form_widget(consigne.description) }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ form_widget(consigne.difficulty) }}
+                                    </div>
+                                </div>
+                                {{ form_widget(consigne.position) }}
+                            </div>
+                            <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
+                                <i class="fas fa-times-circle fs-5"></i>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
             <div class="d-flex gap-2 mt-3">
                 <button type="submit" class="btn btn-primary">Resubmit for review</button>
                 <a href="{{ path('ticket_my_list') }}" class="btn btn-outline-secondary">Cancel</a>
@@ -111,6 +167,158 @@
         if (searchBtn) searchBtn.addEventListener('click', doSearch);
         if (searchInput) searchInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
         if (clearBtn) clearBtn.addEventListener('click', clearLocation);
+
+        // Consignes Collection Logic
+        const addBtn = document.getElementById('add-consigne');
+        const list = document.getElementById('consignes-list');
+        let index = parseInt(list.dataset.index);
+
+        function updatePositions() {
+            const items = list.querySelectorAll('.consigne-item');
+            items.forEach((item, idx) => {
+                const number = item.querySelector('.consigne-number');
+                if (number) number.textContent = idx + 1;
+                const posInput = item.querySelector('.consigne-position');
+                if (posInput) posInput.value = idx;
+            });
+        }
+
+        addBtn.addEventListener('click', function() {
+            const prototype = list.dataset.prototype;
+            const newForm = prototype.replace(/__name__/g, index);
+            index++;
+            list.dataset.index = index;
+
+            const div = document.createElement('div');
+            div.className = 'consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm';
+            div.innerHTML = `
+                <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;"></div>
+                <div class="flex-grow-1">${newForm}</div>
+                <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
+                    <i class="fas fa-times-circle fs-5"></i>
+                </button>
+            `;
+            
+            list.appendChild(div);
+            updatePositions();
+        });
+
+        list.addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-consigne');
+            if (btn) {
+                btn.closest('.consigne-item').remove();
+                updatePositions();
+            }
+        });
+
+        // AI Suggest Logic
+        const aiBtn = document.getElementById('ai-suggest-tasks');
+        const titleInput = document.getElementById('ticket_title');
+        const descInput = document.getElementById('ticket_description');
+
+        aiBtn.addEventListener('click', async function() {
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+
+            if (description.length < 10) {
+                alert('Please provide a longer description (at least 10 chars) so the AI can understand the context.');
+                return;
+            }
+
+            aiBtn.disabled = true;
+            aiBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Thinking...';
+
+            try {
+                const response = await fetch('{{ path('api_ticket_ai_tasks') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate tasks');
+                }
+
+                const responseData = await response.json();
+                const tasks = responseData.tasks || [];
+                const suggestedPriority = responseData.priority;
+                
+                if (tasks.length === 0) {
+                    alert('AI could not generate specific tasks. Try adjusting your description.');
+                } else {
+                    // Update Ticket Priority
+                    const prioritySelect = document.getElementById('ticket_priority');
+                    if (prioritySelect && suggestedPriority) {
+                        prioritySelect.value = suggestedPriority;
+                        
+                        // Add Magic Effect to parent container (input-group)
+                        const priorityContainer = prioritySelect.closest('.input-group');
+                        if (priorityContainer) {
+                            priorityContainer.classList.add('ai-magic-priority');
+                            priorityContainer.classList.add('ai-highlight');
+                            
+                            // Remove highlight after animation
+                            setTimeout(() => priorityContainer.classList.remove('ai-highlight'), 1500);
+
+                            // Remove magic when user manually changes it
+                            const removePriorityMagic = () => {
+                                priorityContainer.classList.remove('ai-magic-priority');
+                                prioritySelect.removeEventListener('change', removePriorityMagic);
+                            };
+                            prioritySelect.addEventListener('change', removePriorityMagic);
+                        }
+                    }
+
+                    tasks.forEach((taskObj, i) => {
+                        const taskText = typeof taskObj === 'string' ? taskObj : taskObj.description;
+                        const taskDifficulty = typeof taskObj === 'object' ? taskObj.difficulty : 'MEDIUM';
+
+                        const prototype = list.dataset.prototype;
+                        const newForm = prototype.replace(/__name__/g, index);
+                        index++;
+                        list.dataset.index = index;
+
+                        const div = document.createElement('div');
+                        div.innerHTML = newForm;
+                        const finalDiv = div.firstElementChild;
+                        
+                        // Add Magic Effect
+                        finalDiv.classList.add('ai-magic-item');
+
+                        // Sequential delay for "magic" appearance
+                        setTimeout(() => {
+                            list.appendChild(finalDiv);
+                            
+                            const input = finalDiv.querySelector('input[type="text"]');
+                            const diffSelect = finalDiv.querySelector('.difficulty-select');
+
+                            if (input) {
+                                input.value = taskText;
+                                // Remove magic on interaction
+                                const removeMagic = () => {
+                                    finalDiv.classList.remove('ai-magic-item');
+                                    input.removeEventListener('input', removeMagic);
+                                    if (diffSelect) diffSelect.removeEventListener('change', removeMagic);
+                                };
+                                input.addEventListener('input', removeMagic);
+                                if (diffSelect) diffSelect.addEventListener('change', removeMagic);
+                            }
+
+                            if (diffSelect && taskDifficulty) {
+                                diffSelect.value = taskDifficulty;
+                            }
+                            updatePositions();
+                        }, i * 150);
+                    });
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                aiBtn.disabled = false;
+                aiBtn.innerHTML = '<i class="fas fa-magic me-1"></i> AI Suggest';
+            }
+        });
 
         resultsEl.addEventListener('click', function(e) {
             e.preventDefault();

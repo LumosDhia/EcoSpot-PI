@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -52,13 +53,42 @@ class TicketType extends AbstractType
                 'label' => 'Domain',
                 'choice_label' => fn (ActionDomain $d) => $d->getLabel(),
                 'attr' => ['class' => 'form-select'],
+            ])
+            ->add('consignes', CollectionType::class, [
+                'entry_type' => ConsigneType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => false,
             ]);
+
+        if ($options['is_admin']) {
+            $builder
+                ->add('status', EnumType::class, [
+                    'class' => \App\Enum\TicketStatus::class,
+                    'label' => 'Status',
+                    'choice_label' => fn($s) => $s->getLabel(),
+                    'attr' => ['class' => 'form-select']
+                ])
+                ->add('adminNotes', TextareaType::class, [
+                    'label' => 'Admin Notes',
+                    'required' => false,
+                    'attr' => ['class' => 'form-control', 'rows' => 3]
+                ])
+                ->add('isSpam', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
+                    'label' => 'Mark as SPAM',
+                    'required' => false,
+                    'help' => 'Flag this ticket as spam or out of context.'
+                ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Ticket::class,
+            'is_admin' => false
         ]);
     }
 }

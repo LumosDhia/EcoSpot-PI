@@ -19,6 +19,16 @@
                     <label for="note" class="form-label">Optional note (visible to user)</label>
                     <textarea name="note" id="note" class="form-control" rows="3" placeholder="Reason for refusal (optional)"></textarea>
                 </div>
+                
+                <div class="mb-4">
+                    <div class="form-check form-switch card bg-danger-subtle border-danger p-3">
+                        <input class="form-check-input ms-0 me-2" type="checkbox" name="spam_timeout" id="spam_timeout">
+                        <label class="form-check-label text-danger fw-bold" for="spam_timeout">
+                            <i class="fas fa-user-slash me-1"></i> Mark as SPAM & Put User in 24h Timeout
+                        </label>
+                        <p class="small text-danger mb-0 mt-1 opacity-75">Use this for repeated spam or highly inappropriate content. The user will be blocked from creating tickets for 24 hours.</p>
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-danger">Refuse ticket</button>
                 <a href="{{ path('admin_pending_tickets') }}" class="btn btn-outline-secondary">Cancel</a>
             </form>
