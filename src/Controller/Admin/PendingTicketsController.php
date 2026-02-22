@@ -18,7 +18,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class PendingTicketsController extends AbstractController
 {
     public function __construct(
-        private readonly TicketRepository $ticketRepository
+        private readonly TicketRepository $ticketRepository,
+        private readonly \App\Service\NotificationService $notificationService
     ) {
     }
 
@@ -53,6 +54,14 @@ class PendingTicketsController extends AbstractController
         $ticket->setStatus(TicketStatus::PUBLISHED);
         $ticket->setAdminNotes(null);
         $this->ticketRepository->save($ticket);
+
+        $this->notificationService->notify(
+            $ticket->getUser(),
+            sprintf('Your ticket "%s" has been approved and published!', $ticket->getTitle()),
+            'success',
+            $ticket->getId()
+        );
+
         $this->addFlash('success', 'Ticket published. It is now visible to everyone.');
 
         return $this->redirectToRoute('admin_pending_tickets');
@@ -78,10 +87,25 @@ class PendingTicketsController extends AbstractController
             // Optional: Put user in timeout if marked as spam
             if ($request->request->get('spam_timeout')) {
                 $ticket->getUser()->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                
+                $this->notificationService->notify(
+                    $ticket->getUser(),
+                    'Your account has been put in a 24-hour timeout by an administrator.',
+                    'danger'
+                );
+
                 $this->addFlash('warning', 'User has been put in a 24-hour timeout.');
             }
 
             $this->ticketRepository->save($ticket);
+
+            $this->notificationService->notify(
+                $ticket->getUser(),
+                sprintf('Your ticket "%s" has been refused.', $ticket->getTitle()),
+                'danger',
+                $ticket->getId()
+            );
+
             $this->addFlash('success', 'Ticket refused.');
             return $this->redirectToRoute('admin_pending_tickets');
         }
@@ -112,6 +136,14 @@ class PendingTicketsController extends AbstractController
             $ticket->setAdminNotes($note);
             $ticket->setStatus(TicketStatus::SENT_BACK);
             $this->ticketRepository->save($ticket);
+
+            $this->notificationService->notify(
+                $ticket->getUser(),
+                sprintf('Your ticket "%s" was sent back for modification. Please check the admin notes.', $ticket->getTitle()),
+                'warning',
+                $ticket->getId()
+            );
+
             $this->addFlash('success', 'Ticket sent back to the user with your note.');
             return $this->redirectToRoute('admin_pending_tickets');
         }

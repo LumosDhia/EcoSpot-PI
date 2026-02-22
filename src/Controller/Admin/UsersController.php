@@ -23,7 +23,8 @@ class UsersController extends AbstractController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly UserPasswordHasherInterface $passwordHasher
+        private readonly UserPasswordHasherInterface $passwordHasher,
+        private readonly \App\Service\NotificationService $notificationService
     ) {
     }
 
@@ -110,6 +111,13 @@ class UsersController extends AbstractController
         if ($this->isCsrfTokenValid('timeout' . $user->getId(), (string) $request->request->get('_token'))) {
             $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
             $this->entityManager->flush();
+
+            $this->notificationService->notify(
+                $user,
+                'Your account has been put in a 24-hour timeout by an administrator.',
+                'danger'
+            );
+
             $this->addFlash('success', 'User put in 24-hour timeout.');
         }
 
@@ -122,6 +130,13 @@ class UsersController extends AbstractController
         if ($this->isCsrfTokenValid('remove-timeout' . $user->getId(), (string) $request->request->get('_token'))) {
             $user->setTimeoutUntil(null);
             $this->entityManager->flush();
+
+            $this->notificationService->notify(
+                $user,
+                'Your account restriction has been removed by an administrator.',
+                'success'
+            );
+
             $this->addFlash('success', 'Timeout removed for this user.');
         }
 

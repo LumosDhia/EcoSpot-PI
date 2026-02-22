@@ -23,7 +23,8 @@ class TicketController extends AbstractController
     public function __construct(
         private readonly TicketRepository $ticketRepository,
         private readonly OpenMeteoWeatherService $weatherService,
-        private readonly SpamDetectionService $spamDetectionService
+        private readonly SpamDetectionService $spamDetectionService,
+        private readonly \App\Service\NotificationService $notificationService
     ) {
     }
 
@@ -72,6 +73,13 @@ class TicketController extends AbstractController
 
                 $this->ticketRepository->save($ticket);
 
+                $this->notificationService->notify(
+                    $user,
+                    sprintf('Your ticket "%s" has been submitted and is pending review.', $ticket->getTitle()),
+                    'info',
+                    $ticket->getId()
+                );
+
                 // Automatic Timeout Logic
                 if ($isSpam) {
                     $since = new \DateTimeImmutable('-24 hours');
@@ -79,7 +87,14 @@ class TicketController extends AbstractController
                     
                     if ($spamCount > 3) {
                         $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
-                        $this->ticketRepository->save($ticket); // Flush the user change via cascade or explicit save
+                        $this->ticketRepository->save($ticket);
+                        
+                        $this->notificationService->notify(
+                            $user,
+                            'Your account has been put in a 24-hour timeout due to repeated spam detection.',
+                            'danger'
+                        );
+
                         $this->addFlash('warning', 'Your account has been put in a 24-hour timeout due to repeated spam detection.');
                     }
                 }
@@ -131,6 +146,13 @@ class TicketController extends AbstractController
 
                 $this->ticketRepository->save($ticket);
 
+                $this->notificationService->notify(
+                    $user,
+                    sprintf('You have resubmitted your ticket "%s" for review.', $ticket->getTitle()),
+                    'info',
+                    $ticket->getId()
+                );
+
                 // Automatic Timeout Logic on Edit
                 if ($isSpam) {
                     $since = new \DateTimeImmutable('-24 hours');
@@ -139,6 +161,13 @@ class TicketController extends AbstractController
                     if ($spamCount > 3) {
                         $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
                         $this->ticketRepository->save($ticket);
+
+                        $this->notificationService->notify(
+                            $user,
+                            'Your account has been put in a 24-hour timeout due to repeated spam detection.',
+                            'danger'
+                        );
+
                         $this->addFlash('warning', 'Your account has been put in a 24-hour timeout due to repeated spam detection.');
                     }
                 }
