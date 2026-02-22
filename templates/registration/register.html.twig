@@ -25,6 +25,37 @@
                         {{ form_errors(registrationForm.city) }}
                         {{ form_row(registrationForm.plainPassword) }}
                         {{ form_row(registrationForm.agreeTerms) }}
+
+                        {# ── Face Enrollment (optional) ──────────────────────────── #}
+                        <div class="card border-0 bg-light rounded-3 p-3 mb-3">
+                            <p class="fw-semibold mb-1">🤖 Face Recognition <span class="badge bg-secondary fw-normal">Optional</span></p>
+                            <p class="text-muted small mb-2">Enroll your face now to enable one-click face login later.</p>
+
+                            <div id="reg-models-status" class="text-muted small mb-2 d-none">
+                                <span class="spinner-border spinner-border-sm me-1"></span> Loading AI models…
+                            </div>
+
+                            <div class="position-relative rounded overflow-hidden bg-dark mb-2 d-none" id="reg-cam-wrapper" style="height:180px;">
+                                <video id="reg-video" autoplay muted playsinline class="w-100 h-100" style="object-fit:cover;"></video>
+                                <canvas id="reg-canvas" class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+                            </div>
+
+                            <div id="reg-face-status" class="alert d-none mb-2 py-2 small" role="alert"></div>
+
+                            <div class="d-flex gap-2 flex-wrap">
+                                <button type="button" id="reg-btn-start" class="btn btn-sm btn-outline-primary">📷 Start Camera</button>
+                                <button type="button" id="reg-btn-capture" class="btn btn-sm btn-success d-none">
+                                    <span id="reg-spinner" class="spinner-border spinner-border-sm d-none me-1"></span>
+                                    Capture &amp; Save Face
+                                </button>
+                                <button type="button" id="reg-btn-stop" class="btn btn-sm btn-outline-secondary d-none">✕ Stop</button>
+                                <button type="button" id="reg-btn-clear" class="btn btn-sm btn-outline-danger d-none">🗑 Remove Face</button>
+                            </div>
+
+                            {# Hidden field — populated by JS with the JSON face descriptor #}
+                            <input type="hidden" name="faceDescriptor" id="reg-face-descriptor">
+                        </div>
+
                         <div class="d-grid gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">{{ 'security.register'|trans }}</button>
                             <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">{{ 'security.already_have_account'|trans }}</a>
@@ -105,5 +136,120 @@
                 }
             });
         });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        const MODELS_URL = '/models';
+        let stream = null;
+        let faceEnrolled = false;
+
+        const $ = id => document.getElementById(id);
+        const video      = $('reg-video');
+        const canvas     = $('reg-canvas');
+        const camWrapper = $('reg-cam-wrapper');
+        const statusBox  = $('reg-face-status');
+        const modStatus  = $('reg-models-status');
+        const btnStart   = $('reg-btn-start');
+        const btnCapture = $('reg-btn-capture');
+        const btnStop    = $('reg-btn-stop');
+        const btnClear   = $('reg-btn-clear');
+        const spinner    = $('reg-spinner');
+        const hidden     = $('reg-face-descriptor');
+
+        function showStatus(msg, type = 'info') {
+            statusBox.className = `alert alert-${type} mb-2 py-2 small`;
+            statusBox.textContent = msg;
+            statusBox.classList.remove('d-none');
+        }
+
+        // ── Load AI models on Start Camera click ──────────────────────────
+        async function loadModels() {
+            modStatus.classList.remove('d-none');
+            btnStart.disabled = true;
+            try {
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODELS_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODELS_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODELS_URL),
+                ]);
+            } finally {
+                modStatus.classList.add('d-none');
+                btnStart.disabled = false;
+            }
+        }
+
+        let modelsLoaded = false;
+
+        async function startCamera() {
+            if (!modelsLoaded) { await loadModels(); modelsLoaded = true; }
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = stream;
+                camWrapper.classList.remove('d-none');
+                btnStart.classList.add('d-none');
+                btnCapture.classList.remove('d-none');
+                btnStop.classList.remove('d-none');
+            } catch (e) {
+                showStatus('Camera access denied or unavailable.', 'danger');
+            }
+        }
+
+        function stopCamera() {
+            if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+            video.srcObject = null;
+            camWrapper.classList.add('d-none');
+            btnCapture.classList.add('d-none');
+            btnStop.classList.add('d-none');
+            btnStart.classList.remove('d-none');
+        }
+
+        btnStart.addEventListener('click', startCamera);
+        btnStop.addEventListener('click', stopCamera);
+
+        btnCapture.addEventListener('click', async () => {
+            btnCapture.disabled = true;
+            spinner.classList.remove('d-none');
+            showStatus('Detecting face with AI…', 'info');
+            try {
+                const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 });
+                const detection = await faceapi
+                    .detectSingleFace(video, options)
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (!detection) {
+                    showStatus('No face detected — look at the camera and try again.', 'warning');
+                    return;
+                }
+
+                // Visual confirmation
+                const dims = faceapi.matchDimensions(canvas, video, true);
+                faceapi.draw.drawDetections(canvas, faceapi.resizeResults(detection, dims));
+
+                hidden.value = JSON.stringify(Array.from(detection.descriptor));
+                faceEnrolled = true;
+                showStatus('✅ Face captured! It will be saved when you register.', 'success');
+                stopCamera();
+                btnClear.classList.remove('d-none');
+            } catch (e) {
+                console.error(e);
+                showStatus('Error during face detection. Please try again.', 'danger');
+            } finally {
+                btnCapture.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+
+        btnClear.addEventListener('click', () => {
+            hidden.value = '';
+            faceEnrolled = false;
+            btnClear.classList.add('d-none');
+            statusBox.classList.add('d-none');
+            showStatus('Face data removed.', 'secondary');
+        });
+    })();
     </script>
 {% endblock %}

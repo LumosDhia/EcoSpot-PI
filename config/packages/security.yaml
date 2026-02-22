@@ -15,7 +15,9 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\LoginFormAuthenticator
+            custom_authenticator: 
+                - App\Security\LoginFormAuthenticator
+                - App\Security\FaceAuthenticator
             logout:
                 path: app_logout
                 target: home
@@ -25,6 +27,8 @@ security:
         - { path: ^/ngo, roles: ROLE_NGO }
         - { path: ^/blog/editor-upload, roles: [ROLE_ADMIN, ROLE_NGO] }
         - { path: ^/dashboard, roles: ROLE_USER }
+        - { path: ^/face-login, roles: PUBLIC_ACCESS }
+        - { path: ^/face-enroll, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }

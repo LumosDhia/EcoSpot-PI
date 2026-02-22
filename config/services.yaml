@@ -49,5 +49,6 @@ services:
         arguments:
             $unsplashAccessKey: '%env(UNSPLASH_ACCESS_KEY)%'
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    App\Service\FaceRecognitionService:
+        arguments:
+            $faceServiceUrl: '%env(FACE_SERVICE_URL)%'

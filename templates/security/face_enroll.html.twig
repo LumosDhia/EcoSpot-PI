@@ -1,0 +1,121 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Enroll Face - EcoSpot{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h1 class="h3 mb-4">Enroll Your Face</h1>
+            <p class="text-muted mb-4">You must enroll your face once to enable Face Recognition Login.</p>
+            
+            <div id="camera-container" class="position-relative bg-dark rounded overflow-hidden mb-3" style="max-width: 500px; margin: 0 auto; min-height: 375px;">
+                <video id="webcam" autoplay muted playsinline class="w-100 h-100" style="object-fit: cover;"></video>
+                <canvas id="snapshot" class="d-none" width="640" height="480"></canvas>
+                <div id="camera-loading" class="position-absolute top-50 start-50 translate-middle text-white">
+                    <div class="spinner-border" role="status"></div>
+                </div>
+            </div>
+
+            <div id="status-message" class="alert d-none mb-3"></div>
+
+            <div class="d-grid gap-2 col-8 mx-auto">
+                <button id="btn-save" class="btn btn-success btn-lg" disabled>
+                    <i class="fas fa-camera me-2"></i>Save My Face
+                </button>
+                <a href="{{ path('home') }}" class="btn btn-outline-secondary">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+    const video = document.getElementById('webcam');
+    const canvas = document.getElementById('snapshot');
+    const btnSave = document.getElementById('btn-save');
+    const statusMsg = document.getElementById('status-message');
+    const loader = document.getElementById('camera-loading');
+
+    function showStatus(msg, type = 'info') {
+        statusMsg.textContent = msg;
+        statusMsg.className = `alert alert-${type} mb-3`;
+        statusMsg.classList.remove('d-none');
+    }
+
+    async function initCamera() {
+        if (!window.isSecureContext) {
+            showStatus("❌ Camera requires a secure context (HTTPS or localhost). Please check your URL.", "danger");
+            loader.innerHTML = '<i class="fas fa-shield-alt fa-3x text-warning"></i>';
+            return;
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { 
+                    width: { ideal: 640 },
+                    height: { ideal: 480 },
+                    facingMode: "user"
+                } 
+            });
+            video.srcObject = stream;
+            video.onloadedmetadata = () => {
+                loader.classList.add('d-none');
+                btnSave.disabled = false;
+            };
+        } catch (err) {
+            console.error("Camera access error:", err);
+            let message = "Could not access camera.";
+            
+            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                message = "🚫 Permission denied. Please click the camera icon in your browser address bar and allow access.";
+            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                message = "📷 No camera found. Please ensure your webcam is plugged in.";
+            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                message = "⚠️ Camera is already in use by another application.";
+            }
+            
+            showStatus(message, "danger");
+            loader.innerHTML = '<i class="fas fa-video-slash fa-3x text-danger"></i>';
+        }
+    }
+
+    btnSave.addEventListener('click', async () => {
+        btnSave.disabled = true;
+        showStatus("Capturing and enrolling...", "info");
+
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+
+        try {
+            const response = await fetch("{{ path('face_enroll_save') }}", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image: base64Image })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                showStatus("✅ Enrollment complete! You can now log in with your face.", "success");
+            } else {
+                showStatus("❌ " + (data.message || "Enrollment failed"), "danger");
+                btnSave.disabled = false;
+            }
+        } catch (err) {
+            console.error("Enrollment error:", err);
+            showStatus("Server error during enrollment.", "danger");
+            btnSave.disabled = false;
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCamera();
+    });
+</script>
+{% endblock %}

@@ -3,48 +3,272 @@
 {% block title %}Login - EcoSpot{% endblock %}
 
 {% block body %}
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-md-5">
-                <div class="card shadow">
-                    <div class="card-body p-4">
-                        <h1 class="h4 mb-4 text-center">{{ 'security.sign_in'|trans }}</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <h1 class="h4 mb-4 text-center">{{ 'security.sign_in'|trans }}</h1>
 
-                        {% if error %}
-                            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-                        {% endif %}
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                    {% endif %}
 
-                        {% if app.user %}
-                            <div class="mb-3 text-center">
-                                {{ 'security.logged_in_as'|trans({'%user%': app.user.userIdentifier}) }}, <a href="{{ path('app_logout') }}">{{ 'security.logout'|trans }}</a>
+                    {% if app.user %}
+                        <div class="mb-3 text-center">
+                            {{ 'security.logged_in_as'|trans({'%user%': app.user.userIdentifier}) }},
+                            <a href="{{ path('app_logout') }}">{{ 'security.logout'|trans }}</a>
+                        </div>
+                    {% else %}
+
+                        {# ── Tab navigation ─────────────────────────────────────── #}
+                        <ul class="nav nav-pills nav-fill mb-4" id="loginTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="password-tab" data-bs-toggle="pill"
+                                        data-bs-target="#password-pane" type="button" role="tab">
+                                    🔑 Password
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="face-tab" data-bs-toggle="pill"
+                                        data-bs-target="#face-pane" type="button" role="tab">
+                                    🤖 Face Login
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content">
+
+                            {# ── Tab 1: Password ────────────────────────────────── #}
+                            <div class="tab-pane fade show active" id="password-pane" role="tabpanel">
+                                <form method="post">
+                                    <div class="mb-3">
+                                        <label for="inputEmail" class="form-label">{{ 'security.email'|trans }}</label>
+                                        <input type="email" value="{{ last_username }}" name="email" id="inputEmail"
+                                               class="form-control" autocomplete="email" required autofocus>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="inputPassword" class="form-label">{{ 'security.password'|trans }}</label>
+                                        <input type="password" name="password" id="inputPassword"
+                                               class="form-control" autocomplete="current-password" required>
+                                    </div>
+                                    <div class="mb-3 text-end">
+                                        <a href="{{ path('app_forgot_password_request') }}">
+                                            {{ 'security.forgot_password'|trans|default('Forgot password?') }}
+                                        </a>
+                                    </div>
+                                    <div class="cf-turnstile mb-3" data-sitekey="{{ turnstile_site_key }}" data-theme="light"></div>
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-primary" type="submit">{{ 'security.sign_in'|trans }}</button>
+                                        <a class="btn btn-outline-secondary" href="{{ path('app_register') }}">{{ 'security.register'|trans }}</a>
+                                    </div>
+                                </form>
                             </div>
-                        {% else %}
-                            <form method="post">
-                                <div class="mb-3">
-                                    <label for="inputEmail" class="form-label">{{ 'security.email'|trans }}</label>
-                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+
+                            {# ── Tab 2: Face Recognition ────────────────────────── #}
+                            <div class="tab-pane fade" id="face-pane" role="tabpanel">
+
+                                {# Loading state while models download #}
+                                <div id="face-models-loading" class="text-center py-3">
+                                    <div class="spinner-border text-primary" role="status"></div>
+                                    <p class="mt-2 text-muted small">Loading AI face recognition models…</p>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="inputPassword" class="form-label">{{ 'security.password'|trans }}</label>
-                                    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+
+                                <div id="face-login-ui" class="d-none">
+                                    <div class="mb-3">
+                                        <label for="face-email" class="form-label">Your email</label>
+                                        <input type="email" id="face-email" class="form-control"
+                                               placeholder="Enter your email" autocomplete="email">
+                                    </div>
+
+                                    {# Webcam preview #}
+                                    <div class="position-relative mb-3 rounded overflow-hidden bg-dark" style="height:220px;">
+                                        <video id="face-video" autoplay muted playsinline
+                                               class="w-100 h-100" style="object-fit:cover;"></video>
+                                        <canvas id="face-canvas" class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+                                        <div id="face-overlay" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                            <span class="text-white text-opacity-75 small">Camera will start when you click below</span>
+                                        </div>
+                                    </div>
+
+                                    {# Status message #}
+                                    <div id="face-status" class="alert d-none mb-3" role="alert"></div>
+
+                                    <div class="d-grid gap-2">
+                                        <button id="btn-start-camera" class="btn btn-outline-primary">
+                                            📷 Start Camera
+                                        </button>
+                                        <button id="btn-scan-face" class="btn btn-success d-none">
+                                            <span id="face-scan-spinner" class="spinner-border spinner-border-sm d-none me-2" role="status"></span>
+                                            🤖 Scan &amp; Sign In
+                                        </button>
+                                        <button id="btn-stop-camera" class="btn btn-outline-secondary d-none">
+                                            ✕ Stop Camera
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="mb-3 text-end">
-                                    <a href="{{ path('app_forgot_password_request') }}">{{ 'security.forgot_password'|trans|default('Forgot password?') }}</a>
-                                </div>
-                                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                                <div class="d-grid gap-2">
-                                    <button class="btn btn-primary" type="submit">{{ 'security.sign_in'|trans }}</button>
-                                    <a class="btn btn-outline-secondary" href="{{ path('app_register') }}">{{ 'security.register'|trans }}</a>
-                                </div>
-                            </form>
-                        {% endif %}
-                    </div>
+
+                            </div>{# /face-pane #}
+
+                        </div>{# /tab-content #}
+
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {# face-api.js — TensorFlow.js-based AI face recognition library #}
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+    <script>
+    (function () {
+        'use strict';
+
+        const MODELS_URL = '/models';
+        const FACE_LOGIN_URL = '/face-login';
+
+        let stream = null;
+
+        const $ = id => document.getElementById(id);
+
+        const video        = $('face-video');
+        const canvas       = $('face-canvas');
+        const statusBox    = $('face-status');
+        const modelsLoader = $('face-models-loading');
+        const loginUI      = $('face-login-ui');
+        const btnStart     = $('btn-start-camera');
+        const btnScan      = $('btn-scan-face');
+        const btnStop      = $('btn-stop-camera');
+        const overlay      = $('face-overlay');
+        const spinner      = $('face-scan-spinner');
+
+        if (!modelsLoader) return; // page has app.user — nothing to do
+
+        function showStatus(msg, type = 'info') {
+            statusBox.className = `alert alert-${type} mb-3`;
+            statusBox.textContent = msg;
+            statusBox.classList.remove('d-none');
+        }
+
+        // ── Load AI models (tiny face detector + landmarks + recognition) ──
+        async function loadModels() {
+            try {
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri(MODELS_URL),
+                    faceapi.nets.faceLandmark68Net.loadFromUri(MODELS_URL),
+                    faceapi.nets.faceRecognitionNet.loadFromUri(MODELS_URL),
+                ]);
+                modelsLoader.classList.add('d-none');
+                loginUI.classList.remove('d-none');
+            } catch (e) {
+                modelsLoader.innerHTML = '<p class="text-danger text-center">⚠ Could not load face AI models. Check your connection.</p>';
+            }
+        }
+
+        // ── Camera controls ────────────────────────────────────────────────
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = stream;
+                overlay.classList.add('d-none');
+                btnStart.classList.add('d-none');
+                btnScan.classList.remove('d-none');
+                btnStop.classList.remove('d-none');
+            } catch (e) {
+                showStatus('Camera access denied or not available.', 'danger');
+            }
+        }
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+            video.srcObject = null;
+            overlay.classList.remove('d-none');
+            btnStart.classList.remove('d-none');
+            btnScan.classList.add('d-none');
+            btnStop.classList.add('d-none');
+        }
+
+        btnStart.addEventListener('click', startCamera);
+        btnStop.addEventListener('click', () => { stopCamera(); statusBox.classList.add('d-none'); });
+
+        // ── Face scan & login ──────────────────────────────────────────────
+        btnScan.addEventListener('click', async () => {
+            const email = $('face-email').value.trim();
+            if (!email) { showStatus('Please enter your email first.', 'warning'); return; }
+            if (!stream) { showStatus('Please start the camera first.', 'warning'); return; }
+
+            btnScan.disabled = true;
+            spinner.classList.remove('d-none');
+            showStatus('Analysing face with AI…', 'info');
+
+            try {
+                const options = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 });
+                const detection = await faceapi
+                    .detectSingleFace(video, options)
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (!detection) {
+                    showStatus('No face detected. Look directly at the camera and try again.', 'warning');
+                    return;
+                }
+
+                // Draw bounding box feedback
+                const dims = faceapi.matchDimensions(canvas, video, true);
+                faceapi.draw.drawDetections(canvas, faceapi.resizeResults(detection, dims));
+
+                // Send descriptor to Symfony backend
+                const response = await fetch(FACE_LOGIN_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        descriptor: Array.from(detection.descriptor),
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.redirect) {
+                    showStatus('✅ Face recognised! Redirecting…', 'success');
+                    stopCamera();
+                    setTimeout(() => { window.location.href = data.redirect; }, 800);
+                } else {
+                    showStatus(data.error || 'Authentication failed.', 'danger');
+                }
+
+            } catch (e) {
+                console.error(e);
+                showStatus('An error occurred during face detection. Please try again.', 'danger');
+            } finally {
+                btnScan.disabled = false;
+                spinner.classList.add('d-none');
+            }
+        });
+
+        // ── Load models when Face Login tab is first activated ─────────────
+        let modelsLoaded = false;
+        const faceTab = document.getElementById('face-tab');
+        if (faceTab) {
+            faceTab.addEventListener('shown.bs.tab', () => {
+                if (!modelsLoaded) { modelsLoaded = true; loadModels(); }
+            });
+        }
+        
+        // Clean up camera when switching away
+        const passwordTab = document.getElementById('password-tab');
+        if (passwordTab) {
+            passwordTab.addEventListener('shown.bs.tab', stopCamera);
+        }
+    })();
+    </script>
 {% endblock %}

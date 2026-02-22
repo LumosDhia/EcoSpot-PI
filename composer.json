@@ -8,9 +8,7 @@
         "ext-ctype": "*",
         "ext-dom": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "^2.18",
         "doctrine/doctrine-migrations-bundle": "^3.7",
-        "doctrine/orm": "^3.6",
         "knplabs/knp-paginator-bundle": "*",
         "knplabs/knp-time-bundle": "^2.5",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -28,7 +26,6 @@
         "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
         "symfony/google-mailer": "6.4.*",
-        "symfony/http-client": "6.4.*",
         "symfony/intl": "6.4.*",
         "symfony/mailer": "6.4.*",
         "symfony/messenger": "6.4.*",
@@ -39,7 +36,7 @@
         "symfony/property-access": "6.4.*",
         "symfony/property-info": "6.4.*",
         "symfony/runtime": "6.4.*",
-        "symfony/security-bundle": "6.4.*",
+        "symfony/security-csrf": "6.4.*",
         "symfony/serializer": "6.4.*",
         "symfony/stimulus-bundle": "^2.32",
         "symfony/string": "6.4.*",
@@ -103,11 +100,15 @@
         }
     },
     "require-dev": {
+        "doctrine/doctrine-bundle": "^2.18",
+        "doctrine/orm": "^3.6",
         "phpunit/phpunit": "^10.5",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
         "symfony/debug-bundle": "6.4.*",
-        "symfony/maker-bundle": "^1.0",
+        "symfony/http-client": "6.4.*",
+        "symfony/maker-bundle": "^1.66",
+        "symfony/security-bundle": "6.4.*",
         "symfony/stopwatch": "6.4.*",
         "symfony/web-profiler-bundle": "6.4.*"
     }
