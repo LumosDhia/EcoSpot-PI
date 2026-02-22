@@ -25,10 +25,15 @@ class AdminTicketController extends AbstractController
     }
 
     #[Route('', name: 'admin_ticket_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = $request->query->get('q');
+        $sortBy = $request->query->get('sort', 'newest');
+
         return $this->render('admin/ticket/index.html.twig', [
-            'tickets' => $this->ticketRepository->findBy([], ['createdAt' => 'DESC']),
+            'tickets' => $this->ticketRepository->findAllForAdmin($query, $sortBy),
+            'currentQuery' => $query,
+            'currentSort' => $sortBy,
         ]);
     }
 

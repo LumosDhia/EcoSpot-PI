@@ -23,12 +23,17 @@ class PendingTicketsController extends AbstractController
     }
 
     #[Route('', name: 'admin_pending_tickets', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $tickets = $this->ticketRepository->findPendingForAdmin();
+        $query = $request->query->get('q');
+        $sortBy = $request->query->get('sort', 'newest');
+
+        $tickets = $this->ticketRepository->findPendingForAdmin($query, $sortBy);
 
         return $this->render('admin/pending_tickets/index.html.twig', [
             'tickets' => $tickets,
+            'currentQuery' => $query,
+            'currentSort' => $sortBy,
         ]);
     }
 

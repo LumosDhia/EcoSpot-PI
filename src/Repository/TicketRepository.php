@@ -49,17 +49,73 @@ class TicketRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /** Pending and sent-back tickets for admin review. */
-    public function findPendingForAdmin(): array
+    /** Pending and sent-back tickets for admin review with search and sort. */
+    public function findPendingForAdmin(?string $query = null, string $sortBy = 'newest'): array
     {
-        return $this->createQueryBuilder('t')
+        $qb = $this->createQueryBuilder('t')
             ->innerJoin('t.user', 'u')
             ->addSelect('u')
             ->where('t.status IN (:statuses)')
-            ->setParameter('statuses', [TicketStatus::PENDING, TicketStatus::SENT_BACK])
-            ->orderBy('t.createdAt', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->setParameter('statuses', [TicketStatus::PENDING, TicketStatus::SENT_BACK]);
+
+        if ($query) {
+            $qb->andWhere('t.title LIKE :q OR t.description LIKE :q')
+               ->setParameter('q', '%' . $query . '%');
+        }
+
+        switch ($sortBy) {
+            case 'oldest':
+                $qb->orderBy('t.createdAt', 'ASC');
+                break;
+            case 'priority_high':
+                // Priority enum handling might need mapping if not alphabetical, but let's assume standard for now or use a custom logic if needed.
+                // Looking at TicketPriority enum labels/values might be better.
+                $qb->orderBy('t.priority', 'DESC'); 
+                break;
+            case 'priority_low':
+                $qb->orderBy('t.priority', 'ASC');
+                break;
+            case 'newest':
+            default:
+                $qb->orderBy('t.createdAt', 'DESC');
+                break;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /** All tickets for admin management with search and sort. */
+    public function findAllForAdmin(?string $query = null, string $sortBy = 'newest'): array
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->innerJoin('t.user', 'u')
+            ->addSelect('u');
+
+        if ($query) {
+            $qb->andWhere('t.title LIKE :q OR t.description LIKE :q')
+               ->setParameter('q', '%' . $query . '%');
+        }
+
+        switch ($sortBy) {
+            case 'oldest':
+                $qb->orderBy('t.createdAt', 'ASC');
+                break;
+            case 'priority_high':
+                $qb->orderBy('t.priority', 'DESC'); 
+                break;
+            case 'priority_low':
+                $qb->orderBy('t.priority', 'ASC');
+                break;
+            case 'status':
+                $qb->orderBy('t.status', 'ASC');
+                break;
+            case 'newest':
+            default:
+                $qb->orderBy('t.createdAt', 'DESC');
+                break;
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /** Published tickets for public listing. */
