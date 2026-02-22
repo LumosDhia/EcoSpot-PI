@@ -49,5 +49,9 @@ services:
         arguments:
             $unsplashAccessKey: '%env(UNSPLASH_ACCESS_KEY)%'
 
+    App\Service\RecaptchaVerifier:
+        arguments:
+            $secretKey: '%env(RECAPTCHA_SECRET_KEY)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

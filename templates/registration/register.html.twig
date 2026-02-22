@@ -25,6 +25,9 @@
                         {{ form_errors(registrationForm.city) }}
                         {{ form_row(registrationForm.plainPassword) }}
                         {{ form_row(registrationForm.agreeTerms) }}
+                        <div class="mb-3">
+                            <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+                        </div>
                         <div class="d-grid gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">{{ 'security.register'|trans }}</button>
                             <a class="btn btn-outline-secondary" href="{{ path('app_login') }}">{{ 'security.already_have_account'|trans }}</a>
@@ -39,6 +42,7 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('city_search_input');

@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Security\LoginFormAuthenticator;
+use App\Service\RecaptchaVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -18,6 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class RegistrationController extends AbstractController
 {
     public function __construct(
+        private readonly RecaptchaVerifier $recaptcha,
     ) {
     }
 
@@ -37,6 +39,15 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Verify reCAPTCHA
+            $captchaToken = $request->request->get('g-recaptcha-response', '');
+            if (!$this->recaptcha->verify($captchaToken)) {
+                $this->addFlash('danger', 'Please complete the CAPTCHA verification.');
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form,
+                ]);
+            }
+
             $user->setPassword(
                 $userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData())
             );
