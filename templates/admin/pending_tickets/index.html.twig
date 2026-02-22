@@ -1,58 +1,122 @@
 {% extends 'base_back.html.twig' %}
 
-{% block title %}Pending tickets - EcoSpot Admin{% endblock %}
-{% block page_title %}Pending tickets{% endblock %}
+{% block title %}Pending Tickets Review - EcoSpot Admin{% endblock %}
+{% block page_title %}Pending Tickets Review{% endblock %}
 
 {% block body %}
-    <p class="text-muted mb-4">Accept (publish), refuse, or send tickets back to the user with a note.</p>
+    <p class="text-muted mb-4">Review, publish, or send tickets back to the user with corrective notes.</p>
 
     {% if tickets is empty %}
-        <div class="alert alert-info">No pending or sent-back tickets.</div>
+        <div class="card border-0 shadow-sm text-center py-5">
+            <div class="card-body">
+                <i class="fas fa-check-circle text-success fs-1 mb-3 opacity-25"></i>
+                <h5 class="text-muted">In-box Zero!</h5>
+                <p class="mb-0">No pending or sent-back tickets require your attention right now.</p>
+            </div>
+        </div>
     {% else %}
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>User</th>
-                        <th>Status</th>
-                        <th>Domain</th>
-                        <th>Created</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ticket in tickets %}
-                        <tr>
-                            <td>
-                                <strong>{{ ticket.title }}</strong>
-                                <br><small class="text-muted">{{ ticket.description|slice(0, 80) }}{% if ticket.description|length > 80 %}...{% endif %}</small>
-                            </td>
-                            <td>{{ ticket.user.firstname }} {{ ticket.user.lastname }}<br><small>{{ ticket.user.email }}</small></td>
-                            <td><span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel() }}</span></td>
-                            <td>{{ ticket.domain.getLabel() }}</td>
-                            <td>{{ ticket.createdAt|date('d/m/Y H:i') }}</td>
-                            <td class="text-end">
-                                <form action="{{ path('admin_pending_ticket_publish', { id: ticket.id }) }}" method="post" class="d-inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-publish-' ~ ticket.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-success">Publish</button>
-                                </form>
-                                <a href="{{ path('admin_ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-info" title="Creative View"><i class="fas fa-eye"></i></a>
-                                <a href="{{ path('admin_ticket_edit', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary" title="Edit with AI"><i class="fas fa-edit"></i></a>
-                                <a href="{{ path('admin_pending_ticket_send_back', { id: ticket.id }) }}" class="btn btn-sm btn-warning">Send back</a>
-                                <a href="{{ path('admin_pending_ticket_refuse', { id: ticket.id }) }}" class="btn btn-sm btn-danger">Refuse</a>
-                            </td>
-                        </tr>
-                        {% if ticket.adminNotes %}
-                            <tr class="table-light">
-                                <td colspan="6" class="small">
-                                    <strong>Admin note:</strong> {{ ticket.adminNotes }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="row g-4">
+            {% for ticket in tickets %}
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm hover-shadow transition-all">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-5">
+                                    <div class="d-flex align-items-center gap-3 mb-2">
+                                        <span class="badge bg-{{ ticket.status.getBadgeClass() }}-subtle text-{{ ticket.status.getBadgeClass() }} px-3 py-2 rounded-pill">
+                                            {{ ticket.status.getLabel()|upper }}
+                                        </span>
+                                        <span class="text-muted small"><i class="fas fa-clock me-1"></i> {{ ticket.createdAt|date('d/m/Y H:i') }}</span>
+                                    </div>
+                                    <h5 class="mb-1 text-dark fw-bold">{{ ticket.title }}</h5>
+                                    <p class="text-muted small mb-0">{{ ticket.description|slice(0, 120) }}{% if ticket.description|length > 120 %}...{% endif %}</p>
+                                </div>
+                                
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div class="avatar-sm bg-eco-forest rounded-circle text-white d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                            {{ ticket.user.firstname|first }}{{ ticket.user.lastname|first }}
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold small">{{ ticket.user.firstname }} {{ ticket.user.lastname }}</div>
+                                            <div class="text-muted" style="font-size: 0.7rem;">{{ ticket.user.email }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="small">
+                                        <span class="text-muted">Priority:</span> 
+                                        <span class="text-{{ ticket.priority.getBadgeClass() }} fw-bold">{{ ticket.priority.getLabel() }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                                    <div class="btn-group gap-2">
+                                        <a href="{{ path('admin_ticket_show', { id: ticket.id }) }}" class="btn btn-outline-info rounded-pill px-3" title="Review Creative">
+                                            <i class="fas fa-eye me-1"></i> View
+                                        </a>
+                                        <a href="{{ path('admin_ticket_edit', { id: ticket.id }) }}" class="btn btn-outline-primary rounded-pill px-3" title="Edit with AI">
+                                            <i class="fas fa-magic me-1"></i> Edit
+                                        </a>
+                                        
+                                        <div class="dropdown d-inline">
+                                            <button class="btn btn-dark rounded-pill px-3 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                Approve
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                                <li>
+                                                    <form action="{{ path('admin_pending_ticket_publish', { id: ticket.id }) }}" method="post" onsubmit="return confirm('Publish this ticket officially?');">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-publish-' ~ ticket.id) }}">
+                                                        <button type="submit" class="dropdown-item text-success">
+                                                            <i class="fas fa-check-circle me-2"></i> Publish Now
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item text-warning" href="{{ path('admin_pending_ticket_send_back', { id: ticket.id }) }}">
+                                                        <i class="fas fa-undo me-2"></i> Send Back with Note
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item text-danger" href="{{ path('admin_pending_ticket_refuse', { id: ticket.id }) }}">
+                                                        <i class="fas fa-times-circle me-2"></i> Refuse
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if ticket.adminNotes %}
+                                <div class="mt-3 p-2 bg-light rounded border-start border-4 border-warning small">
+                                    <strong class="text-warning"><i class="fas fa-sticky-note me-1"></i> Current Admin Note:</strong> 
+                                    <span class="text-muted italic">"{{ ticket.adminNotes }}"</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
         </div>
     {% endif %}
+
+    <style>
+        .hover-shadow:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+            z-index: 10;
+            position: relative;
+        }
+        .transition-all {
+            transition: all 0.3s ease;
+        }
+        /* Ensure card stays on top when dropdown is open */
+        .card:has(.dropdown.show) {
+            z-index: 1050 !important;
+            position: relative;
+        }
+        .bg-pending-subtle { background-color: #fff3cd; }
+        .bg-sent_back-subtle { background-color: #f8d7da; }
+        .text-sent_back { color: #842029; }
+    </style>
 {% endblock %}

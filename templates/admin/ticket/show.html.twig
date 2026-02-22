@@ -114,7 +114,7 @@
         <div class="row align-items-center">
             <div class="col-lg-8">
                 <span class="badge bg-white text-dark mb-3 px-3 py-2 rounded-pill fw-bold">ID #{{ ticket.id }}</span>
-                <h1 class="display-4 fw-bold mb-3">{{ ticket.title }}</h1>
+                <h1 class="display-4 fw-bold mb-3" style="color: #ffca3a;">{{ ticket.title }}</h1>
                 <div class="d-flex flex-wrap gap-4 mt-4">
                     <div class="d-flex align-items-center">
                         <i class="fas fa-calendar-alt me-2 fs-5 text-white-50"></i>
@@ -177,6 +177,19 @@
         </div>
 
         <div class="col-lg-4">
+            {% if ticket.image %}
+                <div class="ticket-image-container mb-4">
+                    <img src="{{ asset(ticket.image) }}" class="img-fluid w-100" alt="Ticket image" style="object-fit: cover;">
+                </div>
+            {% else %}
+                <div class="ticket-image-container mb-4 bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-image fs-1 mb-2"></i>
+                        <p class="mb-0">No image attached</p>
+                    </div>
+                </div>
+            {% endif %}
+
             <div class="glass-card mb-4 p-4 text-center">
                 <div class="info-label">Technical Details</div>
                 <hr class="opacity-10 my-3">
@@ -191,12 +204,6 @@
                     </div>
                 </div>
             </div>
-
-            {% if ticket.image %}
-                <div class="ticket-image-container">
-                    <img src="{{ asset('uploads/tickets/' ~ ticket.image) }}" class="img-fluid w-100" alt="Ticket image" style="object-fit: cover;">
-                </div>
-            {% endif %}
         </div>
     </div>
 </div>
