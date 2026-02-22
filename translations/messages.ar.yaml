@@ -40,6 +40,7 @@ common:
     my_tickets: "تذاكري"
     new_ticket: "تذكرة جديدة"
     community_tickets: "تذاكر المجتمع"
+    all_tickets: "كل التذاكر"
     achievements: "النجاحات"
     administration: "الإدارة"
     id: "المعرف"

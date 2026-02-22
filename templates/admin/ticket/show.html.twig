@@ -192,9 +192,9 @@
                 </div>
             </div>
 
-            {% if ticket.imageName %}
+            {% if ticket.image %}
                 <div class="ticket-image-container">
-                    <img src="{{ asset('uploads/tickets/' ~ ticket.imageName) }}" class="img-fluid w-100" alt="Ticket image" style="object-fit: cover;">
+                    <img src="{{ asset('uploads/tickets/' ~ ticket.image) }}" class="img-fluid w-100" alt="Ticket image" style="object-fit: cover;">
                 </div>
             {% endif %}
         </div>
