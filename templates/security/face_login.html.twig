@@ -5,26 +5,59 @@
 {% block body %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 text-center">
-            <h1 class="h3 mb-4">Face Recognition Login</h1>
-            
-            <div id="camera-container" class="position-relative bg-dark rounded overflow-hidden mb-3" style="max-width: 500px; margin: 0 auto; min-height: 375px;">
-                <video id="webcam" autoplay muted playsinline class="w-100 h-100" style="object-fit: cover;"></video>
-                <canvas id="snapshot" class="d-none" width="640" height="480"></canvas>
-                <div id="camera-loading" class="position-absolute top-50 start-50 translate-middle text-white">
-                    <div class="spinner-border" role="status"></div>
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="h4 mb-4 text-center">🤖 Face Recognition Login</h2>
+                    
+                    <div id="face-login-ui">
+                        <div class="mb-4">
+                            <label for="face-email" class="form-label fw-bold">1. Enter your registered email</label>
+                            <input type="email" id="face-email" class="form-control form-control-lg"
+                                   placeholder="your@email.com" autocomplete="email">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">2. Position your face</label>
+                            <div id="camera-container" class="position-relative mb-3 rounded-4 overflow-hidden bg-dark d-flex align-items-center justify-content-center" style="height:350px; border: 3px solid #f8f9fa;">
+                                <video id="face-video" autoplay muted playsinline class="w-100 h-100 d-none" style="object-fit:cover;"></video>
+                                <canvas id="face-snapshot" class="d-none" width="640" height="480"></canvas>
+                                
+                                <div id="face-placeholder" class="text-center p-4">
+                                    <div class="mb-3 text-muted">
+                                        <i class="fas fa-video-slash fa-4x mb-3"></i>
+                                    </div>
+                                    <h5 class="text-white">Camera is Off</h5>
+                                    <p class="text-white opacity-75 small">Click the button below to start</p>
+                                    <button id="btn-start-camera" class="btn btn-primary mt-3">
+                                        <i class="fas fa-camera me-2"></i>Enable Camera
+                                    </button>
+                                </div>
+
+                                <div id="camera-spinner" class="spinner-border text-light d-none" role="status" style="width: 3rem; height: 3rem;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="face-status" class="alert d-none mb-4" role="alert"></div>
+
+                        <div class="d-grid gap-3">
+                            <button id="btn-scan-face" class="btn btn-success btn-lg d-none">
+                                <span id="face-scan-spinner" class="spinner-border spinner-border-sm d-none me-2"></span>
+                                <i class="fas fa-user-check me-2"></i>Verify & Log In
+                            </button>
+                            <div class="d-flex gap-2">
+                                <button id="btn-stop-camera" class="btn btn-outline-danger flex-grow-1 d-none">
+                                    Stop Camera
+                                </button>
+                                <a href="{{ path('app_login') }}" class="btn btn-outline-secondary flex-grow-1">
+                                    Use Password
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <div id="status-message" class="alert d-none mb-3"></div>
-
-            <div class="d-grid gap-2 col-8 mx-auto">
-                <button id="btn-login" class="btn btn-primary btn-lg" disabled>
-                    <i class="fas fa-user-check me-2"></i>Login with Face
-                </button>
-                <a href="{{ path('app_login') }}" class="btn btn-outline-secondary">
-                    Use Password instead
-                </a>
             </div>
         </div>
     </div>
@@ -34,91 +67,111 @@
 {% block javascripts %}
 {{ parent() }}
 <script>
-    const video = document.getElementById('webcam');
-    const canvas = document.getElementById('snapshot');
-    const btnLogin = document.getElementById('btn-login');
-    const statusMsg = document.getElementById('status-message');
-    const loader = document.getElementById('camera-loading');
+    (function () {
+        'use strict';
 
-    function showStatus(msg, type = 'info') {
-        statusMsg.textContent = msg;
-        statusMsg.className = `alert alert-${type} mb-3`;
-        statusMsg.classList.remove('d-none');
-    }
+        const VERIFY_URL = "{{ path('face_verify') }}";
+        let stream = null;
 
-    async function initCamera() {
-        if (!window.isSecureContext) {
-            showStatus("❌ Camera requires a secure context (HTTPS or localhost). Please check your URL.", "danger");
-            loader.innerHTML = '<i class="fas fa-shield-alt fa-3x text-warning"></i>';
-            return;
+        const $ = id => document.getElementById(id);
+        const video = $('face-video');
+        const canvas = $('face-snapshot');
+        const statusBox = $('face-status');
+        const btnStart = $('btn-start-camera');
+        const btnScan = $('btn-scan-face');
+        const btnStop = $('btn-stop-camera');
+        const placeholder = $('face-placeholder');
+        const spinner = $('face-scan-spinner');
+        const camSpinner = $('camera-spinner');
+
+        function showStatus(msg, type = 'info') {
+            statusBox.className = `alert alert-${type} mb-4`;
+            statusBox.textContent = msg;
+            statusBox.classList.remove('d-none');
         }
 
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    width: { ideal: 640 },
-                    height: { ideal: 480 },
-                    facingMode: "user"
-                } 
-            });
-            video.srcObject = stream;
-            video.onloadedmetadata = () => {
-                loader.classList.add('d-none');
-                btnLogin.disabled = false;
-            };
-        } catch (err) {
-            console.error("Error accessing webcam:", err);
-            let message = "Could not access camera.";
-            
-            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                message = "🚫 Permission denied. Please click the camera icon in your browser address bar and allow access.";
-            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                message = "📷 No camera found. Please ensure your webcam is plugged in.";
-            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-                message = "⚠️ Camera is already in use by another application.";
-            } else if (err.name === 'SecurityError') {
-                message = "🔒 Security error: Camera access blocked by browser policy.";
+        async function startCamera() {
+            if (!window.isSecureContext) {
+                showStatus("❌ Face ID requires a secure context (HTTPS or localhost).", "danger");
+                return;
             }
-            
-            showStatus(message, "danger");
-            loader.innerHTML = '<i class="fas fa-video-slash fa-3x text-danger"></i>';
-        }
-    }
 
-    btnLogin.addEventListener('click', async () => {
-        btnLogin.disabled = true;
-        showStatus("Analyzing face...", "info");
+            camSpinner.classList.remove('d-none');
+            placeholder.classList.add('d-none');
+            btnStart.disabled = true;
 
-        // Capture frame
-        const context = canvas.getContext('2d');
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const base64Image = canvas.toDataURL('image/jpeg', 0.8);
-
-        try {
-            const response = await fetch("{{ path('face_verify') }}", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ image: base64Image })
-            });
-
-            const data = await response.json();
-
-            if (data.status === 'success') {
-                showStatus("✅ Face recognized! Redirecting...", "success");
-                setTimeout(() => window.location.href = data.redirect, 1000);
-            } else {
-                showStatus("❌ " + (data.message || "Face not recognized"), "danger");
-                btnLogin.disabled = false;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } } 
+                });
+                video.srcObject = stream;
+                video.classList.remove('d-none');
+                btnScan.classList.remove('d-none');
+                btnStop.classList.remove('d-none');
+                statusBox.classList.add('d-none');
+            } catch (e) {
+                console.error(e);
+                showStatus('🚫 Camera access denied. Please check site permissions.', 'danger');
+                placeholder.classList.remove('d-none');
+            } finally {
+                camSpinner.classList.add('d-none');
+                btnStart.disabled = false;
             }
-        } catch (err) {
-            console.error("Auth error:", err);
-            showStatus("Server error during recognition.", "danger");
-            btnLogin.disabled = false;
         }
-    });
 
-    document.addEventListener('DOMContentLoaded', () => {
-        initCamera();
-    });
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+            video.srcObject = null;
+            video.classList.add('d-none');
+            placeholder.classList.remove('d-none');
+            btnScan.classList.add('d-none');
+            btnStop.classList.add('d-none');
+        }
+
+        btnStart.addEventListener('click', startCamera);
+        btnStop.addEventListener('click', () => { stopCamera(); statusBox.classList.add('d-none'); });
+
+        btnScan.addEventListener('click', async () => {
+            const email = $('face-email').value.trim();
+            if (!email) { showStatus('Please enter your email first.', 'warning'); return; }
+            if (!stream) { showStatus('Please start the camera first.', 'warning'); return; }
+
+            btnScan.disabled = true;
+            spinner.classList.remove('d-none');
+            showStatus('🤖 AI is verifying your identity...', 'info');
+
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+
+            try {
+                const response = await fetch(VERIFY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ image: base64Image }),
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    showStatus('✅ Identity verified! Redirecting...', 'success');
+                    stopCamera();
+                    setTimeout(() => { window.location.href = data.redirect || '/'; }, 800);
+                } else {
+                    showStatus(data.message || 'Face not recognized.', 'danger');
+                    btnScan.disabled = false;
+                }
+            } catch (e) {
+                console.error(e);
+                showStatus('⚠️ Connection error. Please try again.', 'danger');
+                btnScan.disabled = false;
+            } finally {
+                spinner.classList.add('d-none');
+            }
+        });
+    })();
 </script>
 {% endblock %}
