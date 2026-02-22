@@ -74,6 +74,13 @@ class PendingTicketsController extends AbstractController
             $note = $request->request->get('note', '');
             $ticket->setAdminNotes($note !== '' ? $note : null);
             $ticket->setStatus(TicketStatus::REFUSED);
+            
+            // Optional: Put user in timeout if marked as spam
+            if ($request->request->get('spam_timeout')) {
+                $ticket->getUser()->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                $this->addFlash('warning', 'User has been put in a 24-hour timeout.');
+            }
+
             $this->ticketRepository->save($ticket);
             $this->addFlash('success', 'Ticket refused.');
             return $this->redirectToRoute('admin_pending_tickets');

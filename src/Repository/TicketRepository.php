@@ -157,4 +157,18 @@ class TicketRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countRecentSpamByUser(User $user, \DateTimeImmutable $since): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->where('t.user = :user')
+            ->andWhere('t.isSpam = :isSpam')
+            ->andWhere('t.createdAt >= :since')
+            ->setParameter('user', $user)
+            ->setParameter('isSpam', true)
+            ->setParameter('since', $since)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
 }

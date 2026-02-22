@@ -62,6 +62,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'user', orphanRemoval: true)]
     private \Doctrine\Common\Collections\Collection $reactions;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $timeoutUntil = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -220,5 +223,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getReactions(): \Doctrine\Common\Collections\Collection
     {
         return $this->reactions;
+    }
+
+    public function getTimeoutUntil(): ?\DateTimeImmutable
+    {
+        return $this->timeoutUntil;
+    }
+
+    public function setTimeoutUntil(?\DateTimeImmutable $timeoutUntil): static
+    {
+        $this->timeoutUntil = $timeoutUntil;
+        return $this;
+    }
+
+    public function isTimedOut(): bool
+    {
+        return $this->timeoutUntil !== null && $this->timeoutUntil > new \DateTimeImmutable();
     }
 }

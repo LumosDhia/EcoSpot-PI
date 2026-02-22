@@ -99,6 +99,35 @@ class UsersController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/timeout', name: 'admin_user_timeout', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function timeout(Request $request, User $user): Response
+    {
+        if ($user->getId() === $this->getUser()->getId()) {
+            $this->addFlash('error', 'You cannot put yourself in timeout.');
+            return $this->redirectToRoute('admin_users_index');
+        }
+
+        if ($this->isCsrfTokenValid('timeout' . $user->getId(), (string) $request->request->get('_token'))) {
+            $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+            $this->entityManager->flush();
+            $this->addFlash('success', 'User put in 24-hour timeout.');
+        }
+
+        return $this->redirectToRoute('admin_users_index');
+    }
+
+    #[Route('/{id}/remove-timeout', name: 'admin_user_remove_timeout', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function removeTimeout(Request $request, User $user): Response
+    {
+        if ($this->isCsrfTokenValid('remove-timeout' . $user->getId(), (string) $request->request->get('_token'))) {
+            $user->setTimeoutUntil(null);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Timeout removed for this user.');
+        }
+
+        return $this->redirectToRoute('admin_users_index');
+    }
+
     /** @param list<string> $roles */
     private function getUserTypeFromRoles(array $roles): string
     {
