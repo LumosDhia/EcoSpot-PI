@@ -49,6 +49,10 @@ services:
         arguments:
             $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'
 
+    App\Service\SpamDetectionService:
+        arguments:
+            $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'
+
     App\Service\Blog\UnsplashImageService:
         arguments:
             $unsplashAccessKey: '%env(UNSPLASH_ACCESS_KEY)%'

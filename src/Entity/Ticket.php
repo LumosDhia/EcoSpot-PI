@@ -113,6 +113,9 @@ class Ticket
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $consignes;
 
+    #[ORM\Column]
+    private ?bool $isSpam = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -358,6 +361,18 @@ class Ticket
                 $consigne->setTicket(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isSpam(): ?bool
+    {
+        return $this->isSpam;
+    }
+
+    public function setIsSpam(bool $isSpam): static
+    {
+        $this->isSpam = $isSpam;
 
         return $this;
     }

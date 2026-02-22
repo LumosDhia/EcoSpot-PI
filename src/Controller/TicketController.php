@@ -9,6 +9,7 @@ use App\Enum\TicketStatus;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use App\Service\OpenMeteoWeatherService;
+use App\Service\SpamDetectionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,8 @@ class TicketController extends AbstractController
 {
     public function __construct(
         private readonly TicketRepository $ticketRepository,
-        private readonly OpenMeteoWeatherService $weatherService
+        private readonly OpenMeteoWeatherService $weatherService,
+        private readonly SpamDetectionService $spamDetectionService
     ) {
     }
 
@@ -55,6 +57,11 @@ class TicketController extends AbstractController
             } else {
                 $this->handleTicketImage($form, $ticket);
                 $ticket->setUser($this->getUser());
+                
+                // AI Spam Check
+                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription() ?? '');
+                $ticket->setIsSpam($isSpam);
+
                 $this->ticketRepository->save($ticket);
                 $this->addFlash('success', 'Ticket created. It will be reviewed by the administration.');
                 return $this->redirectToRoute('ticket_my_list');
@@ -89,6 +96,11 @@ class TicketController extends AbstractController
                 $this->handleTicketImage($form, $ticket);
                 $ticket->setStatus(TicketStatus::PENDING);
                 $ticket->setAdminNotes(null);
+                
+                // AI Spam Re-check on resubmit
+                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription() ?? '');
+                $ticket->setIsSpam($isSpam);
+
                 $this->ticketRepository->save($ticket);
                 $this->addFlash('success', 'Ticket updated and resubmitted for review.');
                 return $this->redirectToRoute('ticket_my_list');

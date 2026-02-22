@@ -26,6 +26,11 @@
                                         <span class="badge bg-{{ ticket.status.getBadgeClass() }}-subtle text-{{ ticket.status.getBadgeClass() }} px-3 py-2 rounded-pill">
                                             {{ ticket.status.getLabel()|upper }}
                                         </span>
+                                        {% if ticket.isSpam %}
+                                            <span class="badge bg-danger rounded-pill px-3 py-2">
+                                                <i class="fas fa-exclamation-triangle me-1"></i> SPAM
+                                            </span>
+                                        {% endif %}
                                         <span class="text-muted small"><i class="fas fa-clock me-1"></i> {{ ticket.createdAt|date('d/m/Y H:i') }}</span>
                                     </div>
                                     <h5 class="mb-1 text-dark fw-bold">{{ ticket.title }}</h5>

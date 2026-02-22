@@ -75,6 +75,11 @@ class TicketType extends AbstractType
                     'label' => 'Admin Notes',
                     'required' => false,
                     'attr' => ['class' => 'form-control', 'rows' => 3]
+                ])
+                ->add('isSpam', \Symfony\Component\Form\Extension\Core\Type\CheckboxType::class, [
+                    'label' => 'Mark as SPAM',
+                    'required' => false,
+                    'help' => 'Flag this ticket as spam or out of context.'
                 ]);
         }
     }

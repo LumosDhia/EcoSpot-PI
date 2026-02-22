@@ -21,7 +21,14 @@
                     {% for ticket in tickets %}
                         <tr>
                             <td>
-                                <div class="fw-bold text-dark">{{ ticket.title }}</div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="fw-bold text-dark">{{ ticket.title }}</div>
+                                    {% if ticket.isSpam %}
+                                        <span class="badge bg-danger rounded-pill px-2 py-1" style="font-size: 0.65rem;">
+                                            <i class="fas fa-exclamation-triangle"></i> SPAM
+                                        </span>
+                                    {% endif %}
+                                </div>
                                 <div class="small text-muted">{{ ticket.createdAt|date('d/m/Y H:i') }}</div>
                             </td>
                             <td>
