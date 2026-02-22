@@ -62,12 +62,28 @@ class TicketType extends AbstractType
                 'by_reference' => false,
                 'label' => false,
             ]);
+
+        if ($options['is_admin']) {
+            $builder
+                ->add('status', EnumType::class, [
+                    'class' => \App\Enum\TicketStatus::class,
+                    'label' => 'Status',
+                    'choice_label' => fn($s) => $s->getLabel(),
+                    'attr' => ['class' => 'form-select']
+                ])
+                ->add('adminNotes', TextareaType::class, [
+                    'label' => 'Admin Notes',
+                    'required' => false,
+                    'attr' => ['class' => 'form-control', 'rows' => 3]
+                ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Ticket::class,
+            'is_admin' => false
         ]);
     }
 }

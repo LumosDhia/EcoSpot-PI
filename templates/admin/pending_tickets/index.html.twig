@@ -37,6 +37,8 @@
                                     <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-publish-' ~ ticket.id) }}">
                                     <button type="submit" class="btn btn-sm btn-success">Publish</button>
                                 </form>
+                                <a href="{{ path('admin_ticket_show', { id: ticket.id }) }}" class="btn btn-sm btn-outline-info" title="Creative View"><i class="fas fa-eye"></i></a>
+                                <a href="{{ path('admin_ticket_edit', { id: ticket.id }) }}" class="btn btn-sm btn-outline-primary" title="Edit with AI"><i class="fas fa-edit"></i></a>
                                 <a href="{{ path('admin_pending_ticket_send_back', { id: ticket.id }) }}" class="btn btn-sm btn-warning">Send back</a>
                                 <a href="{{ path('admin_pending_ticket_refuse', { id: ticket.id }) }}" class="btn btn-sm btn-danger">Refuse</a>
                             </td>

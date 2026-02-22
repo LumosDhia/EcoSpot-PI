@@ -26,7 +26,10 @@
             body { font-family: 'Roboto', sans-serif; background-color: var(--admin-bg); min-height: 100vh; }
             .admin-sidebar {
                 background: linear-gradient(180deg, var(--admin-sidebar) 0%, var(--eco-forest) 100%);
-                min-height: 100vh;
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
                 padding: 1.5rem 0;
                 box-shadow: 4px 0 15px rgba(0,0,0,0.05);
             }
@@ -171,6 +174,7 @@
                         <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_blog_comment' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_blog_comment_index') }}"><i class="fas fa-comments"></i> {{ 'common.comments'|trans }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_events' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_events_index') }}"><i class="fas fa-calendar-alt"></i> {{ 'common.events'|trans }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_pending_tickets' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_pending_tickets') }}"><i class="fas fa-ticket-alt"></i> {{ 'common.pending_tickets'|trans }}</a></li>
+                        <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_ticket' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_ticket_index') }}"><i class="fas fa-list-ul"></i> {{ 'common.all_tickets'|trans }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_completions' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_completions_index') }}"><i class="fas fa-check-double"></i> {{ 'common.completions'|trans }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_users' in (app.request.attributes.get('_route') ?? '') ? 'active' : '' }}" href="{{ path('admin_users_index') }}"><i class="fas fa-users"></i> {{ 'common.users'|trans }}</a></li>
                         <li class="nav-item"><a class="nav-link {{ app.request.attributes.get('_route') is defined and 'admin_sponsors' in app.request.attributes.get('_route') ? 'active' : '' }}" href="{{ path('admin_sponsors_index') }}"><i class="fas fa-hand-holding-heart"></i> {{ 'common.sponsors'|trans }}</a></li>

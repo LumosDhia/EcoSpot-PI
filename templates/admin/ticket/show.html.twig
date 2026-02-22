@@ -1,0 +1,215 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Ticket #{{ ticket.id }} - Creative View{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        :root {
+            --eco-glass: rgba(255, 255, 255, 0.7);
+            --eco-blur: blur(12px);
+            --eco-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+        .ticket-hero {
+            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: -4rem;
+            box-shadow: var(--eco-shadow);
+        }
+
+        .ticket-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .glass-card {
+            background: var(--eco-glass);
+            backdrop-filter: var(--eco-blur);
+            -webkit-backdrop-filter: var(--eco-blur);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--eco-shadow);
+        }
+
+        .info-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #64748b;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .consigne-pill {
+            background: white;
+            border-left: 4px solid #40916c;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .consigne-pill:hover {
+            transform: translateX(5px);
+        }
+
+        .difficulty-badge {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .ticket-image-container {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--eco-shadow);
+            max-height: 400px;
+        }
+
+        .action-btns {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        @media print {
+            .admin-sidebar, .action-btns, .breadcrumb, h1 { display: none !important; }
+            .flex-grow-1 { padding: 0 !important; }
+            .ticket-hero { background: #1b4332 !important; color: white !important; margin-bottom: 2rem !important; -webkit-print-color-adjust: exact; }
+            .glass-card { box-shadow: none !important; border: 1px solid #ddd !important; background: white !important; }
+            body { background: white !important; }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <div class="ticket-hero mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge bg-white text-dark mb-3 px-3 py-2 rounded-pill fw-bold">ID #{{ ticket.id }}</span>
+                <h1 class="display-4 fw-bold mb-3">{{ ticket.title }}</h1>
+                <div class="d-flex flex-wrap gap-4 mt-4">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2 fs-5 text-white-50"></i>
+                        <span>{{ ticket.createdAt|date('F d, Y') }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user-circle me-2 fs-5 text-white-50"></i>
+                        <span>{{ ticket.user.firstname }} {{ ticket.user.lastname }}</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-map-marker-alt me-2 fs-5 text-white-50"></i>
+                        <span>{{ ticket.location }}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                <div class="badge bg-{{ ticket.status.getBadgeClass() }} p-3 fs-5 rounded-pill shadow-sm">
+                    {{ ticket.status.getLabel() }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="glass-card mb-4">
+                <div class="info-label">Description</div>
+                <p class="lead text-dark" style="line-height: 1.8;">{{ ticket.description|nl2br }}</p>
+            </div>
+
+            <div class="glass-card mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="info-label mb-0">Action Steps & Instructions</div>
+                    <span class="badge bg-eco-cream text-eco-forest rounded-pill px-3">{{ ticket.consignes|length }} Tasks</span>
+                </div>
+                
+                <div class="consignes-list">
+                    {% for consigne in ticket.consignes|sort((a, b) => a.position <=> b.position) %}
+                        <div class="consigne-pill">
+                            <div class="bg-eco-forest text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; flex-shrink: 0;">{{ loop.index }}</div>
+                            <div class="flex-grow-1 fs-5">{{ consigne.description }}</div>
+                            <span class="difficulty-badge bg-{{ consigne.difficulty.getBadgeClass() }}-subtle text-{{ consigne.difficulty.getBadgeClass() }}">
+                                {{ consigne.difficulty.getLabel() }}
+                            </span>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4 text-muted border-dashed rounded">
+                            No specific instructions provided.
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if ticket.adminNotes %}
+                <div class="glass-card" style="border-left: 8px solid #6c5ce7;">
+                    <div class="info-label" style="color: #6c5ce7;">Internal Admin Note</div>
+                    <p class="mb-0 italic text-muted fw-500">"{{ ticket.adminNotes }}"</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="glass-card mb-4 p-4 text-center">
+                <div class="info-label">Technical Details</div>
+                <hr class="opacity-10 my-3">
+                <div class="row g-3">
+                    <div class="col-6 border-end">
+                        <div class="info-label fs-xs">Priority</div>
+                        <div class="info-value text-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel() }}</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="info-label fs-xs">Domain</div>
+                        <div class="info-value">{{ ticket.domain.getLabel() }}</div>
+                    </div>
+                </div>
+            </div>
+
+            {% if ticket.imageName %}
+                <div class="ticket-image-container">
+                    <img src="{{ asset('uploads/tickets/' ~ ticket.imageName) }}" class="img-fluid w-100" alt="Ticket image" style="object-fit: cover;">
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="action-btns">
+    <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 py-2 shadow">
+        <i class="fas fa-print me-2"></i> Print Ticket
+    </button>
+    <a href="{{ path('admin_ticket_edit', {id: ticket.id}) }}" class="btn btn-primary rounded-pill px-4 py-2 shadow">
+        <i class="fas fa-magic me-2"></i> Edit with AI
+    </a>
+    <a href="{{ path('admin_ticket_index') }}" class="btn btn-outline-secondary rounded-pill px-4 py-2 shadow bg-white">
+        Back to List
+    </a>
+</div>
+{% endblock %}

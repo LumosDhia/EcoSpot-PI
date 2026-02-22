@@ -1,0 +1,238 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}Edit Ticket #{{ ticket.id }} - EcoSpot Admin{% endblock %}
+{% block page_title %}Administrative Ticket Edition{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Ticket Details</h5>
+                    <span class="badge bg-white text-primary">Original Reporter: {{ ticket.user.firstname }} {{ ticket.user.lastname }}</span>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form) }}
+                    {{ form_errors(form) }}
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            {{ form_row(form.title) }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form_row(form.status) }}
+                        </div>
+
+                        <div class="col-12">
+                            {{ form_row(form.description) }}
+                        </div>
+
+                        <div class="col-md-6">
+                            {{ form_row(form.priority) }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form_row(form.domain) }}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Location</label>
+                            <div id="ticket-location-search-wrap" class="mb-2 position-relative {{ ticket.latitude and ticket.longitude ? 'd-none' : '' }}">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" id="ticket-place-search" class="form-control" placeholder="Search for a place..." autocomplete="off">
+                                    <button type="button" class="btn btn-primary" id="ticket-location-search-btn">Find</button>
+                                </div>
+                                <div id="ticket-geocode-results" class="list-group mt-1 position-absolute start-0 w-100 shadow-lg" style="z-index: 1050; display: none; max-height: 250px; overflow-y: auto; background: #fff;"></div>
+                            </div>
+                            <div id="ticket-location-selected" class="{{ ticket.latitude and ticket.longitude ? '' : 'd-none' }}">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-success text-white border-success"><i class="fas fa-check"></i></span>
+                                    <input type="text" id="ticket_location_display" class="form-control bg-light" readonly value="{{ ticket.location }}">
+                                    <button type="button" class="btn btn-outline-secondary" id="ticket-location-clear">Change</button>
+                                </div>
+                            </div>
+                            {{ form_widget(form.location, { attr: { class: 'd-none' } }) }}
+                            {{ form_widget(form.latitude) }}
+                            {{ form_widget(form.longitude) }}
+                        </div>
+
+                        <div class="col-12">
+                            {{ form_row(form.adminNotes) }}
+                        </div>
+                    </div>
+
+                    <div class="my-4 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0 text-primary"><i class="fas fa-magic me-2"></i> Action Plan & Tasks</h5>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill" id="ai-suggest-tasks">
+                                <i class="fas fa-sparkles me-1"></i> Regenerate with AI
+                            </button>
+                        </div>
+
+                        {% set task_prototype %}
+                            <div class="consigne-item d-flex gap-3 align-items-start mb-3 p-3 bg-light border rounded position-relative">
+                                <div class="consigne-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;"></div>
+                                <div class="flex-grow-1">
+                                    <div class="row g-2">
+                                        <div class="col-md-9">{{ form_widget(form.consignes.vars.prototype.description) }}</div>
+                                        <div class="col-md-3">{{ form_widget(form.consignes.vars.prototype.difficulty) }}</div>
+                                    </div>
+                                    {{ form_widget(form.consignes.vars.prototype.position) }}
+                                </div>
+                                <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        {% endset %}
+
+                        <div id="consignes-list" 
+                             data-prototype="{{ task_prototype|e('html_attr') }}"
+                             data-index="{{ form.consignes|length }}">
+                            
+                            {% for consigne in form.consignes %}
+                                <div class="consigne-item d-flex gap-3 align-items-start mb-3 p-3 bg-white border rounded shadow-sm">
+                                    <div class="consigne-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;">{{ loop.index }}</div>
+                                    <div class="flex-grow-1">
+                                        <div class="row g-2">
+                                            <div class="col-md-9">{{ form_widget(consigne.description) }}</div>
+                                            <div class="col-md-3">{{ form_widget(consigne.difficulty) }}</div>
+                                        </div>
+                                        {{ form_widget(consigne.position) }}
+                                    </div>
+                                    <button type="button" class="btn btn-link remove-consigne p-0 text-danger text-decoration-none">
+                                        <i class="fas fa-times-circle fs-5"></i>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="add-consigne">
+                            <i class="fas fa-plus me-1"></i> Add Manual Task
+                        </button>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary px-5">Save All Changes</button>
+                        <a href="{{ path('admin_ticket_index') }}" class="btn btn-outline-secondary">Discard</a>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Location logic
+        const locationInput = document.getElementById('ticket_location');
+        const locationDisplay = document.getElementById('ticket_location_display');
+        const latInput = document.getElementById('ticket_latitude');
+        const lngInput = document.getElementById('ticket_longitude');
+        const searchInput = document.getElementById('ticket-place-search');
+        const searchWrap = document.getElementById('ticket-location-search-wrap');
+        const selectedWrap = document.getElementById('ticket-location-selected');
+        const searchBtn = document.getElementById('ticket-location-search-btn');
+        const clearBtn = document.getElementById('ticket-location-clear');
+        const resultsEl = document.getElementById('ticket-geocode-results');
+
+        function doSearch() {
+            const q = searchInput.value.trim();
+            if (q.length < 2) { resultsEl.style.display = 'none'; return; }
+            resultsEl.innerHTML = '<div class="list-group-item">Searching...</div>';
+            resultsEl.style.display = 'block';
+            fetch('{{ path('api_geocode') }}?q=' + encodeURIComponent(q))
+                .then(r => r.json())
+                .then(data => {
+                    resultsEl.innerHTML = data.map(r => `
+                        <a href="#" class="list-group-item list-group-item-action" 
+                           data-name="${r.display_name.replace(/"/g, '&quot;')}" 
+                           data-lat="${r.lat}" data-lon="${r.lon}">${r.display_name}</a>
+                    `).join('');
+                });
+        }
+
+        searchBtn.addEventListener('click', doSearch);
+        searchInput.addEventListener('keypress', e => { if (e.key === 'Enter') { e.preventDefault(); doSearch(); } });
+        clearBtn.addEventListener('click', () => {
+            locationInput.value = ''; locationDisplay.value = ''; latInput.value = ''; lngInput.value = '';
+            searchWrap.classList.remove('d-none'); selectedWrap.classList.add('d-none');
+        });
+
+        resultsEl.addEventListener('click', e => {
+            e.preventDefault();
+            const a = e.target.closest('a[data-lat]'); if (!a) return;
+            locationInput.value = a.dataset.name; locationDisplay.value = a.dataset.name;
+            latInput.value = a.dataset.lat; lngInput.value = a.dataset.lon;
+            resultsEl.style.display = 'none'; searchWrap.classList.add('d-none'); selectedWrap.classList.remove('d-none');
+        });
+
+        // Tasks logic
+        const addBtn = document.getElementById('add-consigne');
+        const list = document.getElementById('consignes-list');
+        let index = parseInt(list.dataset.index);
+
+        function updatePositions() {
+            list.querySelectorAll('.consigne-item').forEach((item, idx) => {
+                item.querySelector('.consigne-number').textContent = idx + 1;
+                item.querySelector('.consigne-position').value = idx;
+            });
+        }
+
+        addBtn.addEventListener('click', () => {
+            const div = document.createElement('div');
+            div.className = 'consigne-item d-flex gap-3 align-items-start mb-3 p-3 bg-white border rounded shadow-sm';
+            div.innerHTML = list.dataset.prototype.replace(/__name__/g, index);
+            list.appendChild(div); index++; updatePositions();
+        });
+
+        list.addEventListener('click', e => {
+            const btn = e.target.closest('.remove-consigne');
+            if (btn) { btn.closest('.consigne-item').remove(); updatePositions(); }
+        });
+
+        // AI Magic
+        const aiBtn = document.getElementById('ai-suggest-tasks');
+        aiBtn.addEventListener('click', async () => {
+            const title = document.getElementById('ticket_title').value;
+            const description = document.getElementById('ticket_description').value;
+            aiBtn.disabled = true; aiBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Thinking...';
+            
+            try {
+                const response = await fetch('{{ path('api_ticket_ai_tasks') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description })
+                });
+                const data = await response.json();
+                
+                // Priority magic
+                const prioritySelect = document.getElementById('ticket_priority');
+                if (prioritySelect && data.priority) {
+                    prioritySelect.value = data.priority;
+                    const container = prioritySelect.closest('.mb-3') || prioritySelect.parentElement;
+                    container.classList.add('ai-magic-priority', 'ai-highlight');
+                    setTimeout(() => container.classList.remove('ai-highlight'), 1500);
+                }
+
+                data.tasks.forEach((t, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'consigne-item ai-magic-item d-flex gap-3 align-items-start mb-3 p-3 bg-white border rounded shadow-sm';
+                    div.innerHTML = list.dataset.prototype.replace(/__name__/g, index);
+                    index++;
+                    setTimeout(() => {
+                        list.appendChild(div);
+                        const inp = div.querySelector('input[type="text"]');
+                        const sel = div.querySelector('select');
+                        inp.value = t.description; sel.value = t.difficulty;
+                        inp.addEventListener('input', () => div.classList.remove('ai-magic-item'), {once: true});
+                        sel.addEventListener('change', () => div.classList.remove('ai-magic-item'), {once: true});
+                        updatePositions();
+                    }, i * 150);
+                });
+            } finally { aiBtn.disabled = false; aiBtn.innerHTML = '<i class="fas fa-sparkles me-1"></i> Regenerate with AI'; }
+        });
+    });
+    </script>
+{% endblock %}

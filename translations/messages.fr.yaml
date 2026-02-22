@@ -39,6 +39,7 @@ common:
     my_tickets: "Mes tickets"
     new_ticket: "Nouveau ticket"
     community_tickets: "Tickets de la communauté"
+    all_tickets: "Tous les tickets"
     achievements: "Succès"
     administration: "Administration"
     id: "Id"

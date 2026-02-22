@@ -1,0 +1,62 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}All Tickets - EcoSpot Admin{% endblock %}
+{% block page_title %}All Tickets Management{% endblock %}
+
+{% block body %}
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="bg-light">
+                    <tr>
+                        <th>Ticket Info</th>
+                        <th>Reporter</th>
+                        <th>Priority & Domain</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold text-dark">{{ ticket.title }}</div>
+                                <div class="small text-muted">{{ ticket.createdAt|date('d/m/Y H:i') }}</div>
+                            </td>
+                            <td>
+                                <div>{{ ticket.user.firstname }} {{ ticket.user.lastname }}</div>
+                                <div class="small text-muted">{{ ticket.user.email }}</div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill bg-{{ ticket.priority.getBadgeClass() }} me-1">{{ ticket.priority.getLabel() }}</span>
+                                <span class="badge rounded-pill bg-light text-dark border">{{ ticket.domain.getLabel() }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel() }}</span>
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group">
+                                    <a href="{{ path('admin_ticket_show', {id: ticket.id}) }}" class="btn btn-outline-info btn-sm" title="Creative View">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ path('admin_ticket_edit', {id: ticket.id}) }}" class="btn btn-outline-primary btn-sm" title="Edit with AI">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-ticket-alt d-block fs-1 mb-2 opacity-25"></i>
+                                No tickets found in the system.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
