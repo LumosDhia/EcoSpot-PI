@@ -9,6 +9,7 @@ use App\Enum\TicketStatus;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
 use App\Service\OpenMeteoWeatherService;
+use App\Service\SpamDetectionService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,9 @@ class TicketController extends AbstractController
 {
     public function __construct(
         private readonly TicketRepository $ticketRepository,
-        private readonly OpenMeteoWeatherService $weatherService
+        private readonly OpenMeteoWeatherService $weatherService,
+        private readonly SpamDetectionService $spamDetectionService,
+        private readonly \App\Service\NotificationService $notificationService
     ) {
     }
 
@@ -46,6 +49,14 @@ class TicketController extends AbstractController
     {
         $ticket = new Ticket();
         $ticket->setStatus(TicketStatus::PENDING);
+
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isTimedOut()) {
+            $this->addFlash('error', sprintf('Your account is temporarily in timeout due to multiple spam flags. You can submit new tickets after %s.', $user->getTimeoutUntil()->format('d/m/Y H:i')));
+            return $this->redirectToRoute('ticket_my_list');
+        }
+
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
 
@@ -55,7 +66,39 @@ class TicketController extends AbstractController
             } else {
                 $this->handleTicketImage($form, $ticket);
                 $ticket->setUser($this->getUser());
+                
+                // AI Spam Check
+                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription() ?? '');
+                $ticket->setIsSpam($isSpam);
+
                 $this->ticketRepository->save($ticket);
+
+                $this->notificationService->notify(
+                    $user,
+                    sprintf('Your ticket "%s" has been submitted and is pending review.', $ticket->getTitle()),
+                    'info',
+                    $ticket->getId()
+                );
+
+                // Automatic Timeout Logic
+                if ($isSpam) {
+                    $since = new \DateTimeImmutable('-24 hours');
+                    $spamCount = $this->ticketRepository->countRecentSpamByUser($user, $since);
+                    
+                    if ($spamCount > 3) {
+                        $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                        $this->ticketRepository->save($ticket);
+                        
+                        $this->notificationService->notify(
+                            $user,
+                            'Your account has been put in a 24-hour timeout due to repeated spam detection.',
+                            'danger'
+                        );
+
+                        $this->addFlash('warning', 'Your account has been put in a 24-hour timeout due to repeated spam detection.');
+                    }
+                }
+
                 $this->addFlash('success', 'Ticket created. It will be reviewed by the administration.');
                 return $this->redirectToRoute('ticket_my_list');
             }
@@ -69,7 +112,14 @@ class TicketController extends AbstractController
     #[Route('/{id}/edit', name: 'ticket_edit', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
     public function edit(Request $request, Ticket $ticket): Response
     {
-        if ($ticket->getUser() !== $this->getUser()) {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        if ($user->isTimedOut()) {
+            $this->addFlash('error', sprintf('Your account is temporarily in timeout. You cannot edit tickets until %s.', $user->getTimeoutUntil()->format('d/m/Y H:i')));
+            return $this->redirectToRoute('ticket_my_list');
+        }
+
+        if ($ticket->getUser() !== $user) {
             $this->addFlash('error', 'You cannot edit this ticket.');
             return $this->redirectToRoute('ticket_my_list');
         }
@@ -89,7 +139,39 @@ class TicketController extends AbstractController
                 $this->handleTicketImage($form, $ticket);
                 $ticket->setStatus(TicketStatus::PENDING);
                 $ticket->setAdminNotes(null);
+                
+                // AI Spam Re-check on resubmit
+                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription() ?? '');
+                $ticket->setIsSpam($isSpam);
+
                 $this->ticketRepository->save($ticket);
+
+                $this->notificationService->notify(
+                    $user,
+                    sprintf('You have resubmitted your ticket "%s" for review.', $ticket->getTitle()),
+                    'info',
+                    $ticket->getId()
+                );
+
+                // Automatic Timeout Logic on Edit
+                if ($isSpam) {
+                    $since = new \DateTimeImmutable('-24 hours');
+                    $spamCount = $this->ticketRepository->countRecentSpamByUser($user, $since);
+                    
+                    if ($spamCount > 3) {
+                        $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                        $this->ticketRepository->save($ticket);
+
+                        $this->notificationService->notify(
+                            $user,
+                            'Your account has been put in a 24-hour timeout due to repeated spam detection.',
+                            'danger'
+                        );
+
+                        $this->addFlash('warning', 'Your account has been put in a 24-hour timeout due to repeated spam detection.');
+                    }
+                }
+
                 $this->addFlash('success', 'Ticket updated and resubmitted for review.');
                 return $this->redirectToRoute('ticket_my_list');
             }

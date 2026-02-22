@@ -16,6 +16,7 @@
                     <th>Email</th>
                     <th>Name</th>
                     <th>Type</th>
+                    <th>Status</th>
                     <th class="text-end">Actions</th>
                 </tr>
             </thead>
@@ -33,14 +34,46 @@
                                 <span class="badge bg-secondary">Normal user</span>
                             {% endif %}
                         </td>
-                        <td class="text-end">
-                            <a href="{{ path('admin_user_edit_role', { id: user.id }) }}" class="btn btn-sm btn-outline-primary">Change type</a>
-                            {% if user.id != app.user.id %}
-                                <form method="post" action="{{ path('admin_user_delete', { id: user.id }) }}" class="d-inline" onsubmit="return confirm('Remove this user? This cannot be undone.');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
-                                </form>
+                        <td>
+                            {% if user.isTimedOut %}
+                                <span class="badge bg-warning text-dark" title="Until {{ user.timeoutUntil|date('d/m/Y H:i') }}">
+                                    <i class="fas fa-clock me-1"></i> Timeout
+                                </span>
+                            {% else %}
+                                <span class="badge bg-success-subtle text-success">Active</span>
                             {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                <a href="{{ path('admin_user_edit_role', { id: user.id }) }}" class="btn btn-sm btn-outline-primary" title="Edit Role">
+                                    <i class="fas fa-user-tag"></i>
+                                </a>
+                                
+                                {% if user.id != app.user.id %}
+                                    {% if user.isTimedOut %}
+                                        <form method="post" action="{{ path('admin_user_remove_timeout', { id: user.id }) }}" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('remove-timeout' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-success" title="Remove Timeout">
+                                                <i class="fas fa-user-check"></i>
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{{ path('admin_user_timeout', { id: user.id }) }}" class="d-inline" onsubmit="return confirm('Put this user in a 24-hour timeout? They will be blocked from creating tickets.');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('timeout' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-warning" title="Put in Timeout">
+                                                <i class="fas fa-user-slash"></i>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <form method="post" action="{{ path('admin_user_delete', { id: user.id }) }}" class="d-inline" onsubmit="return confirm('Remove this user? This cannot be undone.');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete User">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}

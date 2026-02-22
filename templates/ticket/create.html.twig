@@ -94,6 +94,50 @@
         .location-search-wrap:focus-within input.form-control {
             border-color: var(--eco-mint);
         }
+
+        /* Task Collection Styles */
+        .consignes-container {
+            background: #f8fcf9;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px dashed var(--eco-mint);
+        }
+        .consigne-item {
+            background: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .consigne-item:hover {
+            box-shadow: 0 6px 15px rgba(0,0,0,0.05);
+            border-color: var(--eco-mint);
+        }
+        .consigne-number {
+            width: 28px;
+            height: 28px;
+            background: var(--eco-mint);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .remove-consigne {
+            color: #ef4444;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .remove-consigne:hover {
+            opacity: 1;
+        }
     </style>
 {% endblock %}
 
@@ -189,6 +233,73 @@
                         </div>
                     </div>
 
+                    <div class="mb-4">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="mb-0 text-success"><i class="fas fa-tasks me-2"></i> Tasks & Instructions</h5>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" id="ai-suggest-tasks">
+                                    <i class="fas fa-magic me-1"></i> AI Suggest
+                                </button>
+                                <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" id="add-consigne">
+                                    <i class="fas fa-plus me-1"></i> Add Task
+                                </button>
+                            </div>
+                        </div>
+                        
+                        {% set task_prototype %}
+                            <div class="consigne-item d-flex gap-3 align-items-start">
+                                <div class="consigne-number"></div>
+                                <div class="flex-grow-1">
+                                    <div class="row g-2">
+                                        <div class="col-8">{{ form_widget(form.consignes.vars.prototype.description) }}</div>
+                                        <div class="col-4">{{ form_widget(form.consignes.vars.prototype.difficulty) }}</div>
+                                    </div>
+                                    {{ form_widget(form.consignes.vars.prototype.position) }}
+                                </div>
+                                <button type="button" class="btn btn-link remove-consigne p-0 mt-2">
+                                    <i class="fas fa-times-circle fs-5"></i>
+                                </button>
+                            </div>
+                        {% endset %}
+
+                        <div id="consignes-list" class="consignes-container" 
+                             data-prototype="{{ task_prototype|e('html_attr') }}"
+                             data-index="{{ form.consignes|length }}">
+                            
+                            {% if form.consignes|length == 0 %}
+                                <div id="no-consignes-msg" class="text-center py-4 text-muted">
+                                    <i class="fas fa-clipboard-list d-block fs-2 mb-2 opacity-25"></i>
+                                    <p class="mb-0">No specific tasks added yet. These help anyone who wants to resolve this ticket.</p>
+                                </div>
+                            {% endif %}
+
+                            {% for consigne in form.consignes %}
+                                <div class="consigne-item d-flex gap-3 align-items-start">
+                                    <div class="consigne-number">{{ loop.index }}</div>
+                                    <div class="flex-grow-1">
+                                        <div class="row g-2">
+                                            <div class="col-8">
+                                                {{ form_widget(consigne.description) }}
+                                            </div>
+                                            <div class="col-4">
+                                                {{ form_widget(consigne.difficulty) }}
+                                            </div>
+                                        </div>
+                                        {{ form_widget(consigne.position) }}
+                                    </div>
+                                    <button type="button" class="btn btn-link remove-consigne p-0 mt-2">
+                                        <i class="fas fa-times-circle fs-5"></i>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                            
+                            {# Hidden widget for Symfony to handle the collection #}
+                            <div class="d-none">
+                                {{ form_widget(form.consignes) }}
+                            </div>
+                        </div>
+                    </div>
+
                     <hr class="my-4 text-muted opacity-25">
 
                     <div class="d-flex justify-content-end gap-3 mt-4">
@@ -273,6 +384,162 @@
             var a = e.target.closest('a[data-lat]');
             if (!a) return;
             selectPlace(a.getAttribute('data-name'), a.getAttribute('data-lat'), a.getAttribute('data-lon'));
+        });
+
+        // Consignes Collection Logic
+        const addBtn = document.getElementById('add-consigne');
+        const list = document.getElementById('consignes-list');
+        const noMsg = document.getElementById('no-consignes-msg');
+        let index = parseInt(list.dataset.index);
+
+        function updatePositions() {
+            const items = list.querySelectorAll('.consigne-item');
+            items.forEach((item, idx) => {
+                const number = item.querySelector('.consigne-number');
+                if (number) number.textContent = idx + 1;
+                const posInput = item.querySelector('.consigne-position');
+                if (posInput) posInput.value = idx;
+            });
+            if (noMsg) {
+                noMsg.style.display = items.length === 0 ? 'block' : 'none';
+            }
+        }
+
+        addBtn.addEventListener('click', function() {
+            const prototype = list.dataset.prototype;
+            const newForm = prototype.replace(/__name__/g, index);
+            index++;
+            list.dataset.index = index;
+
+            const div = document.createElement('div');
+            div.className = 'consigne-item d-flex gap-3 align-items-start';
+            div.innerHTML = `
+                <div class="consigne-number"></div>
+                <div class="flex-grow-1">${newForm}</div>
+                <button type="button" class="btn btn-link remove-consigne p-0 mt-2">
+                    <i class="fas fa-times-circle fs-5"></i>
+                </button>
+            `;
+            
+            list.appendChild(div);
+            updatePositions();
+        });
+
+        list.addEventListener('click', function(e) {
+            const btn = e.target.closest('.remove-consigne');
+            if (btn) {
+                btn.closest('.consigne-item').remove();
+                updatePositions();
+            }
+        });
+
+        // AI Suggest Logic
+        const aiBtn = document.getElementById('ai-suggest-tasks');
+        const titleInput = document.getElementById('ticket_title');
+        const descInput = document.getElementById('ticket_description');
+
+        aiBtn.addEventListener('click', async function() {
+            const title = titleInput.value.trim();
+            const description = descInput.value.trim();
+
+            if (description.length < 10) {
+                alert('Please provide a longer description (at least 10 chars) so the AI can understand the context.');
+                return;
+            }
+
+            aiBtn.disabled = true;
+            aiBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Thinking...';
+
+            try {
+                const response = await fetch('{{ path('api_ticket_ai_tasks') }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, description })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Failed to generate tasks');
+                }
+
+                const responseData = await response.json();
+                const tasks = responseData.tasks || [];
+                const suggestedPriority = responseData.priority;
+
+                if (tasks.length === 0) {
+                    alert('AI could not generate specific tasks. Try adjusting your description.');
+                } else {
+                    // Update Ticket Priority
+                    const prioritySelect = document.getElementById('ticket_priority');
+                    if (prioritySelect && suggestedPriority) {
+                        prioritySelect.value = suggestedPriority;
+                        
+                        // Add Magic Effect to parent container (input-group)
+                        const priorityContainer = prioritySelect.closest('.input-group');
+                        if (priorityContainer) {
+                            priorityContainer.classList.add('ai-magic-priority');
+                            priorityContainer.classList.add('ai-highlight');
+                            
+                            // Remove highlight after animation
+                            setTimeout(() => priorityContainer.classList.remove('ai-highlight'), 1500);
+
+                            // Remove magic when user manually changes it
+                            const removePriorityMagic = () => {
+                                priorityContainer.classList.remove('ai-magic-priority');
+                                prioritySelect.removeEventListener('change', removePriorityMagic);
+                            };
+                            prioritySelect.addEventListener('change', removePriorityMagic);
+                        }
+                    }
+
+                    tasks.forEach((taskObj, i) => {
+                        const taskText = typeof taskObj === 'string' ? taskObj : taskObj.description;
+                        const taskDifficulty = typeof taskObj === 'object' ? taskObj.difficulty : 'MEDIUM';
+
+                        const prototype = list.dataset.prototype;
+                        const newForm = prototype.replace(/__name__/g, index);
+                        index++;
+                        list.dataset.index = index;
+
+                        const div = document.createElement('div');
+                        div.innerHTML = newForm;
+                        const finalDiv = div.firstElementChild;
+                        
+                        // Add Magic Effect
+                        finalDiv.classList.add('ai-magic-item');
+                        
+                        // Sequential delay for "magic" appearance
+                        setTimeout(() => {
+                            list.appendChild(finalDiv);
+                            
+                            const input = finalDiv.querySelector('input[type="text"]');
+                            const diffSelect = finalDiv.querySelector('.difficulty-select');
+
+                            if (input) {
+                                input.value = taskText;
+                                // Remove magic on interaction
+                                const removeMagic = () => {
+                                    finalDiv.classList.remove('ai-magic-item');
+                                    input.removeEventListener('input', removeMagic);
+                                    if (diffSelect) diffSelect.removeEventListener('change', removeMagic);
+                                };
+                                input.addEventListener('input', removeMagic);
+                                if (diffSelect) diffSelect.addEventListener('change', removeMagic);
+                            }
+
+                            if (diffSelect && taskDifficulty) {
+                                diffSelect.value = taskDifficulty;
+                            }
+                            updatePositions();
+                        }, i * 150);
+                    });
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
+            } finally {
+                aiBtn.disabled = false;
+                aiBtn.innerHTML = '<i class="fas fa-magic me-1"></i> AI Suggest';
+            }
         });
     });
     </script>
