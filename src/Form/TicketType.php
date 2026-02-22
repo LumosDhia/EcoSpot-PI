@@ -13,6 +13,7 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -52,6 +53,14 @@ class TicketType extends AbstractType
                 'label' => 'Domain',
                 'choice_label' => fn (ActionDomain $d) => $d->getLabel(),
                 'attr' => ['class' => 'form-select'],
+            ])
+            ->add('consignes', CollectionType::class, [
+                'entry_type' => ConsigneType::class,
+                'entry_options' => ['label' => false],
+                'allow_add' => true,
+                'allow_delete' => true,
+                'by_reference' => false,
+                'label' => false,
             ]);
     }
 

@@ -27,6 +27,30 @@
                     &middot; <i class="bi bi-geo-alt"></i> {{ ticket.location|translate }}
                 </p>
                 <div class="card-text">{{ ticket.description|translate|nl2br }}</div>
+
+                {% if ticket.consignes|length > 0 %}
+                    <div class="mt-4 mb-3">
+                        <h6 class="text-success fw-bold"><i class="bi bi-list-check"></i> {{ 'tickets.tasks_to_complete'|trans|default('Tasks to complete') }}</h6>
+                        <ul class="list-group list-group-flush border rounded-3 overflow-hidden shadow-sm">
+                            {% for consigne in ticket.consignes %}
+                                <li class="list-group-item d-flex align-items-center gap-3 py-3 border-bottom">
+                                    <div class="rounded-circle border d-flex align-items-center justify-content-center flex-shrink-0" 
+                                         style="width: 24px; height: 24px; color: var(--eco-leaf);">
+                                        {{ loop.index }}
+                                    </div>
+                                    <div class="flex-grow-1 text-muted">
+                                        {{ consigne.description|translate }}
+                                    </div>
+                                    {% if consigne.isCompleted %}
+                                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                                    {% else %}
+                                        <i class="bi bi-circle text-muted opacity-25 fs-5"></i>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 {% if ticket.adminNotes and ticket.status.value == 'SENT_BACK' %}
                     <div class="alert alert-light border mt-3 mb-0">
                         <strong>{{ 'tickets.admin_note'|trans }}:</strong> {{ ticket.adminNotes|translate }}

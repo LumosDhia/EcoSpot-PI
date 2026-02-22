@@ -243,6 +243,7 @@ tickets:
     achieved_by: "أنجز بواسطة"
     priority: "الأولوية"
     domain: "المجال"
+    tasks_to_complete: "المهام المطلوب إكمالها"
     all_tickets: "كل التذاكر"
     my_tickets_back: "تذاكري"
     my_list_title: "تذاكري"
@@ -269,3 +270,4 @@ security:
     address: "العنوان"
     zipcode: "الرمز البريدي"
     city: "المدينة"
+    forgot_password: "هل نسيت كلمة السر؟"

@@ -8,6 +8,8 @@ use App\Enum\ActionDomain;
 use App\Enum\TicketPriority;
 use App\Enum\TicketStatus;
 use App\Repository\TicketRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -105,6 +107,16 @@ class Ticket
     public function setUpdatedAtValue(): void
     {
         $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\OneToMany(targetEntity: Consigne::class, mappedBy: 'ticket', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $consignes;
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->consignes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -318,5 +330,35 @@ class Ticket
     public function hasCompletionSubmitted(): bool
     {
         return $this->completionSubmittedAt !== null;
+    }
+
+    /**
+     * @return Collection<int, Consigne>
+     */
+    public function getConsignes(): Collection
+    {
+        return $this->consignes;
+    }
+
+    public function addConsigne(Consigne $consigne): static
+    {
+        if (!$this->consignes->contains($consigne)) {
+            $this->consignes->add($consigne);
+            $consigne->setTicket($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsigne(Consigne $consigne): static
+    {
+        if ($this->consignes->removeElement($consigne)) {
+            // set the owning side to null (unless already changed)
+            if ($consigne->getTicket() === $this) {
+                $consigne->setTicket(null);
+            }
+        }
+
+        return $this;
     }
 }

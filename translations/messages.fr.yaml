@@ -242,6 +242,7 @@ tickets:
     achieved_by: "réalisé par"
     priority: "Priorité"
     domain: "Domaine"
+    tasks_to_complete: "Tâches à accomplir"
     all_tickets: "Tous les tickets"
     my_tickets_back: "Mes tickets"
     my_list_title: "Mes tickets"
@@ -268,3 +269,4 @@ security:
     address: "Adresse"
     zipcode: "Code postal"
     city: "Ville"
+    forgot_password: "Mot de passe oublié ?"
