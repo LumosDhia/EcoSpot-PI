@@ -87,9 +87,12 @@
                                             <div class="text-muted" style="font-size: 0.7rem;">{{ ticket.user.email }}</div>
                                         </div>
                                     </div>
-                                    <div class="small">
-                                        <span class="text-muted">Priority:</span> 
-                                        <span class="text-{{ ticket.priority.getBadgeClass() }} fw-bold">{{ ticket.priority.getLabel() }}</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted small">Priority:</span> 
+                                        <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
+                                            <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }}"></i>
+                                            {{ ticket.priority.getLabel() }}
+                                        </span>
                                     </div>
                                 </div>
 

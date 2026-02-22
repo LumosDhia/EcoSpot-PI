@@ -61,7 +61,7 @@
             }
             .admin-sidebar .nav-link.active {
                 background: linear-gradient(90deg, var(--admin-accent) 0%, rgba(64, 145, 108, 0.8) 100%);
-                color: #fff;
+                color: #ffffff !important;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.15);
                 border-left: 4px solid var(--eco-mint);
             }
@@ -269,6 +269,50 @@
             .notification-scroll::-webkit-scrollbar-track { background: transparent; }
             .notification-scroll::-webkit-scrollbar-thumb { background: #dfe6e9; border-radius: 10px; }
             .notification-scroll::-webkit-scrollbar-thumb:hover { background: #b2bec3; }
+
+            /* Priority Badge Styles */
+            .priority-badge {
+                padding: 0.5rem 1rem !important;
+                border-radius: 50px !important;
+                font-weight: 700 !important;
+                font-size: 0.75rem !important;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                border: 1px solid transparent;
+            }
+
+            .priority-low {
+                background-color: rgba(82, 183, 136, 0.15) !important;
+                color: #2d6a4f !important;
+                border-color: rgba(82, 183, 136, 0.2) !important;
+            }
+            .priority-medium {
+                background-color: rgba(116, 185, 255, 0.15) !important;
+                color: #0984e3 !important;
+                border-color: rgba(116, 185, 255, 0.2) !important;
+            }
+            .priority-high {
+                background-color: rgba(253, 203, 110, 0.15) !important;
+                color: #d63031 !important; /* High contrast red on light yellow */
+                border-color: rgba(253, 203, 110, 0.3) !important;
+            }
+            .priority-urgent {
+                background-color: rgba(214, 48, 49, 0.1) !important;
+                color: #d63031 !important;
+                border-color: rgba(214, 48, 49, 0.2) !important;
+                animation: pulse-border 2s infinite;
+                box-shadow: 0 4px 15px rgba(214, 48, 49, 0.15);
+            }
+
+            @keyframes pulse-border {
+                0% { border-color: rgba(214, 48, 49, 0.2); }
+                50% { border-color: rgba(214, 48, 49, 0.6); }
+                100% { border-color: rgba(214, 48, 49, 0.2); }
+            }
 
             .breadcrumb-item + .breadcrumb-item::before { content: "›"; color: #ced4da; }
             .dropdown-toggle-nocaret::after { display: none !important; }

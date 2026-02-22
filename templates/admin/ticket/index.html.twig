@@ -79,8 +79,11 @@
                                 <div class="small text-muted">{{ ticket.user.email }}</div>
                             </td>
                             <td>
-                                <span class="badge rounded-pill bg-{{ ticket.priority.getBadgeClass() }} me-1">{{ ticket.priority.getLabel() }}</span>
-                                <span class="badge rounded-pill bg-light text-dark border">{{ ticket.domain.getLabel() }}</span>
+                                <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
+                                    <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
+                                    {{ ticket.priority.getLabel() }}
+                                </span>
+                                <span class="badge rounded-pill bg-light text-dark border p-2" style="font-size: 0.7rem;">{{ ticket.domain.getLabel() }}</span>
                             </td>
                             <td>
                                 <span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel() }}</span>

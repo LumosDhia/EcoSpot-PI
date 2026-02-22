@@ -198,7 +198,10 @@
                             <span class="badge eco-badge bg-{{ ticket.status.getBadgeClass() }}">
                                 <i class="{{ ticket.status.getIcon() }} me-1"></i> {{ ticket.status.getLabel()|translate }}
                             </span>
-                            <span class="badge eco-badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel()|translate }}</span>
+                            <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
+                                <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
+                                {{ ticket.priority.getLabel()|translate }}
+                            </span>
                         </div>
                         <div class="card-body p-4">
                             <h5 class="card-title">{{ ticket.title|translate }}</h5>

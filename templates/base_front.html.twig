@@ -43,7 +43,8 @@
             .btn-primary { background-color: var(--eco-forest) !important; border-color: var(--eco-forest) !important; color: #fff !important; }
             .btn-primary:hover { background-color: var(--eco-dark-green) !important; border-color: var(--eco-dark-green) !important; color: #fff !important; }
             .topbar { background: var(--eco-forest) !important; }
-            .navbar .navbar-nav .nav-link:hover, .navbar .navbar-nav .nav-link.active { color: var(--eco-forest) !important; }
+            .navbar .navbar-nav .nav-link:hover { color: var(--eco-forest) !important; }
+            .navbar .navbar-nav .nav-link.active:not(.glass-ticket-link) { color: var(--eco-forest) !important; }
             .btn-hover-bg:hover { background: var(--eco-leaf) !important; color: #fff !important; }
             .footer { background: linear-gradient(135deg, var(--eco-dark-green) 0%, var(--eco-forest) 100%) !important; }
             .copyright { background: var(--eco-dark-green) !important; }
@@ -170,6 +171,50 @@
 
             .glass-ticket-link.active i {
                 color: white;
+            }
+
+            /* Priority Badge Styles */
+            .priority-badge {
+                padding: 0.5rem 1rem !important;
+                border-radius: 50px !important;
+                font-weight: 700 !important;
+                font-size: 0.75rem !important;
+                letter-spacing: 0.02em;
+                text-transform: uppercase;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+                border: 1px solid transparent;
+            }
+
+            .priority-low {
+                background-color: rgba(82, 183, 136, 0.15) !important;
+                color: #2d6a4f !important;
+                border-color: rgba(82, 183, 136, 0.2) !important;
+            }
+            .priority-medium {
+                background-color: rgba(116, 185, 255, 0.15) !important;
+                color: #0984e3 !important;
+                border-color: rgba(116, 185, 255, 0.2) !important;
+            }
+            .priority-high {
+                background-color: rgba(253, 203, 110, 0.15) !important;
+                color: #d63031 !important;
+                border-color: rgba(253, 203, 110, 0.3) !important;
+            }
+            .priority-urgent {
+                background-color: rgba(214, 48, 49, 0.1) !important;
+                color: #d63031 !important;
+                border-color: rgba(214, 48, 49, 0.2) !important;
+                animation: pulse-border 2s infinite;
+                box-shadow: 0 4px 15px rgba(214, 48, 49, 0.15);
+            }
+
+            @keyframes pulse-border {
+                0% { border-color: rgba(214, 48, 49, 0.2); }
+                50% { border-color: rgba(214, 48, 49, 0.6); }
+                100% { border-color: rgba(214, 48, 49, 0.2); }
             }
         </style>
         {% block stylesheets %}{% endblock %}

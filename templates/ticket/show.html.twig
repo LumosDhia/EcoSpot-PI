@@ -7,8 +7,11 @@
     <div class="container py-4">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="badge bg-{{ ticket.status.getBadgeClass() }}">{{ ticket.status.getLabel()|translate }}</span>
-                <span class="badge bg-{{ ticket.priority.getBadgeClass() }}">{{ ticket.priority.getLabel()|translate }}</span>
+                <span class="badge bg-{{ ticket.status.getBadgeClass() }} p-2">{{ ticket.status.getLabel()|translate }}</span>
+                <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
+                    <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
+                    {{ ticket.priority.getLabel()|translate }}
+                </span>
                 {% if not public_view|default(false) %}
                     <a href="{{ path('ticket_my_list') }}" class="btn btn-sm btn-outline-secondary">← {{ 'tickets.my_tickets_back'|trans }}</a>
                 {% else %}
