@@ -19,8 +19,8 @@ class AiTicketTaskService
     }
 
     /**
-     * Generates a list of suggested tasks for a ticket.
-     * Returns an array of strings.
+     * Generates suggested tasks and priority for a ticket.
+     * Returns an array with 'tasks' (array of objects) and 'priority' (string).
      */
     public function generateTasks(string $title, string $description): array
     {
@@ -30,12 +30,26 @@ class AiTicketTaskService
         }
 
         $prompt = <<<EOT
-You are an environmental community organizer. Based on the ticket title and description below, generate a list of 3-7 short, actionable, and practical tasks (instructions) that a volunteer can follow to resolve the issue.
+You are an environmental community organizer. Based on the ticket title and description below:
+1. Generate a list of 3-7 short, actionable, and practical tasks (instructions).
+2. For each task, assess its difficulty (EASY, MEDIUM, or HARD).
+3. Suggest an overall priority for the ticket (LOW, MEDIUM, HIGH, or URGENT).
 
 Ticket Title: $title
 Ticket Description: $description
 
-Reply ONLY with a raw JSON array of strings. Example: ["Collect the plastic waste", "Take photos of the progress", "Dispose of waste at the nearest recycling center"]
+Reply ONLY with a JSON object containing:
+- "tasks": An array of objects, each with "description" and "difficulty" (EASY, MEDIUM, or HARD).
+- "suggested_priority": A string (LOW, MEDIUM, HIGH, or URGENT).
+
+Example: 
+{
+  "tasks": [
+    {"description": "Collect plastic waste", "difficulty": "EASY"},
+    {"description": "Contact local recycling center", "difficulty": "MEDIUM"}
+  ],
+  "suggested_priority": "HIGH"
+}
 EOT;
 
         try {
@@ -47,11 +61,11 @@ EOT;
                     'X-Title' => 'EcoSpot Project',
                 ],
                 'json' => [
-                    'model' => 'google/learnlm-1.5-pro-experimental:free', // Using a fast/free model
+                    'model' => 'openrouter/auto', 
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'You are an assistant that outputs ONLY a JSON array of strings.'
+                            'content' => 'You are an assistant that outputs ONLY a JSON object with the requested keys.'
                         ],
                         [
                             'role' => 'user',
@@ -63,19 +77,23 @@ EOT;
             ]);
 
             if ($response->getStatusCode() !== 200) {
-                $this->logger->error('OpenRouter API error: ' . $response->getStatusCode());
+                $errorBody = $response->getContent(false);
+                $this->logger->error('OpenRouter API error: ' . $response->getStatusCode() . ' - ' . $errorBody);
                 return [];
             }
 
             $data = $response->toArray();
-            $textResponse = $data['choices'][0]['message']['content'] ?? '[]';
+            $textResponse = $data['choices'][0]['message']['content'] ?? '{}';
             
-            // Sometimes models wrap JSON in markdown or just return the array
+            $this->logger->info('OpenRouter Raw Response: ' . $textResponse);
+
             $decoded = json_decode($textResponse, true);
             
             if (is_array($decoded)) {
-                // If the model returned an object with a key, or just the array
-                return isset($decoded['tasks']) ? $decoded['tasks'] : (isset($decoded[0]) ? $decoded : []);
+                return [
+                    'tasks' => $decoded['tasks'] ?? [],
+                    'priority' => $decoded['suggested_priority'] ?? 'MEDIUM'
+                ];
             }
 
             return [];

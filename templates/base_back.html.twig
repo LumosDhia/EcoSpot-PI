@@ -86,6 +86,68 @@
             .invalid-feedback { color: #b02a37; }
             .card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border-radius: 8px; }
             .card-header { background: #fff; border-bottom: 1px solid #e2e8f0; font-weight: 600; }
+
+            /* AI Magic Animations */
+            @keyframes magic-appear {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.92) translateY(15px);
+                    filter: brightness(1.2) blur(2px);
+                    box-shadow: 0 0 30px rgba(108, 92, 231, 0.6);
+                }
+                60% {
+                    filter: brightness(1.1) blur(0);
+                    box-shadow: 0 0 40px rgba(108, 92, 231, 0.4);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                    filter: brightness(1) blur(0);
+                }
+            }
+
+            .ai-magic-item, .ai-magic-priority {
+                border: 2px solid rgba(108, 92, 231, 0.4) !important;
+                position: relative;
+                transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            }
+
+            .ai-magic-item {
+                animation: magic-appear 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            }
+
+            .ai-magic-item::after, .ai-magic-priority::after {
+                content: '✨';
+                position: absolute;
+                top: 5px;
+                right: 35px;
+                font-size: 0.8rem;
+                opacity: 0.8;
+                z-index: 10;
+                pointer-events: none;
+                animation: sparkle 1.5s infinite ease-in-out;
+            }
+
+            .ai-magic-priority::after {
+                right: 45px;
+                top: 10px;
+            }
+
+            @keyframes sparkle {
+                0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.6; }
+                50% { transform: scale(1.4) rotate(15deg); opacity: 1; }
+            }
+
+            @keyframes highlight-glow {
+                0% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.5); }
+                70% { box-shadow: 0 0 0 12px rgba(108, 92, 231, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+            }
+
+            .ai-highlight {
+                animation: highlight-glow 1.5s ease-out;
+                border-color: #6c5ce7 !important;
+            }
         </style>
         {% block stylesheets %}{% endblock %}
     </head>

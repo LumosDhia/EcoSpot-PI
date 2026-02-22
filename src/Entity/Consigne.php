@@ -38,9 +38,13 @@ class Consigne
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\Column(type: 'string', length: 20, enumType: \App\Enum\TaskDifficulty::class, options: ['default' => 'MEDIUM'])]
+    private \App\Enum\TaskDifficulty $difficulty = \App\Enum\TaskDifficulty::MEDIUM;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
+        $this->difficulty = \App\Enum\TaskDifficulty::MEDIUM;
     }
 
     #[ORM\PrePersist]
@@ -128,6 +132,18 @@ class Consigne
     public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    public function getDifficulty(): \App\Enum\TaskDifficulty
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(\App\Enum\TaskDifficulty $difficulty): static
+    {
+        $this->difficulty = $difficulty;
 
         return $this;
     }

@@ -23,6 +23,12 @@ class ConsigneType extends AbstractType
                     'placeholder' => 'Task description...',
                 ],
             ])
+            ->add('difficulty', \Symfony\Component\Form\Extension\Core\Type\EnumType::class, [
+                'class' => \App\Enum\TaskDifficulty::class,
+                'label' => false,
+                'attr' => ['class' => 'form-select form-select-sm difficulty-select'],
+                'choice_label' => fn($choice) => $choice->getLabel(),
+            ])
             ->add('position', HiddenType::class, [
                 'attr' => ['class' => 'consigne-position'],
             ]);

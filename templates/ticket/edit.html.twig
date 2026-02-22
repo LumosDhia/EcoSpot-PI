@@ -55,15 +55,39 @@
                     </div>
                 </div>
                 
+                {% set task_prototype %}
+                    <div class="consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm">
+                        <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;"></div>
+                        <div class="flex-grow-1">
+                            <div class="row g-2">
+                                <div class="col-8">{{ form_widget(form.consignes.vars.prototype.description) }}</div>
+                                <div class="col-4">{{ form_widget(form.consignes.vars.prototype.difficulty) }}</div>
+                            </div>
+                            {{ form_widget(form.consignes.vars.prototype.position) }}
+                        </div>
+                        <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
+                            <i class="fas fa-times-circle fs-5"></i>
+                        </button>
+                    </div>
+                {% endset %}
+
                 <div id="consignes-list" class="consignes-container p-3 border rounded bg-light" 
-                     data-prototype="{{ form_widget(form.consignes.vars.prototype)|e('html_attr') }}"
+                     data-prototype="{{ task_prototype|e('html_attr') }}"
                      data-index="{{ form.consignes|length }}">
                     
                     {% for consigne in form.consignes %}
                         <div class="consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm">
                             <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;">{{ loop.index }}</div>
                             <div class="flex-grow-1">
-                                {{ form_widget(consigne) }}
+                                <div class="row g-2">
+                                    <div class="col-8">
+                                        {{ form_widget(consigne.description) }}
+                                    </div>
+                                    <div class="col-4">
+                                        {{ form_widget(consigne.difficulty) }}
+                                    </div>
+                                </div>
+                                {{ form_widget(consigne.position) }}
                             </div>
                             <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
                                 <i class="fas fa-times-circle fs-5"></i>
@@ -216,32 +240,77 @@
                     throw new Error(errorData.error || 'Failed to generate tasks');
                 }
 
-                const tasks = await response.json();
+                const responseData = await response.json();
+                const tasks = responseData.tasks || [];
+                const suggestedPriority = responseData.priority;
                 
                 if (tasks.length === 0) {
                     alert('AI could not generate specific tasks. Try adjusting your description.');
                 } else {
-                    tasks.forEach(taskText => {
+                    // Update Ticket Priority
+                    const prioritySelect = document.getElementById('ticket_priority');
+                    if (prioritySelect && suggestedPriority) {
+                        prioritySelect.value = suggestedPriority;
+                        
+                        // Add Magic Effect to parent container (input-group)
+                        const priorityContainer = prioritySelect.closest('.input-group');
+                        if (priorityContainer) {
+                            priorityContainer.classList.add('ai-magic-priority');
+                            priorityContainer.classList.add('ai-highlight');
+                            
+                            // Remove highlight after animation
+                            setTimeout(() => priorityContainer.classList.remove('ai-highlight'), 1500);
+
+                            // Remove magic when user manually changes it
+                            const removePriorityMagic = () => {
+                                priorityContainer.classList.remove('ai-magic-priority');
+                                prioritySelect.removeEventListener('change', removePriorityMagic);
+                            };
+                            prioritySelect.addEventListener('change', removePriorityMagic);
+                        }
+                    }
+
+                    tasks.forEach((taskObj, i) => {
+                        const taskText = typeof taskObj === 'string' ? taskObj : taskObj.description;
+                        const taskDifficulty = typeof taskObj === 'object' ? taskObj.difficulty : 'MEDIUM';
+
                         const prototype = list.dataset.prototype;
                         const newForm = prototype.replace(/__name__/g, index);
                         index++;
                         list.dataset.index = index;
 
                         const div = document.createElement('div');
-                        div.className = 'consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm';
-                        div.innerHTML = `
-                            <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;"></div>
-                            <div class="flex-grow-1">${newForm}</div>
-                            <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
-                                <i class="fas fa-times-circle fs-5"></i>
-                            </button>
-                        `;
+                        div.innerHTML = newForm;
+                        const finalDiv = div.firstElementChild;
                         
-                        list.appendChild(div);
-                        const input = div.querySelector('input[type="text"]');
-                        if (input) input.value = taskText;
+                        // Add Magic Effect
+                        finalDiv.classList.add('ai-magic-item');
+
+                        // Sequential delay for "magic" appearance
+                        setTimeout(() => {
+                            list.appendChild(finalDiv);
+                            
+                            const input = finalDiv.querySelector('input[type="text"]');
+                            const diffSelect = finalDiv.querySelector('.difficulty-select');
+
+                            if (input) {
+                                input.value = taskText;
+                                // Remove magic on interaction
+                                const removeMagic = () => {
+                                    finalDiv.classList.remove('ai-magic-item');
+                                    input.removeEventListener('input', removeMagic);
+                                    if (diffSelect) diffSelect.removeEventListener('change', removeMagic);
+                                };
+                                input.addEventListener('input', removeMagic);
+                                if (diffSelect) diffSelect.addEventListener('change', removeMagic);
+                            }
+
+                            if (diffSelect && taskDifficulty) {
+                                diffSelect.value = taskDifficulty;
+                            }
+                            updatePositions();
+                        }, i * 150);
                     });
-                    updatePositions();
                 }
             } catch (err) {
                 alert('Error: ' + err.message);
