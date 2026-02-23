@@ -38,6 +38,40 @@
                 {{ form_errors(form.image) }}
                 <small class="text-muted">Or paste an image URL.</small>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        {{ form_label(form.category) }}
+                        <div class="category-selection card p-3 bg-light shadow-sm">
+                            <div class="form-check-list-scrollable" style="max-height: 200px; overflow-y: auto;">
+                                {{ form_widget(form.category) }}
+                            </div>
+                            <hr>
+                            {{ form_label(form.newCategory) }}
+                            {{ form_widget(form.newCategory) }}
+                            {{ form_errors(form.newCategory) }}
+                        </div>
+                        {{ form_errors(form.category) }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-4">
+                        {{ form_label(form.tags) }}
+                        <div class="tags-selection card p-3 bg-light shadow-sm">
+                            <div class="form-check-list-scrollable" style="max-height: 200px; overflow-y: auto;">
+                                {{ form_widget(form.tags) }}
+                            </div>
+                            <hr>
+                            {{ form_label(form.newTags) }}
+                            {{ form_widget(form.newTags) }}
+                            {{ form_errors(form.newTags) }}
+                            <small class="text-muted d-block mt-1">{{ form.newTags.vars.help|trans }}</small>
+                        </div>
+                        {{ form_errors(form.tags) }}
+                    </div>
+                </div>
+            </div>
+
             <div class="row mb-3">
                 <div class="col-md-6">
                     {{ form_label(form.publishMode) }}

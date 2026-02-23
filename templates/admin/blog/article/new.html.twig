@@ -4,96 +4,171 @@
 {% block page_title %}New article{% endblock %}
 
 {% block body %}
-    <div class="card">
-        <div class="card-body">
-            {{ form_start(form, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data' } }) }}
-            <div class="mb-3">
-                {{ form_label(form.title) }}
-                {{ form_widget(form.title) }}
-                {{ form_errors(form.title) }}
-            </div>
-            <div class="mb-3">
-                {{ form_label(form.content) }}
-                {{ form_widget(form.content) }}
-                {{ form_errors(form.content) }}
-            </div>
-            <div class="mb-3">
-                {{ form_label(form.imageFile) }}
-                {{ form_widget(form.imageFile) }}
-                {{ form_errors(form.imageFile) }}
-                <small class="text-muted">Upload a thumbnail or hero image (JPEG, PNG, GIF, WebP).</small>
-            </div>
-            <div class="mb-3">
-                {{ form_label(form.image) }}
-                <div class="input-group">
-                    {{ form_widget(form.image, { attr: { class: 'form-control js-image-url-field' } }) }}
-                    <button type="button" class="btn btn-outline-primary" id="js-search-unsplash-btn">
-                        <i class="fas fa-search me-1"></i> Search Unsplash
-                    </button>
-                </div>
-                {{ form_errors(form.image) }}
-                <small class="text-muted">Or paste an image URL. Use the button to search Unsplash!</small>
-
-                {# Unsplash Search Panel #}
-                <div id="unsplash-search-panel" class="mt-3 p-3 border rounded bg-light" style="display: none;">
-                    <div class="d-flex gap-2 mb-3">
-                        <input type="text" id="unsplash-search-input" class="form-control" placeholder="Search photos (e.g. nature Tunisia)...">
-                        <button type="button" id="unsplash-search-submit" class="btn btn-primary">Search</button>
+    {{ form_start(form, { attr: { novalidate: 'novalidate', enctype: 'multipart/form-data', class: 'js-article-form-root' } }) }}
+    <div class="row">
+        <!-- Main Content Column -->
+        <div class="col-lg-8">
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-uppercase small text-muted mb-2">Article Title</label>
+                        {{ form_widget(form.title, { attr: { class: 'form-control form-control-lg border-0 bg-light fs-2 fw-bold px-0', style: 'box-shadow: none; border-bottom: 2px solid #eee !important; border-radius: 0;' } }) }}
+                        {{ form_errors(form.title) }}
                     </div>
-                    <div id="unsplash-results" class="row g-2" style="max-height: 300px; overflow-y: auto;">
-                        <p class="text-muted text-center py-3">Search for something to see results...</p>
-                    </div>
-                    <div id="unsplash-pagination" class="mt-2 d-flex justify-content-center gap-2"></div>
-                </div>
-            </div>
-
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    {{ form_label(form.publishMode) }}
-                    {{ form_widget(form.publishMode) }}
-                    {{ form_errors(form.publishMode) }}
-                </div>
-                <div class="col-md-6 js-scheduled-wrap" style="display: none;">
-                    {{ form_label(form.scheduledAt) }}
-                    {{ form_widget(form.scheduledAt) }}
-                    {{ form_errors(form.scheduledAt) }}
-                </div>
-            </div>
-            
-            <div class="card mb-4 border-primary">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0 fs-6"><i class="fas fa-search me-2"></i> SEO Settings</h5>
-                    <button type="button" id="js-generate-seo-btn" class="btn btn-light btn-sm">
-                        <i class="fas fa-robot me-1"></i> {{ 'form.generate_seo_btn'|trans }}
-                    </button>
-                </div>
-                <div class="card-body">
+                    
                     <div class="mb-3">
-                        {{ form_label(form.seoTitle) }}
-                        {{ form_widget(form.seoTitle) }}
+                        <label class="form-label fw-bold text-uppercase small text-muted mb-2">Content Editor</label>
+                        {{ form_widget(form.content) }}
+                        {{ form_errors(form.content) }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEO Card -->
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-search me-2"></i> SEO & Search Visibility</h5>
+                    <button type="button" id="js-generate-seo-btn" class="btn btn-outline-primary btn-sm rounded-pill">
+                        <i class="fas fa-magic me-1"></i> {{ 'form.generate_seo_btn'|trans }}
+                    </button>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            {{ form_label(form.seoTitle, null, { label_attr: { class: 'fw-bold mb-0' } }) }}
+                            <button type="button" id="js-generate-titles-btn" class="btn btn-link btn-sm text-primary p-0 text-decoration-none">
+                                <i class="fas fa-lightbulb me-1"></i> Get AI Title Ideas
+                            </button>
+                        </div>
+                        {{ form_widget(form.seoTitle, { attr: { class: 'form-control shadow-sm border-0 bg-light' } }) }}
+                        <div id="js-title-ideas-container" class="mt-2 d-flex flex-wrap gap-2" style="display: none !important;">
+                            {# AI Title Ideas will be injected here #}
+                        </div>
                         {{ form_errors(form.seoTitle) }}
-                        <small class="text-muted">{{ 'form.seo_title_help'|trans }}</small>
+                        <div class="form-text mt-1"><i class="fas fa-info-circle me-1"></i> {{ 'form.seo_title_help'|trans }}</div>
                     </div>
-                    <div class="mb-3">
-                        {{ form_label(form.seoDescription) }}
+                    <div class="mb-4">
+                        {{ form_label(form.seoDescription, null, { label_attr: { class: 'fw-bold mb-1' } }) }}
                         {{ form_widget(form.seoDescription) }}
                         {{ form_errors(form.seoDescription) }}
-                        <small class="text-muted">{{ 'form.seo_description_help'|trans }}</small>
+                        <div class="form-text mt-1"><i class="fas fa-info-circle me-1"></i> {{ 'form.seo_description_help'|trans }}</div>
                     </div>
-                    <div class="mb-3">
-                        {{ form_label(form.seoKeywords) }}
+                    <div class="mb-0">
+                        {{ form_label(form.seoKeywords, null, { label_attr: { class: 'fw-bold mb-1' } }) }}
                         {{ form_widget(form.seoKeywords) }}
                         {{ form_errors(form.seoKeywords) }}
-                        <small class="text-muted">{{ 'form.seo_keywords_help'|trans }}</small>
+                        <div class="form-text mt-1"><i class="fas fa-info-circle me-1"></i> {{ 'form.seo_keywords_help'|trans }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Column -->
+        <div class="col-lg-4">
+            <!-- Publishing Actions -->
+            <div class="card mb-4 shadow-sm border-0 sticky-top" style="top: 20px; z-index: 10;">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-paper-plane me-2 text-primary"></i> Publishing</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        {{ form_label(form.publishMode, null, { label_attr: { class: 'fw-bold mb-2 d-block' } }) }}
+                        {{ form_widget(form.publishMode) }}
+                        {{ form_errors(form.publishMode) }}
+                    </div>
+
+                    <div class="mb-4 js-scheduled-wrap" style="display: none;">
+                        {{ form_label(form.scheduledAt, null, { label_attr: { class: 'fw-bold mb-2 d-block' } }) }}
+                        {{ form_widget(form.scheduledAt) }}
+                        {{ form_errors(form.scheduledAt) }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i> Save Article
+                        </button>
+                        <a href="{{ path('admin_blog_article_index') }}" class="btn btn-link text-muted text-decoration-none small text-center">
+                            Cancel and go back
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex gap-2 js-article-form">
-                <button type="submit" class="btn btn-primary">Save</button>
-                <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary">Cancel</a>
+            <!-- Media Card -->
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-image me-2 text-primary"></i> Hero Image</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        {{ form_label(form.imageFile, null, { label_attr: { class: 'fw-bold mb-2' } }) }}
+                        {{ form_widget(form.imageFile) }}
+                        {{ form_errors(form.imageFile) }}
+                        <div class="form-text">Click to upload image.</div>
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="fw-bold mb-2">Unsplash Library</label>
+                        <div class="input-group mb-3 shadow-sm">
+                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-link text-muted"></i></span>
+                            {{ form_widget(form.image, { attr: { class: 'form-control border-start-0 js-image-url-field', placeholder: 'Image URL...' } }) }}
+                        </div>
+                        <button type="button" class="btn btn-outline-primary w-100" id="js-search-unsplash-btn">
+                            <i class="fas fa-search-plus me-1"></i> Browse Unsplash
+                        </button>
+                        
+                        {# Unsplash Search Modal-like Panel #}
+                        <div id="unsplash-search-panel" class="mt-3 p-3 border rounded-3 bg-light shadow-sm" style="display: none;">
+                            <div class="input-group mb-3">
+                                <input type="text" id="unsplash-search-input" class="form-control" placeholder="Search eco photos...">
+                                <button type="button" id="unsplash-search-submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                            </div>
+                            <div id="unsplash-results" class="row g-2" style="max-height: 250px; overflow-y: auto;">
+                                <p class="text-muted text-center py-3 extra-small">Enter keywords above...</p>
+                            </div>
+                            <div id="unsplash-pagination" class="mt-2 d-flex justify-content-center gap-1"></div>
+                        </div>
+                    </div>
+                    {{ form_errors(form.image) }}
+                </div>
             </div>
-            {{ form_end(form) }}
+
+            <!-- Tags & Categories -->
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-tags me-2 text-primary"></i> Organization</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="fw-bold mb-2 d-block"><i class="fas fa-folder-open me-1 text-muted"></i> Category</label>
+                        <div class="category-selection border rounded p-3 bg-light">
+                            <div class="form-check-list-scrollable" style="max-height: 150px; overflow-y: auto;">
+                                {{ form_widget(form.category) }}
+                            </div>
+                            <div class="mt-3">
+                                {{ form_widget(form.newCategory, { attr: { class: 'form-control form-control-sm', placeholder: '+ New category...' } }) }}
+                            </div>
+                        </div>
+                        {{ form_errors(form.category) }}
+                    </div>
+
+                    <div class="mb-0">
+                        <label class="fw-bold mb-2 d-block"><i class="fas fa-hashtag me-1 text-muted"></i> Tags</label>
+                        <div class="tags-selection border rounded p-3 bg-light">
+                            <div class="form-check-list-scrollable" style="max-height: 150px; overflow-y: auto;">
+                                {{ form_widget(form.tags) }}
+                            </div>
+                            <div class="mt-3">
+                                {{ form_widget(form.newTags, { attr: { class: 'form-control form-control-sm', placeholder: '+ Add tags (comma separated)...' } }) }}
+                            </div>
+                        </div>
+                        {{ form_errors(form.tags) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
         </div>
     </div>
 
@@ -206,10 +281,60 @@
 
         // AI SEO Generation JS
         const generateSeoBtn = document.querySelector('#js-generate-seo-btn');
+        const generateTitlesBtn = document.querySelector('#js-generate-titles-btn');
+        const titleIdeasContainer = document.querySelector('#js-title-ideas-container');
+        
         const seoTitleField = document.querySelector('#article_seoTitle');
         const seoDescField = document.querySelector('#article_seoDescription');
         const seoKeysField = document.querySelector('#article_seoKeywords');
         const titleField = document.querySelector('#article_title');
+
+        if (generateTitlesBtn) {
+            generateTitlesBtn.addEventListener('click', function() {
+                const title = titleField.value.trim();
+                if (window.tinymce) window.tinymce.triggerSave();
+                const content = document.querySelector('.article-content-editor').value.trim();
+
+                if (!title || !content) {
+                    alert('Please enter a title and some content first.');
+                    return;
+                }
+
+                generateTitlesBtn.disabled = true;
+                generateTitlesBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Thinking...';
+
+                fetch('{{ path("blog_api_seo_generate_titles") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title, content })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                    } else {
+                        titleIdeasContainer.innerHTML = '';
+                        titleIdeasContainer.style.setProperty('display', 'flex', 'important');
+                        
+                        // Show title ideas as clickable chips
+                        data.forEach(t => {
+                            const badge = document.createElement('button');
+                            badge.type = 'button';
+                            badge.className = 'btn btn-sm btn-outline-info rounded-pill';
+                            badge.innerText = t;
+                            badge.addEventListener('click', () => {
+                                seoTitleField.value = t;
+                            });
+                            titleIdeasContainer.appendChild(badge);
+                        });
+                    }
+                })
+                .finally(() => {
+                    generateTitlesBtn.disabled = false;
+                    generateTitlesBtn.innerHTML = '<i class="fas fa-lightbulb me-1"></i> Get AI Title Ideas';
+                });
+            });
+        }
 
         if (generateSeoBtn) {
             generateSeoBtn.addEventListener('click', function() {
@@ -228,9 +353,7 @@
 
                 fetch('{{ path("blog_api_seo_generate") }}', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ title, content })
                 })
                 .then(res => res.json())
@@ -238,7 +361,7 @@
                     if (data.error) {
                         alert('Error: ' + data.error);
                     } else {
-                        if (data.title) seoTitleField.value = data.title;
+                        // We skip setting title here because we have dedicated title ideas now
                         if (data.description) seoDescField.value = data.description;
                         if (data.keywords) seoKeysField.value = data.keywords;
                     }

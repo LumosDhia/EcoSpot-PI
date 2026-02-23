@@ -88,4 +88,52 @@ EOT;
             return [];
         }
     }
+
+    public function generateTitleIdeas(Article $article): array
+    {
+        if (empty($this->openRouterApiKey) || str_contains($this->openRouterApiKey, 'your_')) {
+            return [];
+        }
+
+        $title = $article->getTitle();
+        $content = strip_tags($article->getContent());
+        $contentChunk = mb_substr($content, 0, 3000);
+
+        $prompt = <<<EOT
+You are an SEO expert. Analyze the following article title and content to generate 5 DIFFERENT catchy SEO titles (max 60 chars each).
+Reply ONLY with a JSON object containing a key "titles" which is an array of 5 strings.
+
+Article Title: $title
+Article Content: $contentChunk
+EOT;
+
+        try {
+            $response = $this->httpClient->request('POST', self::API_URL, [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->openRouterApiKey,
+                    'Content-Type' => 'application/json',
+                    'HTTP-Referer' => 'http://localhost:8000',
+                    'X-Title' => 'EcoSpot Project',
+                ],
+                'json' => [
+                    'model' => 'openrouter/auto',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'You are an SEO assistant. You must output ONLY valid JSON.'],
+                        ['role' => 'user', 'content' => $prompt]
+                    ],
+                    'response_format' => ['type' => 'json_object']
+                ]
+            ]);
+
+            $data = $response->toArray();
+            $textResponse = $data['choices'][0]['message']['content'] ?? '';
+            $json = json_decode($textResponse, true);
+            
+            return $json['titles'] ?? $json ?? [];
+
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to generate title ideas: ' . $e->getMessage());
+            return [];
+        }
+    }
 }

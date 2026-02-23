@@ -316,6 +316,17 @@
 
             .breadcrumb-item + .breadcrumb-item::before { content: "›"; color: #ced4da; }
             .dropdown-toggle-nocaret::after { display: none !important; }
+
+            /* Custom Checkbox/Radio List Styles */
+            .form-check-list label { display: block; margin-bottom: 5px; cursor: pointer; transition: color 0.2s ease; }
+            .form-check-list label:hover { color: var(--admin-accent); }
+            .form-check-list input { margin-right: 10px; cursor: pointer; }
+            .form-check-list-scrollable div { margin-bottom: 8px; }
+            .category-selection hr, .tags-selection hr { margin: 15px 0; border-color: rgba(0,0,0,0.1); }
+            .form-check-list-scrollable::-webkit-scrollbar { width: 6px; }
+            .form-check-list-scrollable::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+            .form-check-list-scrollable::-webkit-scrollbar-thumb { background: var(--eco-pale); border-radius: 10px; }
+            .form-check-list-scrollable::-webkit-scrollbar-thumb:hover { background: var(--eco-leaf); }
         </style>
         {% block stylesheets %}{% endblock %}
     </head>
