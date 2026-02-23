@@ -25,7 +25,9 @@ class ArticleType extends AbstractType
 {
     public function __construct(
         private TranslationService $translationService,
-        private RequestStack $requestStack
+        private RequestStack $requestStack,
+        private \App\Repository\Blog\Article\CategoryRepository $categoryRepository,
+        private \App\Repository\Blog\Article\TagRepository $tagRepository,
     ) {}
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -55,8 +57,18 @@ class ArticleType extends AbstractType
                 },
                 'label' => 'form.category_label',
                 'required' => false,
+                'expanded' => true,
                 'placeholder' => 'form.category_placeholder',
-                'attr' => ['class' => 'form-select'],
+                'attr' => ['class' => 'form-check-list'],
+            ])
+            ->add('newCategory', TextType::class, [
+                'label' => 'form.new_category_label',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control mt-2',
+                    'placeholder' => 'form.new_category_placeholder',
+                ],
             ])
             ->add('tags', EntityType::class, [
                 'class' => Tag::class,
@@ -65,9 +77,19 @@ class ArticleType extends AbstractType
                 },
                 'label' => 'form.tags_label',
                 'multiple' => true,
-                'expanded' => false,
+                'expanded' => true,
                 'required' => false,
-                'attr' => ['class' => 'form-select', 'size' => 5],
+                'attr' => ['class' => 'form-check-list'],
+            ])
+            ->add('newTags', TextType::class, [
+                'label' => 'form.new_tags_label',
+                'mapped' => false,
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control mt-2',
+                    'placeholder' => 'form.new_tags_placeholder',
+                ],
+                'help' => 'form.new_tags_help',
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'form.image_file_label',
@@ -131,6 +153,40 @@ class ArticleType extends AbstractType
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event): void {
             $form = $event->getForm();
+            $article = $event->getData();
+            if (!$article instanceof Article) {
+                return;
+            }
+
+            // Handle New Category
+            $newCategoryName = $form->get('newCategory')->getData();
+            if ($newCategoryName) {
+                $category = $this->categoryRepository->findOneBy(['name' => $newCategoryName]);
+                if (!$category) {
+                    $category = new Category();
+                    $category->setName($newCategoryName);
+                    $this->categoryRepository->save($category, true);
+                }
+                $article->setCategory($category);
+            }
+
+            // Handle New Tags
+            $newTagsStr = $form->get('newTags')->getData();
+            if ($newTagsStr) {
+                $tagNames = array_map('trim', explode(',', $newTagsStr));
+                foreach ($tagNames as $tagName) {
+                    if (empty($tagName)) continue;
+                    
+                    $tag = $this->tagRepository->findOneBy(['name' => $tagName]);
+                    if (!$tag) {
+                        $tag = new Tag();
+                        $tag->setName($tagName);
+                        $this->tagRepository->save($tag, true);
+                    }
+                    $article->addTag($tag);
+                }
+            }
+
             $mode = $form->get('publishMode')->getData();
             $scheduledAt = $form->get('scheduledAt')->getData();
             if ($mode === 'schedule' && $scheduledAt instanceof \DateTimeInterface && $scheduledAt < new \DateTimeImmutable()) {

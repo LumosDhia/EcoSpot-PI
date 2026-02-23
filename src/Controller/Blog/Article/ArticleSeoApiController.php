@@ -49,4 +49,30 @@ class ArticleSeoApiController extends AbstractController
             return new JsonResponse(['error' => $e->getMessage()], 500);
         }
     }
+    #[Route('/generate-titles', name: 'generate_titles', methods: ['POST'])]
+    public function generateTitles(Request $request): JsonResponse
+    {
+        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted('ROLE_NGO')) {
+            return new JsonResponse(['error' => 'Access denied'], 403);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $title = $data['title'] ?? '';
+        $content = $data['content'] ?? '';
+
+        if (empty($title) || empty($content)) {
+            return new JsonResponse(['error' => 'Title and content are required'], 400);
+        }
+
+        $article = new Article();
+        $article->setTitle($title);
+        $article->setContent($content);
+
+        try {
+            $titles = $this->aiSeoService->generateTitleIdeas($article);
+            return new JsonResponse($titles);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], 500);
+        }
+    }
 }
