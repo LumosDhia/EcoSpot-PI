@@ -79,6 +79,33 @@ The application will be available at [http://localhost:8000](http://localhost:80
 
 ---
 
+## 📸 Face Recognition Service
+
+EcoSpot uses a Python-based microservice for face enrollment and login. This service must be running for these features to work.
+
+### 📋 Prerequisites
+
+- **Python 3.8+**
+- Install dependencies:
+  ```bash
+  pip install -r face_service/requirements.txt
+  ```
+
+### 🏃 Starting the Service
+
+You can start the service using the provided PowerShell script:
+```powershell
+.\start_face_service.ps1
+```
+
+Or manually:
+```bash
+python face_service/main.py
+```
+The service runs on [http://127.0.0.1:8001](http://127.0.0.1:8001).
+
+---
+
 ## 🏗️ Technical Stack
 
 *   **Backend:** Symfony 6.4 (PHP 8.1+)
