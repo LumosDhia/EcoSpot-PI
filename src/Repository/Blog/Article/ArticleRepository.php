@@ -108,13 +108,17 @@ class ArticleRepository extends ServiceEntityRepository
      */
     public function findAdminOwnArticles(User $admin, string $order = 'DESC'): array
     {
+        return $this->getQueryAdminOwnArticles($admin, $order)->getResult();
+    }
+
+    public function getQueryAdminOwnArticles(User $admin, string $order = 'DESC'): \Doctrine\ORM\Query
+    {
         return $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
             ->andWhere('a.writer = :admin OR a.writer IS NULL')
             ->setParameter('admin', $admin)
             ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->getQuery();
     }
 
     /**
@@ -123,8 +127,16 @@ class ArticleRepository extends ServiceEntityRepository
      */
     public function findNgoArticlesForAdmin(string $order = 'DESC'): array
     {
-        $all = $this->findAllForAdmin($order);
-        return array_values(array_filter($all, fn (Article $a): bool => $a->isWrittenByNgo()));
+        return $this->getQueryNgoArticlesForAdmin($order)->getResult();
+    }
+
+    public function getQueryNgoArticlesForAdmin(string $order = 'DESC'): \Doctrine\ORM\Query
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC');
+
+        return $qb->getQuery();
     }
 
     public function save(Article $entity, bool $flush = false): void
