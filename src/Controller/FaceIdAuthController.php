@@ -78,26 +78,36 @@ class FaceIdAuthController extends AbstractController
     }
 
     #[Route(path: '/face-enroll/save', name: 'face_enroll_save', methods: ['POST'])]
-    #[IsGranted('IS_AUTHENTICATED_FULLY')]
     public function enrollSave(Request $request): JsonResponse
     {
-        $user = $this->getUser();
-        if (!$user instanceof User) {
-            return new JsonResponse(['status' => 'error', 'message' => 'User not found'], 403);
-        }
-
         $data = json_decode($request->getContent(), true);
         $imageBase64 = $data['image'] ?? null;
+        $email = $data['email'] ?? null;
+
+        $user = $this->getUser();
+        
+        // If logged in, use the user's email
+        if ($user instanceof User) {
+            $email = $user->getEmail();
+        }
 
         if (!$imageBase64) {
             return new JsonResponse(['status' => 'error', 'message' => 'No image provided'], 400);
         }
 
-        $result = $this->faceService->enrollFace($imageBase64, $user->getEmail());
+        if (!$email) {
+            return new JsonResponse(['status' => 'error', 'message' => 'Email is required for enrollment'], 400);
+        }
+
+        $result = $this->faceService->enrollFace($imageBase64, $email);
 
         if (isset($result['status']) && $result['status'] === 'success') {
-            $user->setFaceEnrolled(true);
-            $this->entityManager->flush();
+            // If user exists in DB, mark them as enrolled
+            $dbUser = $user instanceof User ? $user : $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+            if ($dbUser) {
+                $dbUser->setFaceEnrolled(true);
+                $this->entityManager->flush();
+            }
             return new JsonResponse(['status' => 'success', 'message' => 'Face enrolled successfully']);
         }
 

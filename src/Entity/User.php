@@ -67,6 +67,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $timeoutUntil = null;
 
+    #[ORM\Column]
+    private bool $faceEnrolled = false;
+
     /** @var Collection<int, Notification> */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $notifications;
@@ -246,6 +249,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isTimedOut(): bool
     {
         return $this->timeoutUntil !== null && $this->timeoutUntil > new \DateTimeImmutable();
+    }
+
+    public function isFaceEnrolled(): bool
+    {
+        return $this->faceEnrolled;
+    }
+
+    public function setFaceEnrolled(bool $faceEnrolled): static
+    {
+        $this->faceEnrolled = $faceEnrolled;
+        return $this;
     }
 
     /**

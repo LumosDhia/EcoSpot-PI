@@ -51,6 +51,12 @@ class RegistrationController extends AbstractController
             $user->setPassword(
                 $userPasswordHasher->hashPassword($user, $form->get('plainPassword')->getData())
             );
+
+            // Check if face enrollment was successful
+            if ($request->request->get('face_enrolled') === '1') {
+                $user->setFaceEnrolled(true);
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
 

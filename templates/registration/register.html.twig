@@ -25,6 +25,10 @@
                         {{ form_errors(registrationForm.city) }}
                         {{ form_row(registrationForm.plainPassword) }}
                         {{ form_row(registrationForm.agreeTerms) }}
+
+                        {# Hidden field to track if face enrollment was successful #}
+                        <input type="hidden" name="face_enrolled" id="face_enrolled_hidden" value="0">
+
                         {# ── Face Enrollment (optional) ──────────────────────────── #}
                         <div class="card border-0 bg-light rounded-3 p-3 mb-3">
                             <p class="fw-semibold mb-1">🤖 Face Recognition <span class="badge bg-secondary fw-normal">Optional</span></p>
@@ -218,6 +222,7 @@
 
                 if (data.status === 'success') {
                     showStatus('✅ Face enrolled! It will be active once you register.', 'success');
+                    document.getElementById('face_enrolled_hidden').value = '1';
                     stopCamera();
                     btnClear.classList.remove('d-none');
                 } else {
