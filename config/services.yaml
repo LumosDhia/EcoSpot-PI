@@ -49,6 +49,10 @@ services:
         arguments:
             $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'
 
+    App\Service\AiNgoSuggestionService:
+        arguments:
+            $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'
+
     App\Service\SpamDetectionService:
         arguments:
             $openRouterApiKey: '%env(OPENROUTER_API_KEY)%'

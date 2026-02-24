@@ -1,0 +1,77 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}NGO Assignment Requests - EcoSpot{% endblock %}
+{% block page_title %}NGO Assignment Requests{% endblock %}
+
+{% block body %}
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+            <h5 class="mb-0 text-dark"><i class="fas fa-hand-holding-heart me-2 text-primary"></i> Pending Requests from NGOs</h5>
+        </div>
+        <div class="card-body p-4">
+            {% if requests|length > 0 %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ticket</th>
+                                <th>NGO</th>
+                                <th>Requested Date</th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if req.ticket.image %}
+                                                <img src="{{ asset(req.ticket.image) }}" class="rounded me-3" width="50" height="50" style="object-fit:cover" alt="Ticket">
+                                            {% endif %}
+                                            <div>
+                                                <a href="{{ path('admin_ticket_show', {id: req.ticket.id}) }}" class="text-decoration-none fw-bold text-dark">
+                                                    {{ req.ticket.title }}
+                                                </a><br>
+                                                <small class="text-muted"><i class="bi bi-geo-alt"></i> {{ req.ticket.location }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ req.ngo.firstname }} {{ req.ngo.lastname }}</strong><br>
+                                        <small class="text-muted">{{ req.ngo.email }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted"><i class="bi bi-clock"></i> {{ req.createdAt|date('M d, Y H:i') }}</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <form action="{{ path('admin_ngo_assignment_request_handle', {id: req.id, action: 'approve'}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('handle_request_' ~ req.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 shadow-sm">
+                                                    <i class="fas fa-check me-1"></i> Approve
+                                                </button>
+                                            </form>
+
+                                            <form action="{{ path('admin_ngo_assignment_request_handle', {id: req.id, action: 'reject'}) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('handle_request_' ~ req.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-danger rounded-pill px-3 shadow-sm">
+                                                    <i class="fas fa-times me-1"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="120" class="opacity-50 mb-4" alt="No requests">
+                    <h5 class="text-muted">No pending assignment requests.</h5>
+                    <p class="text-secondary">When an NGO requests to take on a ticket, it will appear here.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

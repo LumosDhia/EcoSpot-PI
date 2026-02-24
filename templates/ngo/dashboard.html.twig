@@ -38,5 +38,38 @@
                 </div>
             </a>
         </div>
+        <div class="col-md-4">
+            <a href="{{ path('ngo_tickets_browse') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-search-location fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Browse Tickets</h5>
+                        <p class="card-text small text-muted">Find published environmental tickets and request to resolve them.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('ngo_my_ticket') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-tasks fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">My Assigned Ticket</h5>
+                        <p class="card-text small text-muted">View and manage your current active ticket work.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{{ path('ngo_achievements') }}" class="text-decoration-none">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">My Achievements</h5>
+                        <p class="card-text small text-muted">Review your history of successfully resolved tickets.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
     </div>
 {% endblock %}

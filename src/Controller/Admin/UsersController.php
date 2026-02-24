@@ -143,6 +143,24 @@ class UsersController extends AbstractController
         return $this->redirectToRoute('admin_users_index');
     }
 
+    #[Route('/{id}/edit-ngo-description', name: 'admin_user_edit_ngo_description', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function editNgoDescription(Request $request, User $user): Response
+    {
+        if (!in_array('ROLE_NGO', $user->getRoles(), true)) {
+            $this->addFlash('error', 'Only NGOs can have a description.');
+            return $this->redirectToRoute('admin_users_index');
+        }
+
+        if ($this->isCsrfTokenValid('edit_ngo_desc' . $user->getId(), (string) $request->request->get('_token'))) {
+            $description = $request->request->get('ngo_description');
+            $user->setNgoDescription($description);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'NGO description updated.');
+        }
+
+        return $this->redirectToRoute('admin_users_index');
+    }
+
     /** @param list<string> $roles */
     private function getUserTypeFromRoles(array $roles): string
     {
