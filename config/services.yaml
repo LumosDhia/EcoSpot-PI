@@ -64,3 +64,9 @@ services:
     App\Service\RecaptchaVerifier:
         arguments:
             $secretKey: '%env(RECAPTCHA_SECRET_KEY)%'
+
+    App\Service\LocationService: ~
+
+    App\Service\EventNotificationService:
+        arguments:
+            $adminEmail: '%app_admin_email%'

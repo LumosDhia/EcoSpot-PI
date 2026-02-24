@@ -69,6 +69,14 @@ class Evenement
     #[ORM\JoinTable(name: 'event_sponsor', joinColumns: [new ORM\JoinColumn(name: 'event_id', referencedColumnName: 'id', onDelete: 'CASCADE')], inverseJoinColumns: [new ORM\JoinColumn(name: 'sponsor_id', referencedColumnName: 'id', onDelete: 'CASCADE')])]
     private Collection $sponsors;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: 'event_participation')]
+    private Collection $participants;
+
+
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $latitude = null;
 
@@ -78,7 +86,9 @@ class Evenement
     public function __construct()
     {
         $this->sponsors = new ArrayCollection();
+        $this->participants = new ArrayCollection();
     }
+
 
     public function validateDatesNotInPast(ExecutionContextInterface $context): void
     {
@@ -234,4 +244,27 @@ class Evenement
         $this->slug = $slug;
         return $this;
     }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getParticipants(): Collection
+    {
+        return $this->participants;
+    }
+
+    public function addParticipant(User $user): static
+    {
+        if (!$this->participants->contains($user)) {
+            $this->participants->add($user);
+        }
+        return $this;
+    }
+
+    public function removeParticipant(User $user): static
+    {
+        $this->participants->removeElement($user);
+        return $this;
+    }
 }
+

@@ -66,4 +66,28 @@ class NominatimGeocodeService
 
         return $results;
     }
+
+    /**
+     * Reverse geocoding: get address from coordinates.
+     */
+    public function reverse(string $lat, string $lon): ?array
+    {
+        try {
+            $response = $this->httpClient->request('GET', 'https://nominatim.openstreetmap.org/reverse', [
+                'query' => [
+                    'lat' => $lat,
+                    'lon' => $lon,
+                    'format' => 'json',
+                ],
+                'headers' => [
+                    'User-Agent' => 'EcoSpot/1.0 (Symfony; environmental ticket app)',
+                    'Accept-Language' => 'en',
+                ],
+                'timeout' => 10,
+            ]);
+            return $response->toArray();
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 }

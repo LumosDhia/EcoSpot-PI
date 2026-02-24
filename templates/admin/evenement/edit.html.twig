@@ -124,9 +124,7 @@
                 if (!lieuInput) return;
                 lieuInput.placeholder = 'Fetching address...';
                 lieuInput.disabled = true;
-                fetch('https://nominatim.openstreetmap.org/reverse?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng) + '&format=json', {
-                    headers: { 'Accept': 'application/json', 'User-Agent': 'EcoSpot-EventAdmin/1.0' }
-                })
+                fetch('{{ path('api_geocode_reverse') }}?lat=' + encodeURIComponent(lat) + '&lon=' + encodeURIComponent(lng))
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     if (data && data.display_name) {

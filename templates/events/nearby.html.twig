@@ -1,0 +1,147 @@
+{% extends 'base_front.html.twig' %}
+
+{% block title %}Nearby Me - EcoSpot{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <style>
+        #nearby-map { 
+            height: 400px; 
+            width: 100%; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .distance-badge {
+            background-color: var(--eco-forest);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .user-location-info {
+            background-color: var(--eco-cream);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--eco-forest);
+            margin-bottom: 30px;
+        }
+    </style>
+{% endblock %}
+
+{% block breadcrumb %}
+    <div class="container-fluid bg-breadcrumb">
+        <div class="container text-center py-5" style="max-width: 900px;">
+            <h3 class="text-white display-3 mb-4">Nearby Me</h3>
+            <p class="fs-5 text-white mb-4">Discover ecological events happening close to you.</p>
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('events_index') }}">{{ 'nav.events'|trans }}</a></li>
+                <li class="breadcrumb-item active text-white">Nearby Me</li>
+            </ol>
+        </div>
+    </div>
+{% endblock %}
+
+{% block body %}
+    <div class="container-fluid py-5">
+        <div class="container py-5">
+            <div class="text-center mx-auto pb-5" style="max-width: 800px;">
+                <h5 class="text-uppercase text-primary">Personalized Recommendations</h5>
+                <h1 class="mb-4">Events Near Your Location</h1>
+                <div class="user-location-info">
+                    <p class="mb-0"><i class="fas fa-map-marker-alt me-2 text-primary"></i> Based on your profile address: <strong>{{ userAddress }}</strong></p>
+                </div>
+            </div>
+
+            <div id="nearby-map"></div>
+
+            <div class="row g-4">
+                {% for item in nearbyEvents %}
+                    {% set event = item.event %}
+                    <div class="col-lg-6 col-xl-4">
+                        <div class="blog-item">
+                            <div class="blog-img">
+                                {% if event.image %}
+                                    <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom }}" loading="lazy" style="height: 220px; object-fit: cover;">
+                                {% else %}
+                                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800" class="img-fluid w-100" alt="{{ event.nom }}" style="height: 220px; object-fit: cover;" loading="lazy">
+                                {% endif %}
+                                <div class="blog-info">
+                                    <span><i class="fa fa-calendar"></i> {{ event.dateDebut ? event.dateDebut|date('d M Y') : '—' }}</span>
+                                </div>
+                                <div class="search-icon">
+                                    <a href="{{ path('events_show', { slug: event.slug }) }}" class="my-auto"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a>
+                                </div>
+                            </div>
+                            <div class="text-dark border p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div class="distance-badge"><i class="fas fa-route me-1"></i> {{ item.distance }} km away</div>
+                                </div>
+                                <h4 class="mb-3">{{ event.nom|translate }}</h4>
+                                <p class="mb-3 text-muted small"><i class="fas fa-map-pin me-1"></i> {{ event.lieu }}</p>
+                                <p class="mb-3">{{ (event.description|translate)|length > 100 ? (event.description|translate)|slice(0, 100) ~ '...' : (event.description|translate) }}</p>
+                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4 w-100" href="{{ path('events_show', { slug: event.slug }) }}">View Event</a>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <div class="mb-4"><i class="fas fa-map-signs fa-4x text-muted"></i></div>
+                        <h3 class="text-muted">No events found near you yet.</h3>
+                        <p>Try searching our full event catalog.</p>
+                        <a href="{{ path('events_index') }}" class="btn btn-primary mt-3">Browse All Events</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const events = [
+                {% for item in nearbyEvents %}
+                {
+                    nom: '{{ item.event.nom|escape('js') }}',
+                    lieu: '{{ item.event.lieu|escape('js') }}',
+                    lat: {{ item.event.latitude|default('0') }},
+                    lng: {{ item.event.longitude|default('0') }},
+                    distance: {{ item.distance }},
+                    url: '{{ path('events_show', { slug: item.event.slug }) }}'
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            if (events.length === 0) return;
+
+            const map = L.map('nearby-map').setView([events[0].lat, events[0].lng], 10);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            const markers = [];
+            events.forEach(function(e) {
+                if (e.lat !== 0) {
+                    const marker = L.marker([e.lat, e.lng])
+                        .bindPopup('<strong>' + e.nom + '</strong><br>' + e.distance + ' km away<br><a href="' + e.url + '">View Details</a>')
+                        .addTo(map);
+                    markers.push([e.lat, e.lng]);
+                }
+            });
+
+            if (markers.length > 0) {
+                const bounds = L.latLngBounds(markers);
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        });
+    </script>
+{% endblock %}
