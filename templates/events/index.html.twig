@@ -2,6 +2,25 @@
 
 {% block title %}Events - EcoSpot{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <style>
+        #events-map { 
+            height: 450px; 
+            width: 100%; 
+            border-radius: 15px; 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+            z-index: 5;
+        }
+        .leaflet-container img { max-width: none !important; }
+        .map-popup-link { color: var(--eco-forest); font-weight: 600; text-decoration: none; }
+        .map-popup-link:hover { text-decoration: underline; }
+    </style>
+{% endblock %}
+
+
 {% block breadcrumb %}
     <div class="container-fluid bg-breadcrumb">
         <div class="container text-center py-5" style="max-width: 900px;">
@@ -23,7 +42,10 @@
                 <h1 class="mb-4">{{ 'events.title'|trans }}</h1>
             </div>
 
+            <div id="events-map" class="mb-5"></div>
+
             <div class="card mb-5">
+
                 <div class="card-body">
                     <form method="get" action="{{ path('events_index') }}" class="row g-2 align-items-end" id="events-search-form">
                         <div class="col-lg-8 mx-auto">
@@ -88,12 +110,70 @@
         </div>
     </div>
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
     (function() {
         const searchInput = document.getElementById('events-search');
         const listEl = document.getElementById('events-list');
         const searchUrl = '{{ path('events_search') }}';
         const defaultImg = 'https://images.unsplash.com/photo-1511497584788-876760111969?w=800';
+
+        let map, markerGroup;
+        const initialEvents = [
+            {% for event in pagination %}
+            {
+                nom: '{{ event.nom|escape('js') }}',
+                lieu: '{{ event.lieu|escape('js') }}',
+                latitude: {{ event.latitude|default('null') }},
+                longitude: {{ event.longitude|default('null') }},
+                showUrl: '{{ path('events_show', { slug: event.slug }) }}'
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        function initMap() {
+            const mapContainer = document.getElementById('events-map');
+            if (!mapContainer) return;
+
+            map = L.map('events-map', {
+                center: [33.8869, 9.5375],
+                zoom: 6,
+                scrollWheelZoom: false
+            });
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                maxZoom: 19
+            }).addTo(map);
+
+            markerGroup = L.layerGroup().addTo(map);
+            updateMapMarkers(initialEvents);
+
+            // Invalidate size once after initialization
+            setTimeout(() => map.invalidateSize(), 200);
+        }
+
+        function updateMapMarkers(events) {
+            if (!markerGroup) return;
+            markerGroup.clearLayers();
+            
+            const points = [];
+            events.forEach(e => {
+                if (e.latitude && e.longitude) {
+                    const marker = L.marker([e.latitude, e.longitude])
+                        .bindPopup('<strong>' + e.nom + '</strong><br>' + e.lieu + '<br><a href="' + e.showUrl + '" class="map-popup-link">Details</a>');
+                    markerGroup.addLayer(marker);
+                    points.push([e.latitude, e.longitude]);
+                }
+            });
+
+            if (points.length > 0) {
+                const bounds = L.latLngBounds(points);
+                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+            }
+        }
 
         const labels = {
             viewEvent: "{{ 'events.view_event'|trans }}",
@@ -110,6 +190,7 @@
         }
 
         function renderEvents(events, searchTerm) {
+            updateMapMarkers(events);
             if (events.length === 0) {
                 const msg = searchTerm
                     ? labels.noResults.replace('TERM_HOLDER', searchTerm)
@@ -151,6 +232,10 @@
         }
 
         searchInput.addEventListener('input', doSearch);
+        initMap();
     })();
     </script>
+{% endblock %}
+
+
 {% endblock %}

@@ -19,17 +19,30 @@ class EvenementCrudController extends AbstractController
 
     public function __construct(
         private readonly EvenementRepository $evenementRepository,
+        private readonly \App\Repository\NotificationRepository $notificationRepository,
+        private readonly \Knp\Component\Pager\PaginatorInterface $paginator,
         private readonly string $projectDir
     ) {
     }
 
+
     #[Route('', name: 'admin_events_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = $this->evenementRepository->getQuerySearchOrderedByDate(null);
+        
+        $pagination = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            4 // Events per page
+
+        );
+
         return $this->render('admin/evenement/index.html.twig', [
-            'events' => $this->evenementRepository->findAllOrderedByDate(),
+            'pagination' => $pagination,
         ]);
     }
+
 
     #[Route('/new', name: 'admin_events_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response
@@ -42,10 +55,17 @@ class EvenementCrudController extends AbstractController
             $this->handleImageUpload($form, $evenement);
             $this->evenementRepository->save($evenement, true);
 
+            $this->createNotification(
+                sprintf('Event "%s" has been created.', $evenement->getNom()),
+                'primary',
+                $evenement->getId()
+            );
+
             $this->addFlash('success', 'Event created successfully.');
 
             return $this->redirectToRoute('admin_events_index', [], Response::HTTP_SEE_OTHER);
         }
+
 
         return $this->render('admin/evenement/new.html.twig', [
             'event' => $evenement,
@@ -71,10 +91,17 @@ class EvenementCrudController extends AbstractController
             $this->handleImageUpload($form, $evenement);
             $this->evenementRepository->save($evenement, true);
 
+            $this->createNotification(
+                sprintf('Event "%s" has been updated.', $evenement->getNom()),
+                'warning',
+                $evenement->getId()
+            );
+
             $this->addFlash('success', 'Event updated successfully.');
 
             return $this->redirectToRoute('admin_events_index', [], Response::HTTP_SEE_OTHER);
         }
+
 
         return $this->render('admin/evenement/edit.html.twig', [
             'event' => $evenement,
@@ -87,9 +114,17 @@ class EvenementCrudController extends AbstractController
     {
         $token = $request->request->getString('_token');
         if ($this->isCsrfTokenValid('delete' . $evenement->getId(), $token)) {
+            $name = $evenement->getNom();
             $this->evenementRepository->remove($evenement, true);
+            
+            $this->createNotification(
+                sprintf('Event "%s" has been deleted.', $name),
+                'danger'
+            );
+
             $this->addFlash('success', 'Event deleted successfully.');
         }
+
 
         return $this->redirectToRoute('admin_events_index', [], Response::HTTP_SEE_OTHER);
     }
@@ -110,4 +145,23 @@ class EvenementCrudController extends AbstractController
         $file->move($uploadDir, $safeName);
         $evenement->setImage('/' . self::UPLOAD_EVENTS_DIR . '/' . $safeName);
     }
+
+    private function createNotification(string $message, string $type, ?int $relatedId = null): void
+    {
+        $user = $this->getUser();
+        if (!$user instanceof \App\Entity\User) {
+            return;
+        }
+
+        $notification = new \App\Entity\Notification();
+        $notification->setUser($user);
+        $notification->setMessage($message);
+        $notification->setType($type);
+        $notification->setRelatedId($relatedId);
+        $notification->setCreatedAt(new \DateTimeImmutable());
+        $notification->setIsRead(false);
+
+        $this->notificationRepository->save($notification, true);
+    }
 }
+

@@ -1,0 +1,21 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+    <div style="background-color: #f0f0f0; padding: 20px; border-radius: 8px;">
+        <h2 style="color: #3498db;">Event Updated</h2>
+        
+        <p>
+            <strong>{{ updatedBy.email }}</strong> has updated an event:
+        </p>
+
+        <div style="background-color: white; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0;">
+            <h3 style="margin-top: 0;">{{ event.nom }}</h3>
+            <p><strong>Location:</strong> {{ event.lieu }}</p>
+            <p><strong>Date:</strong> {{ event.dateDebut|date('d M Y H:i') }}</p>
+            <p><strong>Capacity:</strong> {{ event.capacite }} participants</p>
+            <p><strong>Description:</strong> {{ event.description }}</p>
+        </div>
+
+        <p style="color: #666; font-size: 12px; margin-top: 30px;">
+            This is an automated notification from EcoSpot. Please do not reply to this email.
+        </p>
+    </div>
+</div>
