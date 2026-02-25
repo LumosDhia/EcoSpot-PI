@@ -35,14 +35,14 @@ class AiSeoService
         $contentChunk = mb_substr($content, 0, 3000);
 
         $prompt = <<<EOT
-You are an SEO expert. Analyze the following article title and content to generate SEO metadata.
+You are a content expert. Analyze the following article content to generate high-quality metadata. 
 Reply ONLY with a JSON object containing carefully crafted:
-- "title": A catchy SEO title (max 60 chars).
-- "description": A compelling meta description (max 160 chars).
+- "title": A catchy title (max 60 chars).
+- "description": A compelling summary description (max 160 chars).
 - "keywords": A comma-separated list of 5-10 relevant keywords.
 
-Article Title: $title
-Article Content: $contentChunk
+Article Title: {$title}
+Article Content: {$contentChunk}
 EOT;
 
         try {
@@ -100,11 +100,11 @@ EOT;
         $contentChunk = mb_substr($content, 0, 3000);
 
         $prompt = <<<EOT
-You are an SEO expert. Analyze the following article title and content to generate 5 DIFFERENT catchy SEO titles (max 60 chars each).
+You are a creative editor. Analyze the following article content to generate 5 DIFFERENT catchy and engaging titles (max 60 chars each).
 Reply ONLY with a JSON object containing a key "titles" which is an array of 5 strings.
 
-Article Title: $title
-Article Content: $contentChunk
+Article Title: {$title}
+Article Content: {$contentChunk}
 EOT;
 
         try {

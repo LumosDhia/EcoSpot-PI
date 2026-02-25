@@ -25,9 +25,12 @@ class TranslationService
      */
     public function translate(string $text, string $targetLocale): string
     {
-        if (empty($text) || in_array($targetLocale, ['en', ''])) {
+        if (empty($text)) {
             return $text;
         }
+
+        // If no target locale is provided, default to 'en'
+        $targetLocale = $targetLocale ?: 'en';
 
         // Create a unique cache key based on text and target language
         $cacheKey = 'tr_' . md5($text . '_' . $targetLocale);

@@ -77,86 +77,75 @@
                 </div>
             {% endif %}
 
-            <div class="row g-4">
-                {% for article in pagination %}
-                    <div class="col-lg-6 col-xl-3">
-                        <div class="blog-item">
-                            <div class="blog-img">
-                                {% if article.image %}
-                                    <img src="{{ article.image starts with 'http' ? article.image : asset(article.image) }}" class="img-fluid w-100" alt="{{ article.title|translate }}" style="height: 220px; object-fit: cover;">
-                                {% else %}
-                                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800" class="img-fluid w-100" alt="{{ article.title|translate }}" loading="lazy" style="height: 220px; object-fit: cover;">
-                                {% endif %}
-                                <div class="search-icon">
-                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="btn btn-primary px-3" aria-label="{{ 'common.read_more'|trans }} about {{ article.title|translate }}">{{ 'common.read_more'|trans }}</a>
-                                </div>
-                            </div>
-                            <div class="text-dark border border-top-0 p-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    {% if article.category %}
-                                        <a href="{{ path('blog_index', { 'category': article.category.id }) }}" class="badge bg-primary text-decoration-none">
-                                            {{ article.category.name|translate }}
-                                        </a>
-                                    {% else %}
-                                        <span></span>
-                                    {% endif %}
-                                    <small class="text-muted">
-                                        <i class="fa fa-calendar-alt me-1"></i>
-                                        {% set articleDate = article.publishedAt ?? article.createdAt %}
-                                        {{ articleDate|ago }}
-                                    </small>
-                                </div>
-
-                                <h2 class="h5 mb-3" style="min-height: 3rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.5; margin-top: 10px;">
-                                    <a href="{{ path('blog_show', { slug: article.slug }) }}" class="text-dark text-decoration-none hover-primary">{{ article.title|translate }}</a>
-                                </h2>
-
-                                <div class="d-flex flex-wrap gap-2 text-muted small mb-3 py-2 border-top border-bottom bg-light px-2 rounded-2">
-                                    <span title="{{ 'blog.views'|trans }}"><i class="fa fa-eye me-1 text-primary"></i>{{ article.views }}</span>
-                                    <span title="{{ 'blog.likes'|trans }}"><i class="fa fa-thumbs-up me-1 text-success"></i>{{ article.likesCount }}</span>
-                                    <span title="{{ 'blog.dislikes'|trans }}"><i class="fa fa-thumbs-down me-1 text-danger"></i>{{ article.dislikesCount }}</span>
-                                    <span title="{{ 'blog.reading_time'|trans }}"><i class="fa fa-book-reader me-1 text-info"></i>{{ article.readingTime }}m</span>
-                                    <span title="{{ 'blog.comments'|trans }}"><i class="fa fa-comment me-1 text-secondary"></i>{{ article.comments|length }}</span>
-                                </div>
-
-                                {% if article.writer %}
-                                    <p class="text-muted extra-small mb-2">
-                                        <i class="fas fa-user-edit me-1"></i>
-                                        <a href="{{ path('blog_index', { 'writer': article.writer.id }) }}" class="text-decoration-none text-muted" aria-label="{{ 'blog.filter_by'|trans }} {{ article.writer.firstname }} {{ article.writer.lastname }}">
-                                            {{ article.writer.firstname }} {{ article.writer.lastname }}
-                                        </a>
-                                    </p>
-                                {% endif %}
-
-                                {% set excerptText = article.content|translate|striptags|decode_html_entities %}
-                                <p class="mb-4 article-excerpt text-muted small" style="height: 4.5rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                    {{ excerptText }}
-                                </p>
-                                <a class="btn-hover-bg btn btn-primary text-white w-100 py-2" href="{{ path('blog_show', { slug: article.slug }) }}" aria-label="{{ 'common.read_more'|trans }} about {{ article.title|translate }}">{{ 'common.read_more'|trans }}</a>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="col-12">
-                        <div class="col-12 text-center py-5">
-                            <p class="text-muted">{{ 'blog.no_articles'|trans }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="row g-4" id="article-grid">
+                {% include 'blog/_article_grid.html.twig' %}
             </div>
 
-            <div class="mt-5 d-flex justify-content-center">
+            <div class="mt-5 d-flex justify-content-center" id="pagination-container">
                 {{ knp_pagination_render(pagination) }}
             </div>
         </div>
     </div>
 
     <script>
-        // Ensure the page refreshes when navigating back, so view counts and likes are up to date
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
-                window.location.reload();
-            }
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const orderSelect = document.getElementById('order');
+            const articleGrid = document.getElementById('article-grid');
+            const paginationContainer = document.getElementById('pagination-container');
+            let debounceTimer;
+
+            const updateGrid = () => {
+                const search = searchInput.value;
+                const order = orderSelect.value;
+                
+                // Show loading state
+                articleGrid.style.opacity = '0.5';
+
+                const url = new URL(window.location.href);
+                url.searchParams.set('search', search);
+                url.searchParams.set('order', order);
+                url.searchParams.set('page', 1); // Reset to page 1
+
+                fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    articleGrid.innerHTML = html;
+                    articleGrid.style.opacity = '1';
+                    
+                    // Update URL without reloading for bookmarking/navigation
+                    window.history.pushState({}, '', url);
+
+                    // If searching, we typically hide pagination or would need to update it too.
+                    // For a true "live search", we'll hide it if there's a search term, 
+                    // unless we also return the pagination HTML in the AJAX.
+                    if (search !== '') {
+                        paginationContainer.style.display = 'none';
+                    } else {
+                        paginationContainer.style.display = 'flex';
+                    }
+                });
+            };
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(updateGrid, 300);
+            });
+
+            orderSelect.addEventListener('change', function(e) {
+                // Prevent the default form submission since we handle it via AJAX
+                e.preventDefault();
+                updateGrid();
+            });
+
+            // Ensure the page refreshes when navigating back, so view counts and likes are up to date
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+                    window.location.reload();
+                }
+            });
         });
     </script>
 {% endblock %}

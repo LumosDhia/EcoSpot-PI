@@ -26,7 +26,7 @@ class FaceRecognitionService
                     'image' => $imageBase64,
                     'user_id' => $userId,
                 ],
-                'timeout' => 60,
+                'timeout' => 300,
             ]);
 
             return $response->toArray();
@@ -46,7 +46,7 @@ class FaceRecognitionService
                 'json' => [
                     'image' => $imageBase64,
                 ],
-                'timeout' => 60,
+                'timeout' => 300,
             ]);
 
             if ($response->getStatusCode() === 200) {
