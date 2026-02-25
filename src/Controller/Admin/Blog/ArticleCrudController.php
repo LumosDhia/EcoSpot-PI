@@ -20,17 +20,35 @@ class ArticleCrudController extends AbstractController
 {
     public function __construct(
         private readonly ArticleRepository $articleRepository,
+        private readonly \Knp\Component\Pager\PaginatorInterface $paginator,
         private readonly string $projectDir
     ) {
     }
 
     #[Route('', name: 'admin_blog_article_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $admin = $this->getUser();
+        
+        $adminQuery = $this->articleRepository->getQueryAdminOwnArticles($admin);
+        $adminPagination = $this->paginator->paginate(
+            $adminQuery,
+            $request->query->getInt('page_admin', 1),
+            5,
+            ['pageParameterName' => 'page_admin']
+        );
+
+        $ngoQuery = $this->articleRepository->getQueryNgoArticlesForAdmin();
+        $ngoPagination = $this->paginator->paginate(
+            $ngoQuery,
+            $request->query->getInt('page_ngo', 1),
+            5,
+            ['pageParameterName' => 'page_ngo']
+        );
+
         return $this->render('admin/blog/article/index.html.twig', [
-            'admin_articles' => $this->articleRepository->findAdminOwnArticles($admin),
-            'ngo_articles' => $this->articleRepository->findNgoArticlesForAdmin(),
+            'admin_pagination' => $adminPagination,
+            'ngo_pagination' => $ngoPagination,
         ]);
     }
 

@@ -27,3 +27,5 @@ __pycache__/
 .ipynb_checkpoints/
 .python-version
 
+# Documentation
+/article.md

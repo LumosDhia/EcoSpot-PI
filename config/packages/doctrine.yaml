@@ -5,7 +5,11 @@ doctrine:
         # MUST set server version here. Prevents "Unknown column FULL_COLLATION_NAME" on MariaDB.
         # Do NOT put serverVersion in DATABASE_URL or it can override this and trigger the bug.
         # Format must be major.minor.patch (e.g. mariadb-10.5.0).
+<<<<<<< HEAD
         server_version: '8.0.41'
+=======
+        server_version: '8.0'
+>>>>>>> 95cc85f3d6bd09f3adbe6632feae97dae04490b8
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true

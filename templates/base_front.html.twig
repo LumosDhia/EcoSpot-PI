@@ -25,6 +25,8 @@
         <link href="{{ asset('environs/lib/lightbox/css/lightbox.min.css') }}" rel="stylesheet">
         <link href="{{ asset('environs/css/bootstrap.min.css') }}" rel="stylesheet">
         <link href="{{ asset('environs/css/style.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4/bootstrap-4.css">
+
 
         <style>
             /* EcoSpot green theme – override Environs for a greener look */
@@ -276,7 +278,8 @@
                     <div class="collapse navbar-collapse bg-light" id="navbarCollapse">
                         <div class="navbar-nav ms-auto">
                             <a href="{{ path('home') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">{{ 'nav.home'|trans }}</a>
-                            <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and 'events_' in app.request.attributes.get('_route') ? 'active' : '' }}">{{ 'nav.events'|trans }}</a>
+                            <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and app.request.attributes.get('_route') == 'events_index' ? 'active' : '' }}">{{ 'nav.events'|trans }}</a>
+                            <a href="{{ path('events_nearby') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and app.request.attributes.get('_route') == 'events_nearby' ? 'active' : '' }}">Nearby Me</a>
                             <a href="{{ path('public_tickets') }}" class="nav-item nav-link glass-ticket-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">
                                 <i class="fas fa-ticket-alt me-2" style="font-size: 1.1em; line-height: 1;"></i>{{ 'nav.tickets'|trans }}
                             </a>
@@ -293,18 +296,9 @@
         {% block breadcrumb %}{% endblock %}
 
         <main id="main-content">
-            {% for label, messages in app.flashes %}
-                {% for message in messages %}
-                    <div class="container py-2">
-                        <div class="alert alert-{{ label == 'error' ? 'danger' : label }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    </div>
-                {% endfor %}
-            {% endfor %}
             {% block body %}{% endblock %}
         </main>
+
 
         <!-- Footer -->
         <footer class="container-fluid footer py-5">
@@ -362,6 +356,30 @@
         <script src="{{ asset('environs/lib/owlcarousel/owl.carousel.min.js') }}"></script>
         <script src="{{ asset('environs/lib/lightbox/js/lightbox.min.js') }}"></script>
         <script src="{{ asset('environs/js/main.js') }}"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    Toast.fire({
+                        icon: '{{ label == "error" ? "error" : (label == "success" ? "success" : "info") }}',
+                        title: '{{ message|escape("js") }}'
+                    });
+                {% endfor %}
+            {% endfor %}
+        </script>
         {% block javascripts %}{% endblock %}
     </body>
+
 </html>

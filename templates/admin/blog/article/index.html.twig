@@ -24,7 +24,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for article in admin_articles %}
+                        {% for article in admin_pagination %}
                             <tr>
                                 <td>{{ article.id }}</td>
                                 <td>{{ article.title|translate }}</td>
@@ -67,6 +67,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="navigation d-flex justify-content-center mt-3">
+                {{ knp_pagination_render(admin_pagination) }}
+            </div>
         </div>
     </div>
 
@@ -90,7 +93,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for article in ngo_articles %}
+                        {% for article in ngo_pagination %}
                             <tr>
                                 <td>{{ article.id }}</td>
                                 <td>{{ article.title|translate }}</td>
@@ -120,6 +123,9 @@
                         {% endfor %}
                     </tbody>
                 </table>
+            </div>
+            <div class="navigation d-flex justify-content-center mt-3">
+                {{ knp_pagination_render(ngo_pagination) }}
             </div>
         </div>
     </div>

@@ -1,0 +1,31 @@
+{% extends 'base_email.html.twig'|default('emails/layout.html.twig') %}
+
+{% block body %}
+<div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+    <div style="background-color: #d8f3dc; padding: 40px; border-radius: 12px 12px 0 0; text-align: center; border: 1px solid #95d5b2;">
+        <h1 style="color: #1b4332; margin: 0; font-size: 28px;">Upcoming Event Reminder ⏰</h1>
+    </div>
+    <div style="background-color: #ffffff; padding: 40px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+        <p style="font-size: 18px; margin-bottom: 24px;">Hi <strong>{{ user.firstname }}</strong>,</p>
+        <p style="line-height: 1.6; margin-bottom: 30px;">
+            This is a friendly reminder that the event <strong>{{ event.nom }}</strong> is happening in just 2 days! We're looking forward to seeing you.
+        </p>
+        
+        <div style="background-color: #f7f3ff; border-left: 4px solid #6c5ce7; padding: 25px; border-radius: 0 8px 8px 0; margin-bottom: 30px;">
+            <p style="margin: 0 0 10px 0;"><strong>📅 When:</strong> {{ event.dateDebut|date('l, d F Y') }} at {{ event.dateDebut|date('H:i') }}</p>
+            <p style="margin: 0;"><strong>📍 Where:</strong> {{ event.lieu }}</p>
+        </div>
+
+        <p style="margin-bottom: 30px;">If you can no longer attend, please let us know by canceling your participation so someone else can take your spot.</p>
+
+        <div style="text-align: center;">
+            <a href="{{ url('events_show', {slug: event.slug}) }}" style="background-color: #1b4332; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Manage My Participation</a>
+        </div>
+
+        <hr style="margin: 40px 0; border: 0; border-top: 1px solid #e2e8f0;">
+        <p style="font-size: 14px; color: #666; text-align: center;">
+            EcoSpot — Shaping a greener future, one event at a time.
+        </p>
+    </div>
+</div>
+{% endblock %}
