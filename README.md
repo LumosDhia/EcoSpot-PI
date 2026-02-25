@@ -11,8 +11,12 @@ EcoSpot is a modern web application designed to promote environmental awareness 
 *   **AI SEO Optimizer**: Integrated **OpenRouter API** (`AiSeoService`) to automatically generate high-quality descriptions, and keywords for articles.
 *   **Creative AI Title suggestor**: Tool to generate multiple catchy title ideas for blog posts using **OpenRouter API**.
 *   **AI Reader**: Accessible feature for listening to article content with pause/resume capabilities using the **Web Speech Synthesis API**.
+*   **Dynamic Content Translation**: Integrated **Google Translate API** (via `TranslationService`) with **caching** to automatically translate dynamic content like categories and tags.
 *   **Image Integration**: **Unsplash API** integration in `UnsplashImageService` for professional photo searching.
 *   **Engagement Tools**: Core systems for **Article Reactions** (Likes/Dislikes), **Views Counter**, and **Reading Time** calculations.
+*   **Blog Writing Interface**: Complete redesign of the article creation/editing UI, for more clarity.
+*   **Taxonomy System**: Implemented the core system for **Categories** and **Tags** with dedicated admin management.
+*   **User Filtering**: Added functionality to filter and browse blog articles by **Writer**, **Category**, or **Tag**.
 *   **Technical SEO**: Automatic **SEO-friendly Slugs** using StofDoctrineExtensionsBundle.
 *   **System-Wide UX & Localization**:
     - **Trilingual Support**: Full system translation for **English, French, and Arabic**.
