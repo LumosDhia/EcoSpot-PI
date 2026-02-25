@@ -26,13 +26,24 @@ class FaceRecognitionService
                     'image' => $imageBase64,
                     'user_id' => $userId,
                 ],
-                'timeout' => 60,
+                'timeout' => 30,
             ]);
 
-            return $response->toArray();
+            $data = $response->toArray();
+            if (isset($data['status']) && $data['status'] === 'error') {
+                throw new \Exception($data['message'] ?? 'Unknown error from face service');
+            }
+
+            return $data;
         }
         catch (\Exception $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            // Log the error for debugging
+            return [
+                'status' => 'error', 
+                'message' => 'Face service enrollment failed: ' . $e->getMessage(),
+                'technical_detail' => 'Attempted URL: ' . $this->faceServiceUrl . '/enroll. Ensure the Python server is running on port 8001. Check face_service.log for server-side errors.',
+                'error_type' => get_class($e)
+            ];
         }
     }
 
@@ -46,7 +57,7 @@ class FaceRecognitionService
                 'json' => [
                     'image' => $imageBase64,
                 ],
-                'timeout' => 60,
+                'timeout' => 30,
             ]);
 
             if ($response->getStatusCode() === 200) {
@@ -55,7 +66,8 @@ class FaceRecognitionService
             }
         }
         catch (\Exception $e) {
-        // Log error if needed
+            // Log error if needed: $e->getMessage()
+            // This might happen if the server is down or returns 401
         }
 
         return null;
