@@ -61,6 +61,9 @@ Biometric Integration: Option to enroll face data seamlessly during the initial 
 *   **Participation System**: Real-time capacity management (seats matching) for green community events.
 *   **Automated Emailers**: Real-time **Email Confirmations** via **Symfony Mailer** when joining an event.
 *   **Event Management**: Enhanced CRUD interface and refinements for organizing community events.
+*   **Event pagination**: **KnpPaginatorBundle** Handles the pagination for the event list, allowing users to browse through multiple pages of events efficiently.
+*   **Notification bundle**: creat, modify, delete, paticipate in en event will be notified.
+*   **Location service**: A map **OpenStreetMap Nominatim API** shows where each event is and clicking on it give you the details.
 
 ---
 
