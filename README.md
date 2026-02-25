@@ -41,13 +41,19 @@ EcoSpot is a modern web application designed to promote environmental awareness 
 ---
 
 ### 👩‍💻 Contributed by Wiem
-#### **Face Recognition & User Security**
-*   **Biometric Authentication**: Core implementation of **Face Recognition login** using **face-api.js** (TensorFlow.js) and local pre-trained models.
-*   **Face Enrollment**: User-facing interface and logic to enroll biometric data for secure access.
-*   **Secure Password Reset**: Full "Forgot Password" workflow with email tokens using **Symfony Mailer (SMTP)**.
-*   **UX Intelligence**: Integrated **City Suggestions** and location auto-complete during user registration via the **Open-Meteo Geocoding API**.
-
----
+#### **Face Recognition & User Security
+Biometric Authentication: Core implementation of Face Recognition login using face-api.js (TensorFlow.js) and local pre-trained models.
+Face Enrollment: User-facing interface and logic to enroll biometric data for secure access, available during registration and from the dashboard.
+Secure Password Reset: Full "Forgot Password" workflow with email tokens using Symfony Mailer (SMTP) and Gmail SMTP integration.
+User Security Infrastructure:
+Bot Verification: Integration of Google reCAPTCHA v2 on registration and login forms to prevent automated submissions.
+Account Guard: Implementation of UserChecker with automated 24-hour account timeouts for suspicious activity or administrative action.
+Session Stability: Secure "Remember Me" functionality to maintain authenticated sessions across browser restarts.
+Core Protection: Native CSRF protection and BCrypt hashing across all authentication entry points.
+Registration Ecosystem:
+Multi-Step Flow: A structured, user-friendly registration process for capturing comprehensive profile data.
+UX Intelligence: Geolocation-aware City Suggestions and location auto-complete via the Open-Meteo Geocoding API.
+Biometric Integration: Option to enroll face data seamlessly during the initial signup phase.
 
 ### 👨‍💻 Contributed by Aziz
 #### **Smart Event Management**
