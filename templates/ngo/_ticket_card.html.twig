@@ -1,0 +1,56 @@
+<div class="col-md-6 col-lg-4">
+    <div class="card ticket-card h-100 position-relative border-0 bg-white">
+        {% if isRecommended %}
+            <div class="ai-recommendation shadow-sm">
+                <i class="fas fa-star me-1"></i> Match
+            </div>
+        {% endif %}
+        
+        {% if ticket.image %}
+            <img src="{{ asset(ticket.image) }}" class="card-img-top" alt="Ticket Image" style="height: 180px; object-fit: cover;">
+        {% else %}
+            <div class="bg-light d-flex align-items-center justify-content-center" style="height: 180px;">
+                <i class="fas fa-image text-muted fs-1"></i>
+            </div>
+        {% endif %}
+        
+        <div class="card-body">
+            <h5 class="card-title fw-bold text-dark">{{ ticket.title }}</h5>
+            
+            {% if isRecommended and ticket.aiRecommendationReason is defined %}
+                <div class="alert alert-warning py-2 small mb-3">
+                    <i class="fas fa-info-circle me-1"></i> {{ ticket.aiRecommendationReason }}
+                </div>
+            {% endif %}
+            
+            <p class="card-text text-muted small text-truncate" style="max-height: 40px;">
+                {{ ticket.description }}
+            </p>
+            
+            <ul class="list-unstyled mb-4 small text-secondary">
+                <li class="mb-1"><i class="fas fa-map-marker-alt text-primary me-2"></i> {{ ticket.location }}</li>
+                <li class="mb-1"><i class="fas fa-calendar me-2"></i> {{ ticket.createdAt|date('M d, Y') }}</li>
+                <li class="mb-1">
+                    <span class="badge bg-{{ ticket.priority.getBadgeClass() }}-subtle text-{{ ticket.priority.getBadgeClass() }}">
+                        Priority: {{ ticket.priority.getLabel() }}
+                    </span>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+            {% if ticket.id in requestedTicketIds %}
+                <button class="btn btn-secondary w-100 rounded-pill" disabled>
+                    <i class="fas fa-hourglass-half me-2"></i> Request Pending
+                </button>
+            {% else %}
+                <form action="{{ path('ngo_ticket_request', {id: ticket.id}) }}" method="post">
+                    <input type="hidden" name="_token" value="{{ csrf_token('request_ticket_' ~ ticket.id) }}">
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill shadow-sm" onclick="return confirm('Do you want to request assignment for this ticket?');">
+                        <i class="fas fa-hand-paper me-2"></i> Request this Ticket
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>

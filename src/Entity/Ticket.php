@@ -77,6 +77,13 @@ class Ticket
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $adminNotes = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $assignedNgo = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $ngoNotes = null;
+
     /** User/NGO who submitted completion (proof they did the task). */
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -267,6 +274,28 @@ class Ticket
     public function setAdminNotes(?string $adminNotes): static
     {
         $this->adminNotes = $adminNotes;
+        return $this;
+    }
+
+    public function getAssignedNgo(): ?User
+    {
+        return $this->assignedNgo;
+    }
+
+    public function setAssignedNgo(?User $assignedNgo): static
+    {
+        $this->assignedNgo = $assignedNgo;
+        return $this;
+    }
+
+    public function getNgoNotes(): ?string
+    {
+        return $this->ngoNotes;
+    }
+
+    public function setNgoNotes(?string $ngoNotes): static
+    {
+        $this->ngoNotes = $ngoNotes;
         return $this;
     }
 

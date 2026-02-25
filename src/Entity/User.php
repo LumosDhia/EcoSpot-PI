@@ -70,6 +70,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $faceEnrolled = false;
 
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $ngoDescription = null;
+
     /** @var Collection<int, Notification> */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
     private Collection $notifications;
@@ -259,6 +262,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFaceEnrolled(bool $faceEnrolled): static
     {
         $this->faceEnrolled = $faceEnrolled;
+        return $this;
+    }
+
+    public function getNgoDescription(): ?string
+    {
+        return $this->ngoDescription;
+    }
+
+    public function setNgoDescription(?string $ngoDescription): static
+    {
+        $this->ngoDescription = $ngoDescription;
         return $this;
     }
 

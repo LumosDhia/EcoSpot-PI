@@ -401,7 +401,7 @@
                         <nav aria-label="breadcrumb" class="d-none d-md-block">
                             <ol class="breadcrumb mb-0" style="font-size: 0.9rem; font-weight: 500;">
                                 <li class="breadcrumb-item"><a href="{{ path('dashboard') }}" class="text-decoration-none text-muted">Admin</a></li>
-                                <li class="breadcrumb-item active text-dark" aria-current="page">{{ block('page_title')|default('Dashboard') }}</li>
+                                <li class="breadcrumb-item active text-dark" aria-current="page">{% block page_title %}Dashboard{% endblock %}</li>
                             </ol>
                         </nav>
                     </div>

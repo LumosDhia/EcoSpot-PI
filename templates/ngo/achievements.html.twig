@@ -1,0 +1,74 @@
+{% extends 'base_back.html.twig' %}
+
+{% block title %}My Achievements - EcoSpot{% endblock %}
+{% block page_title %}My Achievements{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+    <div class="row mb-5 align-items-center">
+        <div class="col-md-8">
+            <h2 class="fw-bold text-dark"><i class="fas fa-trophy text-warning me-2"></i> NGO Achievements Wall</h2>
+            <p class="text-muted lead mb-0">Here is the history of environmental issues your organization has successfully resolved.</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <div class="bg-success-subtle text-success p-3 rounded-4 d-inline-block shadow-sm">
+                <div class="fs-1 fw-bold">{{ tickets|length }}</div>
+                <div class="text-uppercase small fw-bold tracking-wide">Tickets Resolved</div>
+            </div>
+        </div>
+    </div>
+
+    {% if tickets|length > 0 %}
+        <div class="row g-4">
+            {% for ticket in tickets %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative" style="transition: transform 0.2s;">
+                        <div class="position-absolute top-0 end-0 p-3 z-3">
+                            <span class="badge bg-warning text-dark fs-6 rounded-circle shadow" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-star"></i>
+                            </span>
+                        </div>
+                        
+                        <div class="bg-light" style="height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                            {% if ticket.image %}
+                                <img src="{{ asset(ticket.image) }}" class="w-100 h-100 object-fit-cover opacity-75" alt="Ticket image">
+                            {% else %}
+                                <i class="fas fa-image fs-1 text-muted opacity-25"></i>
+                            {% endif %}
+                            
+                            <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);">
+                                <h5 class="text-white fw-bold mb-0 text-truncate">{{ ticket.title }}</h5>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-4 bg-white">
+                            <div class="d-flex align-items-center mb-3 text-muted small">
+                                <i class="fas fa-calendar-check me-2 text-success"></i>
+                                Completed on {{ ticket.achievedAt|date('M d, Y') }}
+                            </div>
+                            
+                            <p class="card-text text-secondary small text-truncate" style="max-height: 40px;">
+                                {{ ticket.description }}
+                            </p>
+                            
+                            <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                                <span class="badge bg-light text-dark">{{ ticket.domain.getLabel() }}</span>
+                                <span class="text-muted small"><i class="fas fa-map-marker-alt text-danger me-1"></i> {{ ticket.location }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5 my-5 bg-white rounded-4 shadow-sm border border-dashed">
+            <img src="https://cdn-icons-png.flaticon.com/512/3133/3133170.png" class="opacity-50 mb-4" width="100" alt="Empty trophy">
+            <h4 class="text-dark fw-bold">No achievements yet</h4>
+            <p class="text-muted">Start making a difference by accepting and completing environmental tickets.</p>
+            <a href="{{ path('ngo_tickets_browse') }}" class="btn btn-primary rounded-pill mt-3 px-4 shadow">
+                Browse Tickets
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
