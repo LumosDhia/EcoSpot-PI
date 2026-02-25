@@ -24,9 +24,15 @@ EcoSpot is a modern web application designed to promote environmental awareness 
 ### 👨‍💻 Contributed by Ghassen
 #### **Smart Ticketing & Biometrics Integration**
 *   **Smart Ticketing AI**: AI-powered detection of **Priority & Difficulty** for community tickets using **OpenRouter API**.
-*   **Automated Instructions**: Generation of task-specific "consignes" via `AiTicketTaskService` (Powered by **OpenRouter**).
-*   **Biometric Support**: Integrated the **Face Recognition service** startup logic and critical integration bug fixes between the Symfony backend and the **Python Face-API Microservice**.
-*   **Admin Dashboard UX**: Major styling and layout improvements for the NGO and Admin ticketing sections using **Vanilla CSS**.
+*   **Automated Instructions**: Generation of task-specific "consignes" via `AiTicketTaskService`.
+*   **Biometric Support**: Integrated Face Recognition service startup logic and Symfony/Python integration fixes.
+*   **Full Ticketing Ecosystem**:
+    - **Citizen Portal**: Reporting with images, geolocation (Lat/Long), and real-time status tracking.
+    - **NGO Workspace**: Achievement system, AI-based ticket recommendation, and assignment request flow.
+    - **Admin Control**: Complete moderation workflow (Approve/Refuse/Send Back) and AI-assisted NGO matching.
+    - **AI Security**: Automated spam detection and account enforcement (24h timeout).
+    - **Context Awareness**: Integrated weekly weather forecasts via Open-Meteo for site-specific planning.
+    - **Lifecycle Management**: Comprehensive state machine: `Pending` ➔ `Sent Back` ➔ `Published` ➔ `Assigned` ➔ `In Progress` ➔ `Completed`.
 
 ---
 
