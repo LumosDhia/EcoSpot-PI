@@ -30,8 +30,8 @@ class ArticleSeoApiController extends AbstractController
         $title = $data['title'] ?? '';
         $content = $data['content'] ?? '';
 
-        if (empty($title) || empty($content)) {
-            return new JsonResponse(['error' => 'Title and content are required'], 400);
+        if (empty($content)) {
+            return new JsonResponse(['error' => 'Article content is required to generate metadata'], 400);
         }
 
         // Create a temporary article object for the service
@@ -60,8 +60,8 @@ class ArticleSeoApiController extends AbstractController
         $title = $data['title'] ?? '';
         $content = $data['content'] ?? '';
 
-        if (empty($title) || empty($content)) {
-            return new JsonResponse(['error' => 'Title and content are required'], 400);
+        if (empty($content)) {
+            return new JsonResponse(['error' => 'Article content is required to generate title ideas'], 400);
         }
 
         $article = new Article();

@@ -39,7 +39,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC');
 
         if ($search !== null && $search !== '') {
-            $qb->andWhere('a.title LIKE :search OR a.content LIKE :search')
+            $qb->andWhere('a.title LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
 
@@ -111,14 +111,20 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->getQueryAdminOwnArticles($admin, $order)->getResult();
     }
 
-    public function getQueryAdminOwnArticles(User $admin, string $order = 'DESC'): \Doctrine\ORM\Query
+    public function getQueryAdminOwnArticles(User $admin, ?string $search = null, string $order = 'DESC'): \Doctrine\ORM\Query
     {
-        return $this->createQueryBuilder('a')
+        $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
             ->andWhere('a.writer = :admin OR a.writer IS NULL')
             ->setParameter('admin', $admin)
-            ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC')
-            ->getQuery();
+            ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC');
+
+        if ($search) {
+            $qb->andWhere('a.title LIKE :search OR a.content LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        return $qb->getQuery();
     }
 
     /**
@@ -130,11 +136,18 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->getQueryNgoArticlesForAdmin($order)->getResult();
     }
 
-    public function getQueryNgoArticlesForAdmin(string $order = 'DESC'): \Doctrine\ORM\Query
+    public function getQueryNgoArticlesForAdmin(?string $search = null, string $order = 'DESC'): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
+            ->andWhere('w.roles LIKE :role')
+            ->setParameter('role', '%"ROLE_NGO"%')
             ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC');
+
+        if (!empty($search)) {
+            $qb->andWhere('a.title LIKE :search OR a.content LIKE :search OR w.firstname LIKE :search OR w.lastname LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
 
         return $qb->getQuery();
     }

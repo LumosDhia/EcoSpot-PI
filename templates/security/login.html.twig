@@ -58,9 +58,7 @@
                                     
                                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
                                     
-                                    <div class="mb-3">
-                                        <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
-                                    </div>
+
 
                                     <div class="d-grid gap-2">
                                         <button class="btn btn-primary" type="submit">{{ 'security.sign_in'|trans }}</button>
@@ -133,7 +131,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
     <script>
     (function () {
         'use strict';

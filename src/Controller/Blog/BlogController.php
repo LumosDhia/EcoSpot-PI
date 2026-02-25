@@ -24,15 +24,16 @@ class BlogController extends AbstractController
         private readonly \App\Repository\Blog\Article\TagRepository $tagRepository,
         private readonly \App\Repository\Blog\Article\ArticleReactionRepository $reactionRepository,
         private readonly \App\Repository\UserRepository $userRepository,
-        private readonly \Knp\Component\Pager\PaginatorInterface $paginator
+        private readonly \Knp\Component\Pager\PaginatorInterface $paginator,
+        private readonly \App\Service\TranslationService $translationService
     ) {
     }
 
     #[Route('/blog', name: 'blog_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $search = $request->query->get('q');
-        $order = $request->query->get('order', 'DESC');
+        $search = $request->query->get('search');
+        $order = strtoupper($request->query->get('order', 'DESC'));
         if (!in_array($order, ['ASC', 'DESC'], true)) {
             $order = 'DESC';
         }
@@ -41,19 +42,49 @@ class BlogController extends AbstractController
         $tagId = $request->query->get('tag') ? (int) $request->query->get('tag') : null;
         $writerId = $request->query->get('writer') ? (int) $request->query->get('writer') : null;
 
+        // Support translated search: if searching in non-English, try translating search term back to English
+        $translatedSearch = null;
+        $locale = $request->getLocale();
+        if ($search && $locale !== 'en') {
+            $translatedSearch = $this->translationService->translate($search, 'en');
+        }
+
         $query = $this->articleRepository->getQueryPublishedBySearchAndOrder(
-            $search === '' ? null : $search,
+            null, // No search in SQL yet
             $order,
             $categoryId,
             $tagId,
             $writerId
         );
 
-        $pagination = $this->paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            8 // Articles per page
-        );
+        if ($search) {
+            $articles = $query->getResult();
+            $locale = $request->getLocale();
+            $filteredArticles = array_filter($articles, function($article) use ($search, $locale) {
+                // Get the translated title exactly as shown in Twig
+                $translatedTitle = $this->translationService->translate($article->getTitle(), $locale);
+                return stripos($translatedTitle, $search) !== false;
+            });
+            
+            // Re-paginate the filtered array
+            $pagination = $this->paginator->paginate(
+                $filteredArticles,
+                $request->query->getInt('page', 1),
+                8
+            );
+        } else {
+            $pagination = $this->paginator->paginate(
+                $query,
+                $request->query->getInt('page', 1),
+                8 // Articles per page
+            );
+        }
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('blog/_article_grid.html.twig', [
+                'pagination' => $pagination,
+            ]);
+        }
 
         $selectedCategory = $categoryId ? $this->categoryRepository->find($categoryId) : null;
         $selectedTag = $tagId ? $this->tagRepository->find($tagId) : null;
@@ -62,7 +93,7 @@ class BlogController extends AbstractController
         return $this->render('blog/index.html.twig', [
             'pagination' => $pagination,
             'search' => $search ?? '',
-            'order' => $order,
+            'order' => strtolower($order),
             'selectedCategory' => $selectedCategory,
             'selectedTag' => $selectedTag,
             'selectedWriter' => $selectedWriter,
