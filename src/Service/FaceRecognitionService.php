@@ -6,8 +6,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class FaceRecognitionService
 {
-    private $httpClient;
-    private $faceServiceUrl;
+    private HttpClientInterface $httpClient;
+    private string $faceServiceUrl;
 
     public function __construct(HttpClientInterface $httpClient, string $faceServiceUrl)
     {
@@ -17,6 +17,7 @@ class FaceRecognitionService
 
     /**
      * Enrolls a face in the python microservice.
+     * @return array<string, mixed>
      */
     public function enrollFace(string $imageBase64, string $userId): array
     {

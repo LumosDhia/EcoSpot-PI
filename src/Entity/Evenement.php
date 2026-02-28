@@ -157,9 +157,21 @@ class Evenement
         return $this->dateDebut;
     }
 
+    public function setDateDebut(?\DateTimeInterface $dateDebut): static
+    {
+        $this->dateDebut = $dateDebut;
+        return $this;
+    }
+
     public function getDateFin(): ?\DateTimeInterface
     {
         return $this->dateFin;
+    }
+
+    public function setDateFin(?\DateTimeInterface $dateFin): static
+    {
+        $this->dateFin = $dateFin;
+        return $this;
     }
 
     public function getImage(): ?string

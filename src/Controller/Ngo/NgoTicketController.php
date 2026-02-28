@@ -26,14 +26,14 @@ class NgoTicketController extends AbstractController
         private readonly TicketRepository $ticketRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly NgoAssignmentRequestRepository $requestRepo,
-        private readonly AiNgoSuggestionService $aiNgoService,
-        private readonly NotificationService $notificationService
+        private readonly AiNgoSuggestionService $aiNgoService
     ) {
     }
 
     #[Route('/browse', name: 'ngo_tickets_browse', methods: ['GET'])]
     public function browse(): Response
     {
+        /** @var \App\Entity\User $ngo */
         $ngo = $this->getUser();
         
         // Find published tickets not assigned yet
@@ -103,6 +103,7 @@ class NgoTicketController extends AbstractController
             return $this->redirectToRoute('ngo_tickets_browse');
         }
 
+        /** @var \App\Entity\User $ngo */
         $ngo = $this->getUser();
         
         $existingReq = $this->requestRepo->findOneBy(['ticket' => $ticket, 'ngo' => $ngo]);
@@ -173,8 +174,8 @@ class NgoTicketController extends AbstractController
             return $this->redirectToRoute('ngo_my_ticket');
         }
 
-        $notes = $request->request->get('ngo_notes');
-        $ticket->setNgoNotes($notes);
+        $notes = $request->request->getString('ngo_notes');
+        $ticket->setNgoNotes($notes !== '' ? $notes : null);
         $this->entityManager->flush();
         
         $this->addFlash('success', 'Progress notes updated.');

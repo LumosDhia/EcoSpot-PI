@@ -28,15 +28,15 @@
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
                     <h5 class="mb-0 text-primary fw-bold"><i class="fas fa-search me-2"></i> SEO & Search Visibility</h5>
-                    <button type="button" id="js-generate-seo-btn" class="btn btn-outline-primary btn-sm rounded-pill">
-                        <i class="fas fa-magic me-1"></i> {{ 'form.generate_seo_btn'|trans }}
+                    <button type="button" id="js-generate-seo-btn" class="glass-button">
+                        <i class="fas fa-magic me-2"></i> {{ 'form.generate_seo_btn'|trans }}
                     </button>
                 </div>
                 <div class="card-body p-4">
                     <div class="mb-4">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             {{ form_label(form.seoTitle, null, { label_attr: { class: 'fw-bold mb-0' } }) }}
-                            <button type="button" id="js-generate-titles-btn" class="btn btn-link btn-sm text-primary p-0 text-decoration-none">
+                            <button type="button" id="js-generate-titles-btn" class="glass-button py-1 px-3" style="font-size: 0.8rem;">
                                 <i class="fas fa-lightbulb me-1"></i> Get AI Title Ideas
                             </button>
                         </div>
@@ -84,11 +84,11 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="glass-button w-100 justify-content-center py-3">
                             <i class="fas fa-save me-2"></i> Update Article
                         </button>
                         <div class="d-flex gap-2">
-                            <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="btn btn-outline-info flex-grow-1">
+                            <a href="{{ path('admin_blog_article_show', { id: article.id }) }}" class="glass-button flex-grow-1 justify-content-center opacity-75">
                                 <i class="fas fa-eye me-1"></i> View
                             </a>
                             <a href="{{ path('admin_blog_article_index') }}" class="btn btn-outline-secondary flex-grow-1">
@@ -125,7 +125,7 @@
                             <span class="input-group-text bg-white border-end-0"><i class="fas fa-link text-muted"></i></span>
                             {{ form_widget(form.image, { attr: { class: 'form-control border-start-0 js-image-url-field', placeholder: 'Image URL...' } }) }}
                         </div>
-                        <button type="button" class="btn btn-outline-primary w-100" id="js-search-unsplash-btn">
+                        <button type="button" class="glass-button w-100 justify-content-center mb-2" id="js-search-unsplash-btn">
                             <i class="fas fa-search-plus me-1"></i> Browse Unsplash
                         </button>
                         
@@ -133,7 +133,7 @@
                         <div id="unsplash-search-panel" class="mt-3 p-3 border rounded-3 bg-light shadow-sm" style="display: none;">
                             <div class="input-group mb-3">
                                 <input type="text" id="unsplash-search-input" class="form-control" placeholder="Search eco photos...">
-                                <button type="button" id="unsplash-search-submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                <button type="button" id="unsplash-search-submit" class="glass-button rounded-start-0 py-0 px-3"><i class="fas fa-search"></i></button>
                             </div>
                             <div id="unsplash-results" class="row g-2" style="max-height: 250px; overflow-y: auto;">
                                 <p class="text-muted text-center py-3 extra-small">Enter keywords...</p>
@@ -261,7 +261,7 @@
                 for (let i = 1; i <= maxPages; i++) {
                   const pBtn = document.createElement('button');
                   pBtn.type = 'button';
-                  pBtn.className = `btn btn-sm ${i === page ? 'btn-primary' : 'btn-outline-primary'}`;
+                   pBtn.className = `glass-button py-1 px-2 me-1 mb-1 ${i === page ? '' : 'opacity-75'}`;
                   pBtn.innerText = i;
                   pBtn.addEventListener('click', () => performSearch(i));
                   paginationContainer.appendChild(pBtn);
@@ -328,7 +328,8 @@
                         data.forEach(t => {
                             const badge = document.createElement('button');
                             badge.type = 'button';
-                            badge.className = 'btn btn-sm btn-outline-info rounded-pill';
+                            badge.className = 'glass-button py-1 px-3 m-1';
+                            badge.style.fontSize = '0.75rem';
                             badge.innerText = t;
                             badge.addEventListener('click', () => {
                                 titleField.value = t;

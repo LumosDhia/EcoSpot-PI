@@ -21,7 +21,9 @@ class TestResultsController extends AbstractController
             throw $this->createNotFoundException('Test results are only available in dev.');
         }
 
-        $projectDir = $this->getParameter('kernel.project_dir');
+        /** @var string $kernelProjectDir */
+        $kernelProjectDir = $this->getParameter('kernel.project_dir');
+        $projectDir = $kernelProjectDir;
         $resultsFile = $projectDir . '/var/phpunit-results.xml';
 
         $phpBinary = \defined('PHP_BINARY') ? PHP_BINARY : 'php';
@@ -86,7 +88,7 @@ class TestResultsController extends AbstractController
             foreach ($suites as $suite) {
                 $suiteName = $suite->getAttribute('name') ?: 'Test Suite';
                 $tests = (int) $suite->getAttribute('tests');
-                $assertions = (int) ($suite->getAttribute('assertions') ?? 0);
+                $assertions = (int) ($suite->getAttribute('assertions'));
                 $failures = (int) $suite->getAttribute('failures');
                 $errors = (int) $suite->getAttribute('errors');
                 $time = (float) $suite->getAttribute('time');
@@ -116,7 +118,7 @@ class TestResultsController extends AbstractController
                         'class' => $class,
                         'status' => $status,
                         'message' => $message,
-                        'time' => (float) ($case->getAttribute('time') ?? 0),
+                        'time' => (float) ($case->getAttribute('time')),
                     ];
                 }
                 $results['suites'][] = [

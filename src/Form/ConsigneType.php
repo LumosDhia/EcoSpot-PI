@@ -20,7 +20,7 @@ class ConsigneType extends AbstractType
                 'label' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Task description...',
+                    'placeholder' => 'tickets.form_task_placeholder',
                 ],
             ])
             ->add('difficulty', \Symfony\Component\Form\Extension\Core\Type\EnumType::class, [

@@ -20,7 +20,7 @@ class GeocodeController extends AbstractController
     #[Route('/api/geocode', name: 'api_geocode', methods: ['GET'])]
     public function search(Request $request): JsonResponse
     {
-        $q = $request->query->get('q', '');
+        $q = $request->query->getString('q', '');
         if (strlen(trim($q)) < 2) {
             return new JsonResponse([]);
         }

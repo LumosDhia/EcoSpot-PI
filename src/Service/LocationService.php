@@ -51,6 +51,7 @@ class LocationService
 
     /**
      * Performs a single Nominatim search query.
+     * @return array{lat: float, lng: float}|null
      */
     private function nominatimSearch(string $query): ?array
     {

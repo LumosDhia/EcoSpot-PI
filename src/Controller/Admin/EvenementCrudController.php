@@ -129,7 +129,7 @@ class EvenementCrudController extends AbstractController
         return $this->redirectToRoute('admin_events_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    private function handleImageUpload($form, Evenement $evenement): void
+    private function handleImageUpload(\Symfony\Component\Form\FormInterface $form, Evenement $evenement): void
     {
         $file = $form->get('imageFile')->getData();
         if (!$file) {
@@ -158,7 +158,6 @@ class EvenementCrudController extends AbstractController
         $notification->setMessage($message);
         $notification->setType($type);
         $notification->setRelatedId($relatedId);
-        $notification->setCreatedAt(new \DateTimeImmutable());
         $notification->setIsRead(false);
 
         $this->notificationRepository->save($notification, true);

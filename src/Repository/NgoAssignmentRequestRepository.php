@@ -10,9 +10,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<NgoAssignmentRequest>
  *
  * @method NgoAssignmentRequest|null find($id, $lockMode = null, $lockVersion = null)
- * @method NgoAssignmentRequest|null findOneBy(array $criteria, array $orderBy = null)
+ * @method NgoAssignmentRequest|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method NgoAssignmentRequest[]    findAll()
- * @method NgoAssignmentRequest[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method NgoAssignmentRequest[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, $limit = null, $offset = null)
  */
 class NgoAssignmentRequestRepository extends ServiceEntityRepository
 {

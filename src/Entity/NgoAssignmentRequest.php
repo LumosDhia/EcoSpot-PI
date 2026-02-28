@@ -36,7 +36,7 @@ class NgoAssignmentRequest
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
     {
-        if ($this->createdAt === null) {
+        if (!isset($this->createdAt)) {
             $this->createdAt = new \DateTimeImmutable();
         }
     }

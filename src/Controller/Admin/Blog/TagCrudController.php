@@ -68,7 +68,7 @@ class TagCrudController extends AbstractController
     #[Route('/{id}', name: 'admin_blog_tag_delete', methods: ['POST'])]
     public function delete(Request $request, Tag $tag): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$tag->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$tag->getId(), $request->request->getString('_token'))) {
             $this->tagRepository->remove($tag, true);
             $this->addFlash('success', 'Tag deleted.');
         }

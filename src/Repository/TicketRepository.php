@@ -11,6 +11,9 @@ use App\Enum\TicketStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Ticket>
+ */
 class TicketRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -37,19 +40,18 @@ class TicketRepository extends ServiceEntityRepository
     /** @return list<Ticket> */
     public function findByUser(User $user, ?TicketStatus $status = null): array
     {
-        $qb = $this->createQueryBuilder('t')
-            ->where('t.user = :user')
-            ->setParameter('user', $user)
-            ->orderBy('t.createdAt', 'DESC');
-
+        $criteria = ['user' => $user];
         if ($status !== null) {
-            $qb->andWhere('t.status = :status')->setParameter('status', $status);
+            $criteria['status'] = $status;
         }
 
-        return $qb->getQuery()->getResult();
+        return $this->findBy($criteria, ['createdAt' => 'DESC']);
     }
 
-    /** Pending and sent-back tickets for admin review with search and sort. */
+    /** 
+     * Pending and sent-back tickets for admin review with search and sort. 
+     * @return list<Ticket>
+     */
     public function findPendingForAdmin(?string $query = null, string $sortBy = 'newest'): array
     {
         $qb = $this->createQueryBuilder('t')
@@ -84,7 +86,10 @@ class TicketRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /** All tickets for admin management with search and sort. */
+    /** 
+     * All tickets for admin management with search and sort. 
+     * @return list<Ticket>
+     */
     public function findAllForAdmin(?string $query = null, string $sortBy = 'newest'): array
     {
         $qb = $this->createQueryBuilder('t')
@@ -118,7 +123,10 @@ class TicketRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    /** Published tickets for public listing. */
+    /** 
+     * Published tickets for public listing. 
+     * @return list<Ticket>
+     */
     public function findPublished(): array
     {
         return $this->createQueryBuilder('t')
@@ -131,7 +139,10 @@ class TicketRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Tickets with completion submitted, waiting for admin to mark as achieved. */
+    /** 
+     * Tickets with completion submitted, waiting for admin to mark as achieved. 
+     * @return list<Ticket>
+     */
     public function findPendingCompletions(): array
     {
         return $this->createQueryBuilder('t')
@@ -145,7 +156,10 @@ class TicketRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    /** Achieved tickets (for Achievements page). */
+    /** 
+     * Achieved tickets (for Achievements page). 
+     * @return list<Ticket>
+     */
     public function findAchieved(): array
     {
         return $this->createQueryBuilder('t')
@@ -165,7 +179,7 @@ class TicketRepository extends ServiceEntityRepository
             ->where('t.user = :user')
             ->andWhere('t.isSpam = :isSpam')
             ->andWhere('t.createdAt >= :since')
-            ->setParameter('user', $user)
+            ->setParameter('user', $user->getId(), 'uuid')
             ->setParameter('isSpam', true)
             ->setParameter('since', $since)
             ->getQuery()
@@ -174,13 +188,6 @@ class TicketRepository extends ServiceEntityRepository
 
     public function countByUserAndStatus(User $user, TicketStatus $status): int
     {
-        return (int) $this->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->where('t.user = :user')
-            ->andWhere('t.status = :status')
-            ->setParameter('user', $user)
-            ->setParameter('status', $status)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->count(['user' => $user, 'status' => $status]);
     }
 }

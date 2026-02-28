@@ -21,8 +21,8 @@ class AiNgoSuggestionService
     /**
      * @param string $ticketTitle
      * @param string $ticketDescription
-     * @param array $ngos Array of arrays: [['id' => 1, 'name' => 'NGO Name', 'description' => '...']]
-     * @return array|null Returns ['suggested_ngo_id' => int, 'reason' => string] or null on failure
+     * @param array<int, array<string, mixed>> $ngos Array of arrays: [['id' => 1, 'name' => 'NGO Name', 'description' => '...']]
+     * @return array<string, mixed>|null Returns ['suggested_ngo_id' => int, 'reason' => string] or null on failure
      */
     public function suggestNgo(string $ticketTitle, string $ticketDescription, array $ngos): ?array
     {

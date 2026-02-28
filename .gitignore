@@ -29,3 +29,7 @@ __pycache__/
 
 # Documentation
 /article.md
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

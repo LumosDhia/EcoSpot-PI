@@ -7,6 +7,7 @@ namespace App\Twig;
 use App\Entity\User;
 use App\Enum\TicketStatus;
 use App\Repository\TicketRepository;
+use App\Repository\NotificationRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -14,7 +15,7 @@ use Twig\TwigFunction;
 class TicketNotificationExtension extends AbstractExtension
 {
     public function __construct(
-        private readonly TicketRepository $ticketRepository,
+        private readonly NotificationRepository $notificationRepository,
         private readonly Security $security
     ) {
     }
@@ -29,10 +30,8 @@ class TicketNotificationExtension extends AbstractExtension
 
     /**
      * @return array{
-     *     sent_back: int,
-     *     refused: int,
-     *     is_timed_out: bool,
-     *     total_critical: int
+     *     total_unread: int,
+     *     is_timed_out: bool
      * }
      */
     public function getNotificationCounts(): array
@@ -46,9 +45,7 @@ class TicketNotificationExtension extends AbstractExtension
             ];
         }
 
-        $unreadCount = $this->ticketRepository->getEntityManager()
-            ->getRepository(\App\Entity\Notification::class)
-            ->countUnreadByUser($user);
+        $unreadCount = $this->notificationRepository->countUnreadByUser($user);
             
         $isTimedOut = $user->isTimedOut();
 
@@ -69,8 +66,6 @@ class TicketNotificationExtension extends AbstractExtension
             return [];
         }
 
-        return $this->ticketRepository->getEntityManager()
-            ->getRepository(\App\Entity\Notification::class)
-            ->findUnreadByUser($user);
+        return $this->notificationRepository->findUnreadByUser($user);
     }
 }

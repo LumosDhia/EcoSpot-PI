@@ -49,9 +49,7 @@ class NominatimGeocodeService
             return [];
         }
 
-        if (!is_array($data)) {
-            return [];
-        }
+
 
         $results = [];
         foreach ($data as $item) {
@@ -69,6 +67,7 @@ class NominatimGeocodeService
 
     /**
      * Reverse geocoding: get address from coordinates.
+     * @return array<string, mixed>|null
      */
     public function reverse(string $lat, string $lon): ?array
     {

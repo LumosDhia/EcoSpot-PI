@@ -172,6 +172,12 @@ class Article
         return $this->publishedAt;
     }
 
+    public function setPublishedAt(?\DateTimeImmutable $publishedAt): static
+    {
+        $this->publishedAt = $publishedAt;
+        return $this;
+    }
+
     public function isPublished(): bool
     {
         if ($this->publishedAt === null) {
@@ -288,7 +294,7 @@ class Article
     {
         if ($this->comments->removeElement($comment)) {
             if ($comment->getArticle() === $this) {
-                $comment->setArticle(null);
+                // Mandatory relation, handled by EntityManager
             }
         }
 

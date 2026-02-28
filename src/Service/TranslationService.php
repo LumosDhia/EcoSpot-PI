@@ -35,7 +35,7 @@ class TranslationService
         // Create a unique cache key based on text and target language
         $cacheKey = 'tr_' . md5($text . '_' . $targetLocale);
 
-        return $this->cache->get($cacheKey, function (ItemInterface $item) use ($text, $targetLocale) {
+        return (string) $this->cache->get($cacheKey, function (ItemInterface $item) use ($text, $targetLocale) {
             // Cache translations for 1 week
             $item->expiresAfter(604800);
 

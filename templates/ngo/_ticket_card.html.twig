@@ -32,7 +32,7 @@
                 <li class="mb-1"><i class="fas fa-calendar me-2"></i> {{ ticket.createdAt|date('M d, Y') }}</li>
                 <li class="mb-1">
                     <span class="badge bg-{{ ticket.priority.getBadgeClass() }}-subtle text-{{ ticket.priority.getBadgeClass() }}">
-                        Priority: {{ ticket.priority.getLabel() }}
+                        Priority: {{ ticket.priority.getLabel()|trans }}
                     </span>
                 </li>
             </ul>

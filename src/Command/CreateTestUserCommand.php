@@ -36,7 +36,7 @@ class CreateTestUserCommand extends Command
             'lastname' => 'User'
         ];
 
-        $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $userData['email']]);
+        $existingUser = $this->entityManager->getRepository(User::class)->findOneBy(['emailAddress.email' => $userData['email']]);
         if ($existingUser) {
             $io->warning(sprintf('User with email "%s" already exists.', $userData['email']));
             return Command::SUCCESS;

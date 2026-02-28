@@ -68,7 +68,7 @@ class CategoryCrudController extends AbstractController
     #[Route('/{id}', name: 'admin_blog_category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->getString('_token'))) {
             $this->categoryRepository->remove($category, true);
             $this->addFlash('success', 'Category deleted.');
         }

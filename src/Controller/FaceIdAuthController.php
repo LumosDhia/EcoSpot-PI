@@ -15,9 +15,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class FaceIdAuthController extends AbstractController
 {
-    private $faceService;
-    private $entityManager;
-    private $security;
+    private FaceRecognitionService $faceService;
+    private EntityManagerInterface $entityManager;
+    private Security $security;
 
     public function __construct(
         FaceRecognitionService $faceService,
@@ -54,7 +54,7 @@ class FaceIdAuthController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'Face not recognized'], 401);
         }
 
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $userId]);
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['emailAddress.email' => $userId]);
         
         if (!$user) {
             return new JsonResponse(['status' => 'error', 'message' => 'User not found'], 404);
@@ -103,7 +103,7 @@ class FaceIdAuthController extends AbstractController
 
         if (isset($result['status']) && $result['status'] === 'success') {
             // If user exists in DB, mark them as enrolled
-            $dbUser = $user instanceof User ? $user : $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+            $dbUser = $user instanceof User ? $user : $this->entityManager->getRepository(User::class)->findOneBy(['emailAddress.email' => $email]);
             if ($dbUser) {
                 $dbUser->setFaceEnrolled(true);
                 $this->entityManager->flush();

@@ -64,7 +64,7 @@
                                 <div class="col-md-5">
                                     <div class="d-flex align-items-center gap-3 mb-2">
                                         <span class="badge bg-{{ ticket.status.getBadgeClass() }}-subtle text-{{ ticket.status.getBadgeClass() }} px-3 py-2 rounded-pill">
-                                            {{ ticket.status.getLabel()|upper }}
+                                            {{ ticket.status.getLabel()|trans|upper }}
                                         </span>
                                         {% if ticket.isSpam %}
                                             <span class="badge bg-danger rounded-pill px-3 py-2">
@@ -91,7 +91,7 @@
                                         <span class="text-muted small">Priority:</span> 
                                         <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
                                             <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }}"></i>
-                                            {{ ticket.priority.getLabel() }}
+                                            {{ ticket.priority.getLabel()|trans }}
                                         </span>
                                     </div>
                                 </div>

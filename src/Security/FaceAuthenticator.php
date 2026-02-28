@@ -16,11 +16,8 @@ use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPasspor
 
 class FaceAuthenticator extends AbstractAuthenticator
 {
-    private $userProvider;
-
-    public function __construct(UserProviderInterface $userProvider)
+    public function __construct()
     {
-        $this->userProvider = $userProvider;
     }
 
     public function supports(Request $request): ?bool

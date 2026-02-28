@@ -177,7 +177,7 @@
                     <select name="status" id="status" class="form-select border-0 bg-light" onchange="this.form.submit()">
                         <option value="">{{ 'tickets.all_statuses'|trans }}</option>
                         {% for s in statuses %}
-                            <option value="{{ s.value }}" {{ currentStatus == s ? 'selected' : '' }}>{{ s.getLabel()|translate }}</option>
+                            <option value="{{ s.value }}" {{ currentStatus == s ? 'selected' : '' }}>{{ s.getLabel()|trans }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -195,18 +195,25 @@
                 <div class="col-md-6 col-lg-6 mb-2">
                     <div class="card h-100 position-relative eco-ticket-card">
                         <div class="eco-ticket-header d-flex justify-content-between align-items-center flex-wrap gap-1">
-                            <span class="badge eco-badge bg-{{ ticket.status.getBadgeClass() }}">
-                                <i class="{{ ticket.status.getIcon() }} me-1"></i> {{ ticket.status.getLabel()|translate }}
-                            </span>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge eco-badge bg-{{ ticket.status.getBadgeClass() }}">
+                                    <i class="{{ ticket.status.getIcon() }} me-1"></i> {{ ticket.status.getLabel()|trans }}
+                                </span>
+                                {% if ticket.isSpam %}
+                                    <span class="badge bg-danger rounded-pill px-2 py-1 shadow-sm" style="font-size: 0.75rem;">
+                                        <i class="fas fa-exclamation-triangle me-1"></i> {{ 'tickets.flagged_spam'|trans }}
+                                    </span>
+                                {% endif %}
+                            </div>
                             <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
                                 <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
-                                {{ ticket.priority.getLabel()|translate }}
+                                {{ ticket.priority.getLabel()|trans }}
                             </span>
                         </div>
                         <div class="card-body p-4">
                             <h5 class="card-title">{{ ticket.title|translate }}</h5>
                             <div class="ticket-meta">
-                                <span><i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel()|translate }}</span>
+                                <span><i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel()|trans }}</span>
                                 <span>&middot;</span>
                                 <span><i class="bi bi-geo-alt-fill"></i> {{ ticket.location|translate }}</span>
                             </div>

@@ -94,7 +94,7 @@ class SponsorCrudController extends AbstractController
         return $this->redirectToRoute('admin_sponsors_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    private function handleImageUpload($form, Sponsor $sponsor): void
+    private function handleImageUpload(\Symfony\Component\Form\FormInterface $form, Sponsor $sponsor): void
     {
         $file = $form->get('imageFile')->getData();
         if (!$file) {

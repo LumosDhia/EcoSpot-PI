@@ -28,6 +28,7 @@ class ArticleCrudController extends AbstractController
     #[Route('', name: 'admin_blog_article_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
+        /** @var \App\Entity\User $admin */
         $admin = $this->getUser();
         
         $adminQuery = $this->articleRepository->getQueryAdminOwnArticles($admin);
@@ -60,7 +61,9 @@ class ArticleCrudController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $article->setWriter($this->getUser());
+            /** @var \App\Entity\User $writer */
+            $writer = $this->getUser();
+            $article->setWriter($writer);
             $this->applyPublishModeFromForm($form, $article);
             $this->handleArticleHeroImage($form, $article);
             $this->articleRepository->save($article, true);

@@ -22,6 +22,69 @@
     {{ parent() }}
     <style>
         .article-excerpt { font-size: 1rem; line-height: 1.5; }
+
+        /* Premium EcoSpot Pagination */
+        .pagination {
+            gap: 8px;
+            margin-top: 2rem;
+        }
+        
+        .page-item {
+            margin: 0 2px;
+        }
+
+        .page-item .page-link {
+            border-radius: 12px !important;
+            border: 1px solid rgba(45, 106, 79, 0.15);
+            color: var(--eco-forest);
+            padding: 0.75rem 1.15rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 45px;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, var(--eco-forest) 0%, var(--eco-dark-green) 100%) !important;
+            border-color: var(--eco-dark-green) !important;
+            color: white !important;
+            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .page-item .page-link:hover:not(.active) {
+            background-color: var(--eco-cream);
+            color: var(--eco-forest);
+            border-color: var(--eco-forest);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(45, 106, 79, 0.1);
+        }
+
+        .page-item.disabled .page-link {
+            background-color: #f8f9fa;
+            border-color: rgba(0,0,0,0.05);
+            color: #adb5bd;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .page-item:first-child .page-link, 
+        .page-item:last-child .page-link {
+            border-radius: 12px !important;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .page-item .page-link {
+                padding: 0.5rem 0.8rem;
+                min-width: 38px;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 {% endblock %}
 

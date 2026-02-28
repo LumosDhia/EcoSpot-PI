@@ -406,17 +406,11 @@
             index++;
             list.dataset.index = index;
 
-            const div = document.createElement('div');
-            div.className = 'consigne-item d-flex gap-3 align-items-start';
-            div.innerHTML = `
-                <div class="consigne-number"></div>
-                <div class="flex-grow-1">${newForm}</div>
-                <button type="button" class="btn btn-link remove-consigne p-0 mt-2">
-                    <i class="fas fa-times-circle fs-5"></i>
-                </button>
-            `;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newForm.trim();
+            const newElem = tempDiv.firstElementChild;
             
-            list.appendChild(div);
+            list.appendChild(newElem);
             updatePositions();
         });
 

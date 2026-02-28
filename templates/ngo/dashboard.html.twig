@@ -3,69 +3,174 @@
 {% block title %}{{ 'dashboard.ngo_title'|trans }} - EcoSpot{% endblock %}
 {% block page_title %}{{ 'dashboard.ngo_title'|trans }}{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .eco-dashboard-card {
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: #ffffff;
+            border: 1px solid rgba(45, 106, 79, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .eco-dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(82, 183, 136, 0.05) 0%, rgba(45, 106, 79, 0) 100%);
+            z-index: -1;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        .eco-dashboard-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(27, 67, 50, 0.1);
+            border-color: rgba(82, 183, 136, 0.4);
+        }
+
+        .eco-dashboard-card:hover::before {
+            opacity: 1;
+        }
+
+        .eco-dashboard-icon-wrap {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(82, 183, 136, 0.1) 0%, rgba(45, 106, 79, 0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            transition: all 0.4s ease;
+        }
+
+        .eco-dashboard-icon-wrap i {
+            color: var(--eco-forest);
+            transition: all 0.3s ease;
+        }
+
+        .eco-dashboard-card:hover .eco-dashboard-icon-wrap {
+            transform: scale(1.1) rotate(5deg);
+            background: linear-gradient(135deg, var(--eco-forest) 0%, var(--eco-dark-green) 100%);
+            box-shadow: 0 8px 20px rgba(45, 106, 79, 0.3);
+        }
+
+        .eco-dashboard-card:hover .eco-dashboard-icon-wrap i {
+            color: #ffffff !important;
+        }
+
+        .eco-dashboard-title {
+            font-weight: 700;
+            color: var(--eco-dark-green);
+            margin-bottom: 0.5rem;
+        }
+
+        .eco-dashboard-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.8rem;
+            padding: 0.35em 0.65em;
+            border-radius: 20px;
+            font-weight: 600;
+            background: var(--eco-forest) !important;
+            box-shadow: 0 4px 10px rgba(45, 106, 79, 0.3);
+            color: white !important;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="row g-4">
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <a href="{{ path('ngo_article_new') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">{{ 'dashboard.create_article'|trans }}</h5>
+                <div class="card h-100 border-0 shadow-sm eco-dashboard-card">
+                    <div class="card-body text-center py-5 position-relative">
+                        {% if articles_count is defined and articles_count > 0 %}
+                            <span class="badge eco-dashboard-badge">{{ articles_count }}</span>
+                        {% endif %}
+                        <div class="eco-dashboard-icon-wrap">
+                            <i class="fas fa-newspaper fa-2x"></i>
+                        </div>
+                        <h5 class="eco-dashboard-title">{{ 'dashboard.create_article'|trans }}</h5>
                         <p class="card-text small text-muted">{{ 'dashboard.publish_article_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <a href="{{ path('ngo_comments_index') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-comments fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">{{ 'common.comments'|trans }}</h5>
+                <div class="card h-100 border-0 shadow-sm eco-dashboard-card">
+                    <div class="card-body text-center py-5 position-relative">
+                        {% if comments_count is defined and comments_count > 0 %}
+                            <span class="badge eco-dashboard-badge">{{ comments_count }}</span>
+                        {% endif %}
+                        <div class="eco-dashboard-icon-wrap">
+                            <i class="fas fa-comments fa-2x"></i>
+                        </div>
+                        <h5 class="eco-dashboard-title">{{ 'common.comments'|trans }}</h5>
                         <p class="card-text small text-muted">{{ 'dashboard.ngo_comments_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <a href="{{ path('ngo_event_new') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <i class="fas fa-calendar-plus fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">{{ 'dashboard.create_event'|trans }}</h5>
+                <div class="card h-100 border-0 shadow-sm eco-dashboard-card">
+                    <div class="card-body text-center py-5 position-relative">
+                        {% if events_count is defined and events_count > 0 %}
+                            <span class="badge eco-dashboard-badge">{{ events_count }}</span>
+                        {% endif %}
+                        <div class="eco-dashboard-icon-wrap">
+                            <i class="fas fa-calendar-plus fa-2x"></i>
+                        </div>
+                        <h5 class="eco-dashboard-title">{{ 'dashboard.create_event'|trans }}</h5>
                         <p class="card-text small text-muted">{{ 'dashboard.add_event_desc'|trans }}</p>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <a href="{{ path('ngo_tickets_browse') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm eco-dashboard-card">
                     <div class="card-body text-center py-5">
-                        <i class="fas fa-search-location fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">Browse Tickets</h5>
+                        <div class="eco-dashboard-icon-wrap">
+                            <i class="fas fa-search-location fa-2x"></i>
+                        </div>
+                        <h5 class="eco-dashboard-title">Browse Tickets</h5>
                         <p class="card-text small text-muted">Find published environmental tickets and request to resolve them.</p>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <a href="{{ path('ngo_my_ticket') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm eco-dashboard-card">
                     <div class="card-body text-center py-5">
-                        <i class="fas fa-tasks fa-3x text-primary mb-3"></i>
-                        <h5 class="card-title">My Assigned Ticket</h5>
+                        <div class="eco-dashboard-icon-wrap">
+                            <i class="fas fa-tasks fa-2x"></i>
+                        </div>
+                        <h5 class="eco-dashboard-title">My Assigned Ticket</h5>
                         <p class="card-text small text-muted">View and manage your current active ticket work.</p>
                     </div>
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-4">
             <a href="{{ path('ngo_achievements') }}" class="text-decoration-none">
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card h-100 border-0 shadow-sm eco-dashboard-card">
                     <div class="card-body text-center py-5">
-                        <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
-                        <h5 class="card-title">My Achievements</h5>
+                        <div class="eco-dashboard-icon-wrap">
+                            <i class="fas fa-trophy fa-2x"></i>
+                        </div>
+                        <h5 class="eco-dashboard-title">My Achievements</h5>
                         <p class="card-text small text-muted">Review your history of successfully resolved tickets.</p>
                     </div>
                 </div>

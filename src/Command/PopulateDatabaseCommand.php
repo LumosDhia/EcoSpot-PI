@@ -51,7 +51,7 @@ class PopulateDatabaseCommand extends Command
 
         foreach ($userData as $data) {
             $user = $this->entityManager->getRepository(User::class)
-                ->findOneBy(['email' => $data['email']]);
+                ->findOneBy(['emailAddress.email' => $data['email']]);
 
             if (!$user) {
                 $user = new User();
@@ -62,10 +62,6 @@ class PopulateDatabaseCommand extends Command
                 );
                 $user->setFirstname(ucfirst(explode('@', $data['email'])[0]));
                 $user->setLastname('User');
-
-                if (method_exists($user, 'setIsVerified')) {
-                    $user->setIsVerified(true);
-                }
 
                 $this->entityManager->persist($user);
                 $io->text("Created user: {$data['email']}");
@@ -121,9 +117,7 @@ class PopulateDatabaseCommand extends Command
                 $event->setLatitude($data['lat']);
                 $event->setLongitude($data['lng']);
 
-                if (method_exists($event, 'setSlug')) {
-                    $event->setSlug(strtolower(str_replace(' ', '-', $data['nom'])));
-                }
+                $event->setSlug(strtolower(str_replace(' ', '-', $data['nom'])));
 
                 $this->entityManager->persist($event);
                 $io->text("Created event: {$data['nom']}");
@@ -188,7 +182,6 @@ class PopulateDatabaseCommand extends Command
                 $ticket->setPriority($data['priority']);
                 $ticket->setDomain(ActionDomain::WASTE);
                 $ticket->setUser($data['user']);
-                $ticket->setCreatedAt(new \DateTimeImmutable());
                 $ticket->setLatitude($data['lat']);
                 $ticket->setLongitude($data['lon']);
                 $ticket->setIsSpam(false);

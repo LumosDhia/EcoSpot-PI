@@ -21,6 +21,7 @@ class AiTicketTaskService
     /**
      * Generates suggested tasks and priority for a ticket.
      * Returns an array with 'tasks' (array of objects) and 'priority' (string).
+     * @return array<string, mixed>
      */
     public function generateTasks(string $title, string $description): array
     {

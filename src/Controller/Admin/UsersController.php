@@ -31,7 +31,7 @@ class UsersController extends AbstractController
     #[Route('', name: 'admin_users_index', methods: ['GET'])]
     public function index(): Response
     {
-        $users = $this->userRepository->findBy([], ['email' => 'ASC']);
+        $users = $this->userRepository->findBy([], ['emailAddress.email' => 'ASC']);
 
         return $this->render('admin/users/index.html.twig', [
             'users' => $users,
@@ -63,10 +63,12 @@ class UsersController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'admin_user_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[Route('/{id}', name: 'admin_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user): Response
     {
-        if ($user->getId() === $this->getUser()->getId()) {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser();
+        if ($user->getId() === $currentUser->getId()) {
             $this->addFlash('error', 'You cannot delete your own account.');
             return $this->redirectToRoute('admin_users_index');
         }
@@ -79,7 +81,7 @@ class UsersController extends AbstractController
         return $this->redirectToRoute('admin_users_index');
     }
 
-    #[Route('/{id}/role', name: 'admin_user_edit_role', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/{id}/role', name: 'admin_user_edit_role', methods: ['GET', 'POST'])]
     public function editRole(Request $request, User $user): Response
     {
         $currentType = $this->getUserTypeFromRoles($user->getRoles());
@@ -100,10 +102,12 @@ class UsersController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/timeout', name: 'admin_user_timeout', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[Route('/{id}/timeout', name: 'admin_user_timeout', methods: ['POST'])]
     public function timeout(Request $request, User $user): Response
     {
-        if ($user->getId() === $this->getUser()->getId()) {
+        /** @var \App\Entity\User $currentUser */
+        $currentUser = $this->getUser();
+        if ($user->getId() === $currentUser->getId()) {
             $this->addFlash('error', 'You cannot put yourself in timeout.');
             return $this->redirectToRoute('admin_users_index');
         }
@@ -124,7 +128,7 @@ class UsersController extends AbstractController
         return $this->redirectToRoute('admin_users_index');
     }
 
-    #[Route('/{id}/remove-timeout', name: 'admin_user_remove_timeout', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[Route('/{id}/remove-timeout', name: 'admin_user_remove_timeout', methods: ['POST'])]
     public function removeTimeout(Request $request, User $user): Response
     {
         if ($this->isCsrfTokenValid('remove-timeout' . $user->getId(), (string) $request->request->get('_token'))) {
@@ -143,7 +147,7 @@ class UsersController extends AbstractController
         return $this->redirectToRoute('admin_users_index');
     }
 
-    #[Route('/{id}/edit-ngo-description', name: 'admin_user_edit_ngo_description', requirements: ['id' => '\d+'], methods: ['POST'])]
+    #[Route('/{id}/edit-ngo-description', name: 'admin_user_edit_ngo_description', methods: ['POST'])]
     public function editNgoDescription(Request $request, User $user): Response
     {
         if (!in_array('ROLE_NGO', $user->getRoles(), true)) {
@@ -152,8 +156,8 @@ class UsersController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('edit_ngo_desc' . $user->getId(), (string) $request->request->get('_token'))) {
-            $description = $request->request->get('ngo_description');
-            $user->setNgoDescription($description);
+            $description = $request->request->getString('ngo_description', '');
+            $user->setNgoDescription($description !== '' ? $description : null);
             $this->entityManager->flush();
             $this->addFlash('success', 'NGO description updated.');
         }
@@ -173,6 +177,7 @@ class UsersController extends AbstractController
         return UserRoleType::TYPE_NORMAL;
     }
 
+    /** @return list<string> */
     private function getRolesFromType(string $type): array
     {
         return match ($type) {

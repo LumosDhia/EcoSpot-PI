@@ -1,0 +1,61 @@
+ ------ ------------------------------------------------------- 
+  Line   Entity/NgoAssignmentRequest.php                        
+ ------ ------------------------------------------------------- 
+  :39    Strict comparison using === between DateTimeImmutable  
+         and null will always evaluate to false.                
+         🪪  identical.alwaysFalse                              
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Ticket.php                                      
+ ------ ------------------------------------------------------- 
+  :108   Strict comparison using === between DateTimeImmutable  
+         and null will always evaluate to false.                
+         🪪  identical.alwaysFalse                              
+  :379   Parameter #1 $ticket of method                         
+         App\Entity\Consigne::setTicket() expects               
+         App\Entity\Ticket, null given.                         
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/User.php                                        
+ ------ ------------------------------------------------------- 
+  :225   Parameter #1 $user of method                           
+         App\Entity\Ticket::setUser() expects App\Entity\User,  
+         null given.                                            
+         🪪  argument.type                                      
+  :303   Parameter #1 $user of method                           
+         App\Entity\Notification::setUser() expects             
+         App\Entity\User, null given.                           
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Twig/TicketNotificationExtension.php                    
+ ------ -------------------------------------------------------- 
+  :18    Property                                                
+         App\Twig\TicketNotificationExtension::$ticketRepositor  
+         y is never read, only written.                          
+         🪪  property.onlyWritten                                
+         💡  See:                                                
+         https://phpstan.org/developing-extensions/always-read-  
+         written-properties                                      
+  :45    Method                                                  
+         App\Twig\TicketNotificationExtension::getNotificationC  
+         ounts() should return array{sent_back: int, refused:    
+         int, is_timed_out: bool, total_critical: int} but       
+         returns array{total_unread: 0, is_timed_out: false}.    
+         🪪  return.type                                         
+         💡  Array does not have offset 'sent_back'.             
+  :55    Method                                                  
+         App\Twig\TicketNotificationExtension::getNotificationC  
+         ounts() should return array{sent_back: int, refused:    
+         int, is_timed_out: bool, total_critical: int} but       
+         returns array{total_unread: int, is_timed_out: bool}.   
+         🪪  return.type                                         
+         💡  Array does not have offset 'sent_back'.             
+ ------ -------------------------------------------------------- 
+
+ [ERROR] Found 8 errors                                          
+

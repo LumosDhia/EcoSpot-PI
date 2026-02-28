@@ -15,12 +15,10 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class SendMailCommand extends Command
 {
     private MailerInterface $mailer;
-    private UrlGeneratorInterface $urlGenerator;
 
-    public function __construct(MailerInterface $mailer, UrlGeneratorInterface $urlGenerator)
+    public function __construct(MailerInterface $mailer)
     {
         $this->mailer = $mailer;
-        $this->urlGenerator = $urlGenerator;
         parent::__construct();
     }
 
@@ -28,9 +26,10 @@ final class SendMailCommand extends Command
     {
         // Mocking resetToken data
         $resetToken = new class {
-            public $token = 'test-token-123';
-            public $expirationMessageKey = 'reset_password_request.expired';
-            public $expirationMessageData = ['%count%' => 1, '%unit%' => 'hour'];
+            public string $token = 'test-token-123';
+            public string $expirationMessageKey = 'reset_password_request.expired';
+            /** @var array<string, mixed> */
+            public array $expirationMessageData = ['%count%' => 1, '%unit%' => 'hour'];
         };
 
         $email = (new TemplatedEmail())

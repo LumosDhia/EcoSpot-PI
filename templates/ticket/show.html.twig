@@ -7,11 +7,18 @@
     <div class="container py-4">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="badge bg-{{ ticket.status.getBadgeClass() }} p-2">{{ ticket.status.getLabel()|translate }}</span>
-                <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
-                    <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
-                    {{ ticket.priority.getLabel()|translate }}
-                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-{{ ticket.status.getBadgeClass() }} p-2">{{ ticket.status.getLabel()|trans }}</span>
+                    {% if ticket.isSpam %}
+                        <span class="badge bg-danger p-2 shadow-sm">
+                            <i class="fas fa-exclamation-triangle me-1"></i> {{ 'tickets.flagged_spam'|trans }}
+                        </span>
+                    {% endif %}
+                    <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
+                        <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
+                        {{ ticket.priority.getLabel()|trans }}
+                    </span>
+                </div>
                 {% if not public_view|default(false) %}
                     <a href="{{ path('ticket_my_list') }}" class="btn btn-sm btn-outline-secondary">← {{ 'tickets.my_tickets_back'|trans }}</a>
                 {% else %}
@@ -26,7 +33,7 @@
                 {% endif %}
                 <h1 class="h4 card-title">{{ ticket.title|translate }}</h1>
                 <p class="text-muted small mb-2">
-                    <i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel()|translate }}
+                    <i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ticket.domain.getLabel()|trans }}
                     &middot; <i class="bi bi-geo-alt"></i> {{ ticket.location|translate }}
                 </p>
                 <div class="card-text">{{ ticket.description|translate|nl2br }}</div>

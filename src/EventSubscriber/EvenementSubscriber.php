@@ -22,6 +22,7 @@ class EvenementSubscriber
 
     public function postPersist(Evenement $entity): void
     {
+        /** @var \App\Entity\User|null $user */
         $user = $this->security->getUser();
         if ($user === null) {
             return;
@@ -33,6 +34,7 @@ class EvenementSubscriber
 
     public function postUpdate(Evenement $entity): void
     {
+        /** @var \App\Entity\User|null $user */
         $user = $this->security->getUser();
         if ($user === null) {
             return;
@@ -44,6 +46,7 @@ class EvenementSubscriber
 
     public function postRemove(Evenement $entity): void
     {
+        /** @var \App\Entity\User|null $user */
         $user = $this->security->getUser();
         if ($user === null) {
             return;

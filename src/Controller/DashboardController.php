@@ -29,8 +29,10 @@ class DashboardController extends AbstractController
         }
 
         $myTicketsCount = 0;
-        if ($this->getUser()) {
-            $myTicketsCount = \count($this->ticketRepository->findByUser($this->getUser()));
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
+        if ($user) {
+            $myTicketsCount = \count($this->ticketRepository->findByUser($user));
         }
 
         return $this->render('dashboard/index.html.twig', [

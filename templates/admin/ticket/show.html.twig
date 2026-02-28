@@ -98,13 +98,7 @@
             z-index: 1000;
         }
 
-        @media print {
-            .admin-sidebar, .action-btns, .breadcrumb, h1 { display: none !important; }
-            .flex-grow-1 { padding: 0 !important; }
-            .ticket-hero { background: #1b4332 !important; color: white !important; margin-bottom: 2rem !important; -webkit-print-color-adjust: exact; }
-            .glass-card { box-shadow: none !important; border: 1px solid #ddd !important; background: white !important; }
-            body { background: white !important; }
-        }
+
     </style>
 {% endblock %}
 
@@ -139,7 +133,7 @@
             </div>
             <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
                 <div class="badge bg-{{ ticket.status.getBadgeClass() }} p-3 fs-5 rounded-pill shadow-sm">
-                    {{ ticket.status.getLabel() }}
+                    {{ ticket.status.getLabel()|trans }}
                 </div>
             </div>
         </div>
@@ -161,11 +155,11 @@
                 <div class="consignes-list">
                     {% for consigne in ticket.consignes|sort((a, b) => a.position <=> b.position) %}
                         <div class="consigne-pill">
-                            <div class="bg-eco-forest text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; flex-shrink: 0;">{{ loop.index }}</div>
-                            <div class="flex-grow-1 fs-5">{{ consigne.description }}</div>
-                            <span class="difficulty-badge bg-{{ consigne.difficulty.getBadgeClass() }}-subtle text-{{ consigne.difficulty.getBadgeClass() }}">
-                                {{ consigne.difficulty.getLabel() }}
-                            </span>
+                                <i class="bg-eco-forest text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 32px; height: 32px; flex-shrink: 0;">{{ loop.index }}</i>
+                                <div class="flex-grow-1 fs-5">{{ consigne.description }}</div>
+                                <span class="difficulty-badge bg-{{ consigne.difficulty.getBadgeClass() }}-subtle text-{{ consigne.difficulty.getBadgeClass() }}">
+                                    {{ consigne.difficulty.getLabel()|trans }}
+                                </span>
                         </div>
                     {% else %}
                         <div class="text-center py-4 text-muted border-dashed rounded">
@@ -205,12 +199,12 @@
                         <div class="info-label fs-xs">Priority</div>
                         <div class="priority-badge priority-{{ ticket.priority.value|lower }} mt-1" style="transform: scale(0.9);">
                             <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
-                            {{ ticket.priority.getLabel() }}
+                            {{ ticket.priority.getLabel()|trans }}
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="info-label fs-xs">Domain</div>
-                        <div class="info-value">{{ ticket.domain.getLabel() }}</div>
+                        <div class="info-value">{{ ticket.domain.getLabel()|trans }}</div>
                     </div>
                 </div>
             </div>
@@ -258,9 +252,7 @@
 </div>
 
 <div class="action-btns">
-    <button onclick="window.print()" class="btn btn-dark rounded-pill px-4 py-2 shadow">
-        <i class="fas fa-print me-2"></i> Print Ticket
-    </button>
+
     <a href="{{ path('admin_ticket_edit', {id: ticket.id}) }}" class="btn btn-primary rounded-pill px-4 py-2 shadow">
         <i class="fas fa-magic me-2"></i> Edit with AI
     </a>

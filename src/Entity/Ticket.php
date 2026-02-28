@@ -102,13 +102,7 @@ class Ticket
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $achievedAt = null;
 
-    #[ORM\PrePersist]
-    public function setCreatedAtValue(): void
-    {
-        if ($this->createdAt === null) {
-            $this->createdAt = new \DateTimeImmutable();
-        }
-    }
+
 
     #[ORM\PreUpdate]
     public function setUpdatedAtValue(): void
@@ -116,6 +110,7 @@ class Ticket
         $this->updatedAt = new \DateTimeImmutable();
     }
 
+    /** @var Collection<int, Consigne> */
     #[ORM\OneToMany(targetEntity: Consigne::class, mappedBy: 'ticket', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $consignes;
@@ -331,6 +326,12 @@ class Ticket
         return $this->achievedAt;
     }
 
+    public function setAchievedAt(?\DateTimeImmutable $achievedAt): static
+    {
+        $this->achievedAt = $achievedAt;
+        return $this;
+    }
+
     public function isAchieved(): bool
     {
         return $this->achievedAt !== null;
@@ -339,6 +340,12 @@ class Ticket
     public function hasCompletionSubmitted(): bool
     {
         return $this->completionSubmittedAt !== null;
+    }
+
+    public function setCompletionSubmittedAt(?\DateTimeImmutable $completionSubmittedAt): static
+    {
+        $this->completionSubmittedAt = $completionSubmittedAt;
+        return $this;
     }
 
     /**
@@ -364,7 +371,7 @@ class Ticket
         if ($this->consignes->removeElement($consigne)) {
             // set the owning side to null (unless already changed)
             if ($consigne->getTicket() === $this) {
-                $consigne->setTicket(null);
+                // ticket is mandatory, removing from collection usually implies deletion
             }
         }
 

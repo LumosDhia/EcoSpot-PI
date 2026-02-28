@@ -1,0 +1,23 @@
+nohup: ignoring input
+INFO: --- Face Service Script Loaded ---
+INFO: Python version: 3.9.2 (default, Jan 25 2026, 13:37:52) 
+[GCC 10.2.1 20210110]
+INFO: Working directory: /home/lumosdhia/EcoSpot-PI
+INFO: Starting Uvicorn server on 0.0.0.0...
+INFO:     Started server process [7776]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52200 - "HEAD / HTTP/1.1" 404 Not Found
+INFO: Enrollment request for user: test@ecospot.local
+INFO: Extracting face representation (VGG-Face)...
+INFO: Successfully enrolled user: test@ecospot.local
+INFO:     127.0.0.1:56784 - "POST /enroll HTTP/1.1" 200 OK
+INFO: Enrollment request for user: test@ecospot.local
+INFO: Extracting face representation (VGG-Face)...
+INFO: Successfully enrolled user: test@ecospot.local
+INFO:     127.0.0.1:33498 - "POST /enroll HTTP/1.1" 200 OK
+INFO: Extracting face representation for recognition...
+INFO: Match found: test@ecospot.local (dist: 0.5397)
+INFO:     127.0.0.1:46502 - "POST /recognize HTTP/1.1" 200 OK
+: test@ecospot.local (dist: 0.5397)

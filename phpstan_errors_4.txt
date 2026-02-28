@@ -1,0 +1,203 @@
+ ------ ------------------------------------------------------- 
+  Line   Command/PopulateDatabaseCommand.php                    
+ ------ ------------------------------------------------------- 
+  :66    Call to function method_exists() with App\Entity\User  
+         and 'setIsVerified' will always evaluate to false.     
+         🪪  function.impossibleType                            
+  :124   Call to function method_exists() with                  
+         App\Entity\Evenement and 'setSlug' will always         
+         evaluate to true.                                      
+         🪪  function.alreadyNarrowedType                       
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Admin/Blog/ArticleCrudController.php         
+ ------ -------------------------------------------------------- 
+  :33    Parameter #1 $admin of method                           
+         App\Repository\Blog\Article\ArticleRepository::getQuer  
+         yAdminOwnArticles() expects App\Entity\User,            
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :63    Parameter #1 $writer of method                          
+         App\Entity\Blog\Article\Article::setWriter() expects    
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Blog/BlogController.php                      
+ ------ -------------------------------------------------------- 
+  :156   Parameter #2 $userId of method                          
+         App\Repository\Blog\Article\ArticleReactionRepository:  
+         :findOneByArticleAndUser() expects int,                 
+         Symfony\Component\Uid\UuidV7|null given.                
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Controller/DashboardController.php                     
+ ------ ------------------------------------------------------- 
+  :33    Parameter #1 $user of method                           
+         App\Repository\TicketRepository::findByUser() expects  
+         App\Entity\User,                                       
+         Symfony\Component\Security\Core\User\UserInterface     
+         given.                                                 
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------ 
+  Line   Controller/EventsController.php                 
+ ------ ------------------------------------------------ 
+  :119   Expression on left side of ?? is not nullable.  
+         🪪  nullCoalesce.expr                           
+ ------ ------------------------------------------------ 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Ngo/NgoDashboardController.php               
+ ------ -------------------------------------------------------- 
+  :61    Parameter #1 $writer of method                          
+         App\Entity\Blog\Article\Article::setWriter() expects    
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Ngo/NgoTicketController.php                  
+ ------ -------------------------------------------------------- 
+  :116   Parameter #1 $ngo of method                             
+         App\Entity\NgoAssignmentRequest::setNgo() expects       
+         App\Entity\User,                                        
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/PublicTicketsController.php                  
+ ------ -------------------------------------------------------- 
+  :84    Parameter #1 $completedBy of method                     
+         App\Entity\Ticket::setCompletedBy() expects             
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------ 
+  Line   Controller/TestResultsController.php            
+ ------ ------------------------------------------------ 
+  :89    Expression on left side of ?? is not nullable.  
+         🪪  nullCoalesce.expr                           
+  :119   Expression on left side of ?? is not nullable.  
+         🪪  nullCoalesce.expr                           
+ ------ ------------------------------------------------ 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/TicketController.php                         
+ ------ -------------------------------------------------------- 
+  :38    Parameter #1 $user of method                            
+         App\Repository\TicketRepository::findByUser() expects   
+         App\Entity\User,                                        
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :68    Parameter #1 $user of method                            
+         App\Entity\Ticket::setUser() expects App\Entity\User,   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :71    Expression on left side of ?? is not nullable.          
+         🪪  nullCoalesce.expr                                   
+  :144   Expression on left side of ?? is not nullable.          
+         🪪  nullCoalesce.expr                                   
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/NgoAssignmentRequest.php                        
+ ------ ------------------------------------------------------- 
+  :39    Strict comparison using === between DateTimeImmutable  
+         and null will always evaluate to false.                
+         🪪  identical.alwaysFalse                              
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Ticket.php                                      
+ ------ ------------------------------------------------------- 
+  :108   Strict comparison using === between DateTimeImmutable  
+         and null will always evaluate to false.                
+         🪪  identical.alwaysFalse                              
+  :379   Parameter #1 $ticket of method                         
+         App\Entity\Consigne::setTicket() expects               
+         App\Entity\Ticket, null given.                         
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/User.php                                        
+ ------ ------------------------------------------------------- 
+  :225   Parameter #1 $user of method                           
+         App\Entity\Ticket::setUser() expects App\Entity\User,  
+         null given.                                            
+         🪪  argument.type                                      
+  :303   Parameter #1 $user of method                           
+         App\Entity\Notification::setUser() expects             
+         App\Entity\User, null given.                           
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   EventSubscriber/EvenementSubscriber.php                 
+ ------ -------------------------------------------------------- 
+  :31    Parameter #2 $creator of method                         
+         App\Service\EventNotificationService::notifyEventCreat  
+         ed() expects App\Entity\User,                           
+         Symfony\Component\Security\Core\User\UserInterface      
+         given.                                                  
+         🪪  argument.type                                       
+  :42    Parameter #2 $updatedBy of method                       
+         App\Service\EventNotificationService::notifyEventUpdat  
+         ed() expects App\Entity\User,                           
+         Symfony\Component\Security\Core\User\UserInterface      
+         given.                                                  
+         🪪  argument.type                                       
+  :53    Parameter #2 $deletedBy of method                       
+         App\Service\EventNotificationService::notifyEventDelet  
+         ed() expects App\Entity\User,                           
+         Symfony\Component\Security\Core\User\UserInterface      
+         given.                                                  
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Twig/TicketNotificationExtension.php                    
+ ------ -------------------------------------------------------- 
+  :18    Property                                                
+         App\Twig\TicketNotificationExtension::$ticketRepositor  
+         y is never read, only written.                          
+         🪪  property.onlyWritten                                
+         💡  See:                                                
+         https://phpstan.org/developing-extensions/always-read-  
+         written-properties                                      
+  :45    Method                                                  
+         App\Twig\TicketNotificationExtension::getNotificationC  
+         ounts() should return array{sent_back: int, refused:    
+         int, is_timed_out: bool, total_critical: int} but       
+         returns array{total_unread: 0, is_timed_out: false}.    
+         🪪  return.type                                         
+         💡  Array does not have offset 'sent_back'.             
+  :55    Method                                                  
+         App\Twig\TicketNotificationExtension::getNotificationC  
+         ounts() should return array{sent_back: int, refused:    
+         int, is_timed_out: bool, total_critical: int} but       
+         returns array{total_unread: int, is_timed_out: bool}.   
+         🪪  return.type                                         
+         💡  Array does not have offset 'sent_back'.             
+ ------ -------------------------------------------------------- 
+
+ [ERROR] Found 27 errors                                         
+

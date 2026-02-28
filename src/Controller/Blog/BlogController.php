@@ -32,8 +32,9 @@ class BlogController extends AbstractController
     #[Route('/blog', name: 'blog_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $search = $request->query->get('search');
-        $order = strtoupper($request->query->get('order', 'DESC'));
+        $search = $request->query->getString('search', '');
+        $search = $search === '' ? null : $search;
+        $order = strtoupper($request->query->getString('order', 'DESC'));
         if (!in_array($order, ['ASC', 'DESC'], true)) {
             $order = 'DESC';
         }
@@ -111,10 +112,12 @@ class BlogController extends AbstractController
         $article->incrementViews();
         $this->articleRepository->save($article, true);
 
-        $comment = new Comment($this->getUser());
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
+        $comment = new Comment($user);
         $comment->setArticle($article);
-        if ($this->getUser()) {
-            $comment->setAuthor(trim($this->getUser()->getFirstname() . ' ' . $this->getUser()->getLastname()) ?: $this->getUser()->getUserIdentifier());
+        if ($user) {
+            $comment->setAuthor(trim($user->getFirstname() . ' ' . $user->getLastname()) ?: $user->getUserIdentifier());
         }
         $form = $this->createForm(CommentPublicType::class, $comment);
         $form->handleRequest($request);
@@ -124,15 +127,17 @@ class BlogController extends AbstractController
                 $this->addFlash('error', 'blog.sign_in_flash');
                 return $this->redirectToRoute('app_login', ['_target_path' => $request->getRequestUri()]);
             }
-            $comment->setAuthor(trim($this->getUser()->getFirstname() . ' ' . $this->getUser()->getLastname()) ?: $this->getUser()->getUserIdentifier());
-            $comment->setAuthorUser($this->getUser());
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+            $comment->setAuthor(trim($user->getFirstname() . ' ' . $user->getLastname()) ?: $user->getUserIdentifier());
             $this->commentRepository->save($comment, true);
             $this->addFlash('success', 'blog.comment_success_flash');
 
             return $this->redirectToRoute('blog_show', ['slug' => $article->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
-        $comments = $this->commentRepository->findByArticleOrderByCreatedAt($article->getId(), 'DESC');
+        $articleId = $article->getId();
+        $comments = $articleId !== null ? $this->commentRepository->findByArticleOrderByCreatedAt($articleId, 'DESC') : [];
 
         return $this->render('blog/show.html.twig', [
             'article' => $article,
@@ -150,7 +155,15 @@ class BlogController extends AbstractController
         }
 
         /** @var \App\Entity\User $user */
-        $reaction = $this->reactionRepository->findOneByArticleAndUser($article->getId(), $user->getId());
+        
+        $articleId = $article->getId();
+        $userId = $user->getId();
+        
+        if ($articleId === null || $userId === null) {
+            return $this->json(['error' => 'Invalid article or user.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $reaction = $this->reactionRepository->findOneByArticleAndUser($articleId, $userId);
 
         if ($reaction) {
             if ($reaction->getType() === $type) {

@@ -25,7 +25,6 @@ class EventsController extends AbstractController
     #[Route('/events/nearby', name: 'events_nearby', methods: ['GET'], priority: 15)]
     public function nearby(Request $request): Response
     {
-        /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if (!$user instanceof \App\Entity\User) {
             $this->addFlash('error', 'You must be logged in to see nearby events.');
@@ -78,11 +77,10 @@ class EventsController extends AbstractController
     #[Route('/events', name: 'events_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $search = $request->query->get('q');
-        $search = $search === null ? null : trim($search);
-        $search = $search === '' ? null : $search;
+        $search = $request->query->getString('q', '');
+        $search = $search === '' ? null : trim($search);
 
-        $order = $request->query->get('order', 'DESC');
+        $order = $request->query->getString('order', 'DESC');
         if (!in_array($order, ['ASC', 'DESC'], true)) {
             $order = 'DESC';
         }
@@ -117,7 +115,7 @@ class EventsController extends AbstractController
         $events = $this->evenementRepository->searchOrderedByDate($q);
 
         $data = array_map(function (Evenement $e) {
-            $desc = $e->getDescription() ?? '';
+            $desc = $e->getDescription();
             $description = \mb_strlen($desc) > 120 ? \mb_substr($desc, 0, 120) . '...' : $desc;
             return [
                 'id' => $e->getId(),

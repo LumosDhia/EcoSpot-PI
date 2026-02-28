@@ -118,7 +118,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return array_values(array_unique($roles));
     }
 
     /** @param list<string> $roles */
@@ -222,7 +222,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeTicket(Ticket $ticket): static
     {
         if ($this->tickets->removeElement($ticket) && $ticket->getUser() === $this) {
-            $ticket->setUser(null);
+            // relation is mandatory, removal handled by EM
         }
         return $this;
     }
@@ -242,6 +242,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getTimeoutUntil(): ?\DateTimeImmutable
     {
         return $this->timeoutUntil;
+    }
+
+    public function setTimeoutUntil(?\DateTimeImmutable $timeoutUntil): static
+    {
+        $this->timeoutUntil = $timeoutUntil;
+        return $this;
     }
 
     public function isTimedOut(): bool
@@ -294,7 +300,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->notifications->removeElement($notification)) {
             // set the owning side to null (unless already changed)
             if ($notification->getUser() === $this) {
-                $notification->setUser(null);
+                // mandatory relation
             }
         }
 

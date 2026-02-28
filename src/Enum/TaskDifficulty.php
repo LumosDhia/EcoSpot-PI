@@ -13,9 +13,9 @@ enum TaskDifficulty: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::EASY => 'Easy',
-            self::MEDIUM => 'Medium',
-            self::HARD => 'Hard',
+            self::EASY => 'tickets.form_task_easy',
+            self::MEDIUM => 'tickets.form_task_medium',
+            self::HARD => 'tickets.form_task_hard',
         };
     }
 

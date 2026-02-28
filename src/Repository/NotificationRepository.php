@@ -38,25 +38,11 @@ class NotificationRepository extends ServiceEntityRepository
      */
     public function findUnreadByUser(User $user): array
     {
-        return $this->createQueryBuilder('n')
-            ->andWhere('n.user = :user')
-            ->andWhere('n.isRead = :isRead')
-            ->setParameter('user', $user)
-            ->setParameter('isRead', false)
-            ->orderBy('n.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+        return $this->findBy(['user' => $user, 'isRead' => false], ['createdAt' => 'DESC']);
     }
 
     public function countUnreadByUser(User $user): int
     {
-        return (int) $this->createQueryBuilder('n')
-            ->select('count(n.id)')
-            ->andWhere('n.user = :user')
-            ->andWhere('n.isRead = :isRead')
-            ->setParameter('user', $user)
-            ->setParameter('isRead', false)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->count(['user' => $user, 'isRead' => false]);
     }
 }

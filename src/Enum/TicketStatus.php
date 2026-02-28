@@ -17,13 +17,13 @@ enum TicketStatus: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::PENDING => 'Pending',
-            self::SENT_BACK => 'Sent back for modification',
-            self::REFUSED => 'Refused',
-            self::PUBLISHED => 'Published',
-            self::ASSIGNED => 'Assigned to NGO',
-            self::IN_PROGRESS => 'In Progress',
-            self::COMPLETED => 'Completed',
+            self::PENDING => 'common.status_pending',
+            self::SENT_BACK => 'common.status_sent_back',
+            self::REFUSED => 'common.status_refused',
+            self::PUBLISHED => 'common.status_published',
+            self::ASSIGNED => 'common.status_assigned',
+            self::IN_PROGRESS => 'common.status_in_progress',
+            self::COMPLETED => 'common.status_completed',
         };
     }
 

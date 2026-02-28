@@ -73,7 +73,9 @@ class PublicTicketsController extends AbstractController
             $imageFile = $form->get('image')->getData();
             $filename = null;
             if ($imageFile) {
-                $dir = $this->getParameter('kernel.project_dir') . '/public/images/ticket_completions';
+                /** @var string $projectDir */
+                $projectDir = $this->getParameter('kernel.project_dir');
+                $dir = $projectDir . '/public/images/ticket_completions';
                 if (!is_dir($dir)) {
                     mkdir($dir, 0755, true);
                 }
@@ -81,7 +83,9 @@ class PublicTicketsController extends AbstractController
                 $imageFile->move($dir, $filename);
             }
 
-            $ticket->setCompletedBy($this->getUser());
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+            $ticket->setCompletedBy($user);
             $ticket->setCompletionMessage($form->get('message')->getData());
             $ticket->setCompletionImage($filename);
             $ticket->setCompletionSubmittedAt(new \DateTimeImmutable());

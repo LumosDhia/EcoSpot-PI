@@ -35,7 +35,15 @@ class NgoDashboardController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_NGO');
 
-        return $this->render('ngo/dashboard.html.twig');
+        $articlesCount = \count($this->articleRepository->findAll());
+        $commentsCount = \count($this->commentRepository->findAll());
+        $eventsCount = \count($this->evenementRepository->findAll());
+
+        return $this->render('ngo/dashboard.html.twig', [
+            'articles_count' => $articlesCount,
+            'comments_count' => $commentsCount,
+            'events_count' => $eventsCount,
+        ]);
     }
 
     #[Route('/articles', name: 'ngo_articles_index', methods: ['GET'])]
@@ -58,7 +66,9 @@ class NgoDashboardController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $article->setWriter($this->getUser());
+            /** @var \App\Entity\User $writer */
+            $writer = $this->getUser();
+            $article->setWriter($writer);
             $this->applyPublishModeFromForm($form, $article);
             $this->handleArticleHeroImage($form, $article);
             $this->articleRepository->save($article, true);
@@ -178,7 +188,7 @@ class NgoDashboardController extends AbstractController
         ]);
     }
 
-    private function handleEventImageUpload($form, Evenement $evenement): void
+    private function handleEventImageUpload(\Symfony\Component\Form\FormInterface $form, Evenement $evenement): void
     {
         $file = $form->get('imageFile')->getData();
         if (!$file) {

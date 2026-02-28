@@ -27,6 +27,7 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId, $writerId)->getResult();
     }
 
+    /** @return \Doctrine\ORM\Query<mixed, Article> */
     public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
@@ -34,8 +35,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->leftJoin('a.category', 'c')->addSelect('c')
             ->leftJoin('a.tags', 't')->addSelect('t')
             ->andWhere('a.publishedAt IS NOT NULL')
-            ->andWhere('a.publishedAt <= :now')
-            ->setParameter('now', new \DateTimeImmutable())
+            ->andWhere('a.publishedAt <= CURRENT_TIMESTAMP()')
             ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC');
 
         if ($search !== null && $search !== '') {
@@ -67,9 +67,8 @@ class ArticleRepository extends ServiceEntityRepository
             ->leftJoin('a.writer', 'w')->addSelect('w')
             ->andWhere('a.id = :id')
             ->andWhere('a.publishedAt IS NOT NULL')
-            ->andWhere('a.publishedAt <= :now')
+            ->andWhere('a.publishedAt <= CURRENT_TIMESTAMP()')
             ->setParameter('id', $id)
-            ->setParameter('now', new \DateTimeImmutable())
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -82,9 +81,8 @@ class ArticleRepository extends ServiceEntityRepository
             ->leftJoin('a.tags', 't')->addSelect('t')
             ->andWhere('a.slug = :slug')
             ->andWhere('a.publishedAt IS NOT NULL')
-            ->andWhere('a.publishedAt <= :now')
+            ->andWhere('a.publishedAt <= CURRENT_TIMESTAMP()')
             ->setParameter('slug', $slug)
-            ->setParameter('now', new \DateTimeImmutable())
             ->getQuery()
             ->getOneOrNullResult();
     }
@@ -111,12 +109,14 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->getQueryAdminOwnArticles($admin, $order)->getResult();
     }
 
+    /** @return \Doctrine\ORM\Query<mixed, Article> */
     public function getQueryAdminOwnArticles(User $admin, ?string $search = null, string $order = 'DESC'): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
-            ->andWhere('a.writer = :admin OR a.writer IS NULL')
+            ->andWhere('a.writer = :admin OR a.writer IS NULL OR w.roles NOT LIKE :roleNgo')
             ->setParameter('admin', $admin)
+            ->setParameter('roleNgo', '%"ROLE_NGO"%')
             ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC');
 
         if ($search) {
@@ -136,6 +136,7 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->getQueryNgoArticlesForAdmin($order)->getResult();
     }
 
+    /** @return \Doctrine\ORM\Query<mixed, Article> */
     public function getQueryNgoArticlesForAdmin(?string $search = null, string $order = 'DESC'): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')

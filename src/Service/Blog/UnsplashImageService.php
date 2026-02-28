@@ -57,6 +57,7 @@ class UnsplashImageService
         }
     }
 
+    /** @return array<string, mixed> */
     public function searchImages(string $query, int $page = 1, int $perPage = 12): array
     {
         if ($this->unsplashAccessKey === 'your_access_key_here' || empty($this->unsplashAccessKey)) {

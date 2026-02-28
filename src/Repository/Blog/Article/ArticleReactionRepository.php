@@ -18,15 +18,12 @@ class ArticleReactionRepository extends ServiceEntityRepository
         parent::__construct($registry, ArticleReaction::class);
     }
 
-    public function findOneByArticleAndUser(int $articleId, int $userId): ?ArticleReaction
+    public function findOneByArticleAndUser(int $articleId, \Symfony\Component\Uid\UuidV7 $userId): ?ArticleReaction
     {
-        return $this->createQueryBuilder('ar')
-            ->andWhere('ar.article = :articleId')
-            ->andWhere('ar.user = :userId')
-            ->setParameter('articleId', $articleId)
-            ->setParameter('userId', $userId)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findOneBy([
+            'article' => $articleId,
+            'user' => $userId
+        ]);
     }
 
     public function save(ArticleReaction $entity, bool $flush = false): void

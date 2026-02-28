@@ -26,8 +26,9 @@ class PendingTicketsController extends AbstractController
     #[Route('', name: 'admin_pending_tickets', methods: ['GET'])]
     public function index(Request $request): Response
     {
-        $query = $request->query->get('q');
-        $sortBy = $request->query->get('sort', 'newest');
+        $query = $request->query->getString('q');
+        $query = $query === '' ? null : $query;
+        $sortBy = $request->query->getString('sort', 'newest');
 
         $tickets = $this->ticketRepository->findPendingForAdmin($query, $sortBy);
 
@@ -80,7 +81,7 @@ class PendingTicketsController extends AbstractController
                 $this->addFlash('error', 'Invalid security token.');
                 return $this->redirectToRoute('admin_pending_tickets');
             }
-            $note = $request->request->get('note', '');
+            $note = $request->request->getString('note', '');
             $ticket->setAdminNotes($note !== '' ? $note : null);
             $ticket->setStatus(TicketStatus::REFUSED);
             
@@ -128,7 +129,7 @@ class PendingTicketsController extends AbstractController
                 $this->addFlash('error', 'Invalid security token.');
                 return $this->redirectToRoute('admin_pending_tickets');
             }
-            $note = $request->request->get('note', '');
+            $note = $request->request->getString('note', '');
             if ($note === '') {
                 $this->addFlash('error', 'Please provide a note for the user.');
                 return $this->render('admin/pending_tickets/send_back.html.twig', ['ticket' => $ticket]);

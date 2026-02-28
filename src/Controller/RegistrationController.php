@@ -40,7 +40,7 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Verify reCAPTCHA
-            $captchaToken = $request->request->get('g-recaptcha-response', '');
+            $captchaToken = $request->request->getString('g-recaptcha-response', '');
             if (!$this->recaptcha->verify($captchaToken)) {
                 $this->addFlash('danger', 'Please complete the CAPTCHA verification.');
                 return $this->render('registration/register.html.twig', [
@@ -60,7 +60,7 @@ class RegistrationController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $security->login($user, LoginFormAuthenticator::class, 'main');
+            return $security->login($user, LoginFormAuthenticator::class, 'main') ?: $this->redirectToRoute('home');
         }
 
         return $this->render('registration/register.html.twig', [

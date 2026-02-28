@@ -17,6 +17,20 @@
             {{ form_errors(form) }}
             {{ form_row(form.title) }}
             {{ form_row(form.description) }}
+            
+            {% if ticket.image %}
+                <div class="mb-3">
+                    <label class="form-label d-block text-muted small">Current Picture</label>
+                    <div class="position-relative d-inline-block">
+                        <img src="{{ asset(ticket.image) }}" class="img-thumbnail" alt="Current image" style="max-height: 150px;">
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success shadow-sm">
+                            <i class="fas fa-check small"></i>
+                        </span>
+                    </div>
+                    <div class="form-text mt-1">Keep it as is, or upload a new one below to replace it.</div>
+                </div>
+            {% endif %}
+
             {{ form_row(form.imageFile) }}
             <div class="mb-3">
                 <label class="form-label">Location <span class="text-danger">*</span></label>
@@ -189,17 +203,11 @@
             index++;
             list.dataset.index = index;
 
-            const div = document.createElement('div');
-            div.className = 'consigne-item d-flex gap-3 align-items-start mb-3 p-2 bg-white border rounded shadow-sm';
-            div.innerHTML = `
-                <div class="consigne-number bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 24px; height: 24px; flex-shrink: 0; font-size: 0.8rem;"></div>
-                <div class="flex-grow-1">${newForm}</div>
-                <button type="button" class="btn btn-link remove-consigne p-0 text-danger">
-                    <i class="fas fa-times-circle fs-5"></i>
-                </button>
-            `;
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = newForm.trim();
+            const newElem = tempDiv.firstElementChild;
             
-            list.appendChild(div);
+            list.appendChild(newElem);
             updatePositions();
         });
 

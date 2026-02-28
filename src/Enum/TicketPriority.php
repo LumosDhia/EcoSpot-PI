@@ -14,10 +14,10 @@ enum TicketPriority: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::LOW => 'Low',
-            self::MEDIUM => 'Medium',
-            self::HIGH => 'High',
-            self::URGENT => 'Urgent',
+            self::LOW => 'tickets.form_priority_low',
+            self::MEDIUM => 'tickets.form_priority_medium',
+            self::HIGH => 'tickets.form_priority_high',
+            self::URGENT => 'tickets.form_priority_urgent',
         };
     }
 

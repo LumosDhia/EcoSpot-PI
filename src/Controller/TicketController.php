@@ -35,7 +35,9 @@ class TicketController extends AbstractController
         $status = $statusFilter && \in_array($statusFilter, array_map(fn (TicketStatus $s) => $s->value, TicketStatus::cases()), true)
             ? TicketStatus::from($statusFilter) : null;
 
-        $tickets = $this->ticketRepository->findByUser($this->getUser(), $status);
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+        $tickets = $this->ticketRepository->findByUser($user, $status);
 
         return $this->render('ticket/my_tickets.html.twig', [
             'tickets' => $tickets,
@@ -53,7 +55,7 @@ class TicketController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if ($user->isTimedOut()) {
-            $this->addFlash('error', sprintf('Your account is temporarily in timeout due to multiple spam flags. You can submit new tickets after %s.', $user->getTimeoutUntil()->format('d/m/Y H:i')));
+            $this->addFlash('error', sprintf('Your account is temporarily in timeout due to multiple spam flags. You can submit new tickets after %s.', $user->getTimeoutUntil()?->format('d/m/Y H:i')));
             return $this->redirectToRoute('ticket_my_list');
         }
 
@@ -65,10 +67,10 @@ class TicketController extends AbstractController
                 $form->addError(new \Symfony\Component\Form\FormError('Please search and select a location from the list. Only chosen places can be used so we can show weather for the ticket.'));
             } else {
                 $this->handleTicketImage($form, $ticket);
-                $ticket->setUser($this->getUser());
+                $ticket->setUser($user);
                 
                 // AI Spam Check
-                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription() ?? '');
+                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription());
                 $ticket->setIsSpam($isSpam);
 
                 $this->ticketRepository->save($ticket);
@@ -115,7 +117,7 @@ class TicketController extends AbstractController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
         if ($user->isTimedOut()) {
-            $this->addFlash('error', sprintf('Your account is temporarily in timeout. You cannot edit tickets until %s.', $user->getTimeoutUntil()->format('d/m/Y H:i')));
+            $this->addFlash('error', sprintf('Your account is temporarily in timeout. You cannot edit tickets until %s.', $user->getTimeoutUntil()?->format('d/m/Y H:i')));
             return $this->redirectToRoute('ticket_my_list');
         }
 
@@ -141,7 +143,7 @@ class TicketController extends AbstractController
                 $ticket->setAdminNotes(null);
                 
                 // AI Spam Re-check on resubmit
-                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription() ?? '');
+                $isSpam = $this->spamDetectionService->isSpam($ticket->getTitle(), $ticket->getDescription());
                 $ticket->setIsSpam($isSpam);
 
                 $this->ticketRepository->save($ticket);
@@ -212,7 +214,9 @@ class TicketController extends AbstractController
         if (!in_array($file->getMimeType(), $allowed, true)) {
             return;
         }
-        $dir = $this->getParameter('kernel.project_dir') . '/public/uploads/tickets';
+        /** @var string $kernelProjectDir */
+        $kernelProjectDir = $this->getParameter('kernel.project_dir');
+        $dir = $kernelProjectDir . '/public/uploads/tickets';
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
@@ -238,7 +242,7 @@ class TicketController extends AbstractController
             return $this->redirectToRoute('ticket_my_list');
         }
 
-        if ($this->isCsrfTokenValid('delete_ticket_' . $ticket->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete_ticket_' . $ticket->getId(), $request->request->getString('_token'))) {
             $this->ticketRepository->remove($ticket);
             $this->addFlash('success', 'Ticket successfully deleted.');
         }

@@ -48,6 +48,7 @@
                             {% endfor %}
                         </div>
                         {{ form_errors(form.sponsors) }}
+                        {% do form.sponsors.setRendered() %}
                     </div>
                 </div>
             </div>

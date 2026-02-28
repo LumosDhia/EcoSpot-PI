@@ -9,6 +9,7 @@ use App\Service\AiSeoService;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
+use Doctrine\Persistence\ObjectManager;
 
 class ArticleSeoSubscriber implements EventSubscriberInterface
 {
@@ -25,16 +26,19 @@ class ArticleSeoSubscriber implements EventSubscriberInterface
         ];
     }
 
+    /** @param LifecycleEventArgs<ObjectManager> $args */
     public function prePersist(LifecycleEventArgs $args): void
     {
         $this->generateSeoIfEmpty($args);
     }
 
+    /** @param LifecycleEventArgs<ObjectManager> $args */
     public function preUpdate(LifecycleEventArgs $args): void
     {
         $this->generateSeoIfEmpty($args);
     }
 
+    /** @param LifecycleEventArgs<ObjectManager> $args */
     private function generateSeoIfEmpty(LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();

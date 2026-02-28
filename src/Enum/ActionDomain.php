@@ -17,13 +17,13 @@ enum ActionDomain: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::WASTE => 'Waste',
-            self::POLLUTION => 'Pollution',
-            self::WATER => 'Water',
-            self::AIR => 'Air',
-            self::GREEN_SPACES => 'Green spaces',
-            self::FAUNA_FLORA => 'Fauna and flora',
-            self::OTHER => 'Other',
+            self::WASTE => 'tickets.form_domain_waste',
+            self::POLLUTION => 'tickets.form_domain_pollution',
+            self::WATER => 'tickets.form_domain_water',
+            self::AIR => 'tickets.form_domain_air',
+            self::GREEN_SPACES => 'tickets.form_domain_green_spaces',
+            self::FAUNA_FLORA => 'tickets.form_domain_fauna_flora',
+            self::OTHER => 'tickets.form_domain_other',
         };
     }
 

@@ -1,0 +1,475 @@
+ ------ ------------------------------------------------------- 
+  Line   Command/PopulateDatabaseCommand.php                    
+ ------ ------------------------------------------------------- 
+  :66    Call to function method_exists() with App\Entity\User  
+         and 'setIsVerified' will always evaluate to false.     
+         🪪  function.impossibleType                            
+  :118   Call to an undefined method                            
+         App\Entity\Evenement::setDateDebut().                  
+         🪪  method.notFound                                    
+  :124   Call to function method_exists() with                  
+         App\Entity\Evenement and 'setSlug' will always         
+         evaluate to true.                                      
+         🪪  function.alreadyNarrowedType                       
+  :191   Call to an undefined method                            
+         App\Entity\Ticket::setCreatedAt().                     
+         🪪  method.notFound                                    
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Admin/Blog/ArticleCrudController.php         
+ ------ -------------------------------------------------------- 
+  :33    Parameter #1 $admin of method                           
+         App\Repository\Blog\Article\ArticleRepository::getQuer  
+         yAdminOwnArticles() expects App\Entity\User,            
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :63    Parameter #1 $writer of method                          
+         App\Entity\Blog\Article\Article::setWriter() expects    
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :129   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :144   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :161   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :163   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :165   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------------ 
+  Line   Controller/Admin/CompletionSubmissionsController.php  
+ ------ ------------------------------------------------------ 
+  :47    Call to an undefined method                           
+         App\Entity\Ticket::setAchievedAt().                   
+         🪪  method.notFound                                   
+ ------ ------------------------------------------------------ 
+
+ ------ ---------------------------------------------- 
+  Line   Controller/Admin/EvenementCrudController.php  
+ ------ ---------------------------------------------- 
+  :161   Call to an undefined method                   
+         App\Entity\Notification::setCreatedAt().      
+         🪪  method.notFound                           
+ ------ ---------------------------------------------- 
+
+ ------ ----------------------------------------------- 
+  Line   Controller/Admin/PendingTicketsController.php  
+ ------ ----------------------------------------------- 
+  :89    Call to an undefined method                    
+         App\Entity\User::setTimeoutUntil().            
+         🪪  method.notFound                            
+ ------ ----------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Admin/UsersController.php                    
+ ------ -------------------------------------------------------- 
+  :69    Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tId().                                                  
+         🪪  method.notFound                                     
+  :106   Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tId().                                                  
+         🪪  method.notFound                                     
+  :112   Call to an undefined method                             
+         App\Entity\User::setTimeoutUntil().                     
+         🪪  method.notFound                                     
+  :131   Call to an undefined method                             
+         App\Entity\User::setTimeoutUntil().                     
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Blog/BlogController.php                      
+ ------ -------------------------------------------------------- 
+  :114   Parameter #1 $authorUser of class                       
+         App\Entity\Blog\Comment\Comment constructor expects     
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :117   Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tFirstname().                                           
+         🪪  method.notFound                                     
+  :117   Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tLastname().                                            
+         🪪  method.notFound                                     
+  :127   Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tFirstname().                                           
+         🪪  method.notFound                                     
+  :127   Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tLastname().                                            
+         🪪  method.notFound                                     
+  :128   Call to an undefined method                             
+         App\Entity\Blog\Comment\Comment::setAuthorUser().       
+         🪪  method.notFound                                     
+  :153   Parameter #2 $userId of method                          
+         App\Repository\Blog\Article\ArticleReactionRepository:  
+         :findOneByArticleAndUser() expects int,                 
+         Symfony\Component\Uid\UuidV7|null given.                
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Controller/DashboardController.php                     
+ ------ ------------------------------------------------------- 
+  :33    Parameter #1 $user of method                           
+         App\Repository\TicketRepository::findByUser() expects  
+         App\Entity\User,                                       
+         Symfony\Component\Security\Core\User\UserInterface     
+         given.                                                 
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------ 
+  Line   Controller/EventsController.php                 
+ ------ ------------------------------------------------ 
+  :119   Expression on left side of ?? is not nullable.  
+         🪪  nullCoalesce.expr                           
+ ------ ------------------------------------------------ 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Ngo/NgoDashboardController.php               
+ ------ -------------------------------------------------------- 
+  :61    Parameter #1 $writer of method                          
+         App\Entity\Blog\Article\Article::setWriter() expects    
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :104   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :202   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :204   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+  :206   Call to an undefined method                             
+         App\Entity\Blog\Article\Article::setPublishedAt().      
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/Ngo/NgoTicketController.php                  
+ ------ -------------------------------------------------------- 
+  :52    Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tId().                                                  
+         🪪  method.notFound                                     
+  :53    Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tFirstname().                                           
+         🪪  method.notFound                                     
+  :53    Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tLastname().                                            
+         🪪  method.notFound                                     
+  :54    Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tNgoDescription().                                      
+         🪪  method.notFound                                     
+  :69    Call to an undefined method                             
+         Symfony\Component\Security\Core\User\UserInterface::ge  
+         tId().                                                  
+         🪪  method.notFound                                     
+  :115   Parameter #1 $ngo of method                             
+         App\Entity\NgoAssignmentRequest::setNgo() expects       
+         App\Entity\User,                                        
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :199   Call to an undefined method                             
+         App\Entity\Ticket::setAchievedAt().                     
+         🪪  method.notFound                                     
+  :200   Call to an undefined method                             
+         App\Entity\Ticket::setCompletionSubmittedAt().          
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/PublicTicketsController.php                  
+ ------ -------------------------------------------------------- 
+  :84    Parameter #1 $completedBy of method                     
+         App\Entity\Ticket::setCompletedBy() expects             
+         App\Entity\User|null,                                   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :87    Call to an undefined method                             
+         App\Entity\Ticket::setCompletionSubmittedAt().          
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------ 
+  Line   Controller/TestResultsController.php            
+ ------ ------------------------------------------------ 
+  :89    Expression on left side of ?? is not nullable.  
+         🪪  nullCoalesce.expr                           
+  :119   Expression on left side of ?? is not nullable.  
+         🪪  nullCoalesce.expr                           
+ ------ ------------------------------------------------ 
+
+ ------ -------------------------------------------------------- 
+  Line   Controller/TicketController.php                         
+ ------ -------------------------------------------------------- 
+  :38    Parameter #1 $user of method                            
+         App\Repository\TicketRepository::findByUser() expects   
+         App\Entity\User,                                        
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :68    Parameter #1 $user of method                            
+         App\Entity\Ticket::setUser() expects App\Entity\User,   
+         Symfony\Component\Security\Core\User\UserInterface|nul  
+         l given.                                                
+         🪪  argument.type                                       
+  :71    Expression on left side of ?? is not nullable.          
+         🪪  nullCoalesce.expr                                   
+  :89    Call to an undefined method                             
+         App\Entity\User::setTimeoutUntil().                     
+         🪪  method.notFound                                     
+  :144   Expression on left side of ?? is not nullable.          
+         🪪  nullCoalesce.expr                                   
+  :162   Call to an undefined method                             
+         App\Entity\User::setTimeoutUntil().                     
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Entity/Blog/Article/Article.php                         
+ ------ -------------------------------------------------------- 
+  :34    Property App\Entity\Blog\Article\Article::$id           
+         (int|null) is never assigned int so it can be removed   
+         from the property type.                                 
+         🪪  property.unusedType                                 
+  :56    Property App\Entity\Blog\Article\Article::$publishedAt  
+         (DateTimeImmutable|null) is never assigned              
+         DateTimeImmutable so it can be removed from the         
+         property type.                                          
+         🪪  property.unusedType                                 
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Blog/Article/ArticleReaction.php                
+ ------ ------------------------------------------------------- 
+  :22    Property App\Entity\Blog\Article\ArticleReaction::$id  
+         (int|null) is never assigned int so it can be removed  
+         from the property type.                                
+         🪪  property.unusedType                                
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Blog/Article/Category.php                       
+ ------ ------------------------------------------------------- 
+  :20    Property App\Entity\Blog\Article\Category::$id         
+         (int|null) is never assigned int so it can be removed  
+         from the property type.                                
+         🪪  property.unusedType                                
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------ 
+  Line   Entity/Blog/Article/Tag.php                           
+ ------ ------------------------------------------------------ 
+  :20    Property App\Entity\Blog\Article\Tag::$id (int|null)  
+         is never assigned int so it can be removed from the   
+         property type.                                        
+         🪪  property.unusedType                               
+ ------ ------------------------------------------------------ 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Blog/Comment/Comment.php                        
+ ------ ------------------------------------------------------- 
+  :22    Property App\Entity\Blog\Comment\Comment::$id          
+         (int|null) is never assigned int so it can be removed  
+         from the property type.                                
+         🪪  property.unusedType                                
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Consigne.php                                    
+ ------ ------------------------------------------------------- 
+  :22    Property App\Entity\Consigne::$id (int|null) is never  
+         assigned int so it can be removed from the property    
+         type.                                                  
+         🪪  property.unusedType                                
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Entity/Evenement.php                                    
+ ------ -------------------------------------------------------- 
+  :26    Property App\Entity\Evenement::$id (int|null) is never  
+         assigned int so it can be removed from the property     
+         type.                                                   
+         🪪  property.unusedType                                 
+  :54    Property App\Entity\Evenement::$dateDebut               
+         (DateTimeInterface|null) is never assigned              
+         DateTimeInterface so it can be removed from the         
+         property type.                                          
+         🪪  property.unusedType                                 
+  :60    Property App\Entity\Evenement::$dateFin                 
+         (DateTimeInterface|null) is never assigned              
+         DateTimeInterface so it can be removed from the         
+         property type.                                          
+         🪪  property.unusedType                                 
+ ------ -------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/NgoAssignmentRequest.php                        
+ ------ ------------------------------------------------------- 
+  :20    Property App\Entity\NgoAssignmentRequest::$id          
+         (int|null) is never assigned int so it can be removed  
+         from the property type.                                
+         🪪  property.unusedType                                
+  :39    Strict comparison using === between DateTimeImmutable  
+         and null will always evaluate to false.                
+         🪪  identical.alwaysFalse                              
+ ------ ------------------------------------------------------- 
+
+ ------ ----------------------------------------------------- 
+  Line   Entity/Notification.php                              
+ ------ ----------------------------------------------------- 
+  :17    Property App\Entity\Notification::$id (int|null) is  
+         never assigned int so it can be removed from the     
+         property type.                                       
+         🪪  property.unusedType                              
+ ------ ----------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/ResetPasswordRequest.php                        
+ ------ ------------------------------------------------------- 
+  :20    Property App\Entity\ResetPasswordRequest::$id          
+         (int|null) is never assigned int so it can be removed  
+         from the property type.                                
+         🪪  property.unusedType                                
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------ 
+  Line   Entity/Sponsor.php                                    
+ ------ ------------------------------------------------------ 
+  :21    Property App\Entity\Sponsor::$id (int|null) is never  
+         assigned int so it can be removed from the property   
+         type.                                                 
+         🪪  property.unusedType                               
+ ------ ------------------------------------------------------ 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Ticket.php                                      
+ ------ ------------------------------------------------------- 
+  :31    Property App\Entity\Ticket::$id (int|null) is never    
+         assigned int so it can be removed from the property    
+         type.                                                  
+         🪪  property.unusedType                                
+  :99    Property App\Entity\Ticket::$completionSubmittedAt     
+         (DateTimeImmutable|null) is never assigned             
+         DateTimeImmutable so it can be removed from the        
+         property type.                                         
+         🪪  property.unusedType                                
+  :103   Property App\Entity\Ticket::$achievedAt                
+         (DateTimeImmutable|null) is never assigned             
+         DateTimeImmutable so it can be removed from the        
+         property type.                                         
+         🪪  property.unusedType                                
+  :108   Strict comparison using === between DateTimeImmutable  
+         and null will always evaluate to false.                
+         🪪  identical.alwaysFalse                              
+  :367   Parameter #1 $ticket of method                         
+         App\Entity\Consigne::setTicket() expects               
+         App\Entity\Ticket, null given.                         
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/User.php                                        
+ ------ ------------------------------------------------------- 
+  :71    Property App\Entity\User::$timeoutUntil                
+         (DateTimeImmutable|null) is never assigned             
+         DateTimeImmutable so it can be removed from the        
+         property type.                                         
+         🪪  property.unusedType                                
+  :225   Parameter #1 $user of method                           
+         App\Entity\Ticket::setUser() expects App\Entity\User,  
+         null given.                                            
+         🪪  argument.type                                      
+  :297   Parameter #1 $user of method                           
+         App\Entity\Notification::setUser() expects             
+         App\Entity\User, null given.                           
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   EventSubscriber/EvenementSubscriber.php                 
+ ------ -------------------------------------------------------- 
+  :31    Parameter #2 $creator of method                         
+         App\Service\EventNotificationService::notifyEventCreat  
+         ed() expects App\Entity\User,                           
+         Symfony\Component\Security\Core\User\UserInterface      
+         given.                                                  
+         🪪  argument.type                                       
+  :42    Parameter #2 $updatedBy of method                       
+         App\Service\EventNotificationService::notifyEventUpdat  
+         ed() expects App\Entity\User,                           
+         Symfony\Component\Security\Core\User\UserInterface      
+         given.                                                  
+         🪪  argument.type                                       
+  :53    Parameter #2 $deletedBy of method                       
+         App\Service\EventNotificationService::notifyEventDelet  
+         ed() expects App\Entity\User,                           
+         Symfony\Component\Security\Core\User\UserInterface      
+         given.                                                  
+         🪪  argument.type                                       
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Twig/TicketNotificationExtension.php                    
+ ------ -------------------------------------------------------- 
+  :43    Method                                                  
+         App\Twig\TicketNotificationExtension::getNotificationC  
+         ounts() should return array{sent_back: int, refused:    
+         int, is_timed_out: bool, total_critical: int} but       
+         returns array{total_unread: 0, is_timed_out: false}.    
+         🪪  return.type                                         
+         💡  Array does not have offset 'sent_back'.             
+  :49    Call to protected method getEntityManager() of class    
+         Doctrine\ORM\EntityRepository<object>.                  
+         🪪  method.protected                                    
+  :51    Call to an undefined method                             
+         Doctrine\ORM\EntityRepository<App\Entity\Notification>  
+         ::countUnreadByUser().                                  
+         🪪  method.notFound                                     
+  :55    Method                                                  
+         App\Twig\TicketNotificationExtension::getNotificationC  
+         ounts() should return array{sent_back: int, refused:    
+         int, is_timed_out: bool, total_critical: int} but       
+         returns array{total_unread: mixed, is_timed_out:        
+         bool}.                                                  
+         🪪  return.type                                         
+         💡  Array does not have offset 'sent_back'.             
+  :72    Call to protected method getEntityManager() of class    
+         Doctrine\ORM\EntityRepository<object>.                  
+         🪪  method.protected                                    
+  :74    Call to an undefined method                             
+         Doctrine\ORM\EntityRepository<App\Entity\Notification>  
+         ::findUnreadByUser().                                   
+         🪪  method.notFound                                     
+ ------ -------------------------------------------------------- 
+
+ [ERROR] Found 82 errors                                         
+

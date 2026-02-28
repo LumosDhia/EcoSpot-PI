@@ -29,9 +29,9 @@
                             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
                                 <span class="priority-badge priority-{{ ticket.priority.value|lower }}">
                                     <i class="fas fa-{{ ticket.priority.value == 'LOW' ? 'leaf' : (ticket.priority.value == 'MEDIUM' ? 'info-circle' : (ticket.priority.value == 'HIGH' ? 'exclamation-circle' : 'bolt')) }} me-1"></i>
-                                    {{ ticket.priority.getLabel()|translate }}
+                                    {{ ticket.priority.getLabel()|trans }}
                                 </span>
-                                <span class="small text-muted"><i class="bi {{ ticket.domain.getIcon() }}"></i> {{ ('tickets.domain'|trans ~ ': ' ~ ticket.domain.getLabel())|translate }}</span>
+                                <span class="small text-muted"><i class="bi {{ ticket.domain.getIcon() }}"></i> {{ 'tickets.domain'|trans }}: {{ ticket.domain.getLabel()|trans }}</span>
                             </div>
                             <div class="card-body">
                                 <h5 class="card-title">{{ ticket.title|translate }}</h5>

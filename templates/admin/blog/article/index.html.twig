@@ -7,8 +7,10 @@
     {# Admin's own articles: full control (create, edit, publish, delete) #}
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span>{{ 'admin.my_articles'|trans }}</span>
-            <a href="{{ path('admin_blog_article_new') }}" class="btn btn-primary btn-sm">{{ 'admin.new_article'|trans }}</a>
+            <span>Official & Admin Articles</span>
+            <a href="{{ path('admin_blog_article_new') }}" class="glass-button">
+                <i class="fas fa-plus-circle me-2"></i> {{ 'admin.new_article'|trans }}
+            </a>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

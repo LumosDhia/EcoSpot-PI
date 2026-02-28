@@ -37,6 +37,7 @@ class EvenementRepository extends ServiceEntityRepository
         return $this->getQuerySearchOrderedByDate($query)->getResult();
     }
 
+    /** @return \Doctrine\ORM\Query<mixed, Evenement> */
     public function getQuerySearchOrderedByDate(?string $query): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('e')

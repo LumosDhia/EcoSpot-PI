@@ -24,7 +24,7 @@ class UnsplashSearchController extends AbstractController
     #[Route('/search', name: 'blog_api_unsplash_search', methods: ['GET'])]
     public function search(Request $request): JsonResponse
     {
-        $query = $request->query->get('q', '');
+        $query = $request->query->getString('q', '');
         $page = (int) $request->query->get('page', 1);
 
         if (empty($query)) {

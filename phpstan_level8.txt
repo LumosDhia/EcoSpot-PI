@@ -1,0 +1,254 @@
+ ------ ------------------------------------------------------- 
+  Line   Controller/PublicTicketsController.php                 
+ ------ ------------------------------------------------------- 
+  :76    Cannot cast array|bool|float|int|string|UnitEnum|null  
+         to string.                                             
+         🪪  cast.string                                        
+ ------ ------------------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Controller/TestResultsController.php                   
+ ------ ------------------------------------------------------- 
+  :24    Cannot cast array|bool|float|int|string|UnitEnum|null  
+         to string.                                             
+         🪪  cast.string                                        
+ ------ ------------------------------------------------------- 
+
+ ------ ----------------------------------------------- 
+  Line   Controller/TicketController.php                
+ ------ ----------------------------------------------- 
+  :217   Binary operation "." between                   
+         array|bool|float|int|string|UnitEnum|null and  
+         '/public/uploads…' results in an error.        
+         🪪  binaryOp.invalid                           
+ ------ ----------------------------------------------- 
+
+ ------ ------------------------------------------------------- 
+  Line   Entity/Blog/Article/Article.php                        
+ ------ ------------------------------------------------------- 
+  :297   Parameter #1 $article of method                        
+         App\Entity\Blog\Comment\Comment::setArticle() expects  
+         App\Entity\Blog\Article\Article, null given.           
+         🪪  argument.type                                      
+ ------ ------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Entity/ResetPasswordRequest.php                         
+ ------ -------------------------------------------------------- 
+  :29    Property App\Entity\ResetPasswordRequest::$hashedToken  
+         has no type specified.                                  
+         🪪  missingType.property                                
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   EventSubscriber/ArticleSeoSubscriber.php                
+ ------ -------------------------------------------------------- 
+  :28    Method                                                  
+         App\EventSubscriber\ArticleSeoSubscriber::prePersist()  
+         has parameter $args with generic class                  
+         Doctrine\Persistence\Event\LifecycleEventArgs but does  
+         not specify its types: TObjectManager                   
+         🪪  missingType.generics                                
+  :33    Method                                                  
+         App\EventSubscriber\ArticleSeoSubscriber::preUpdate()   
+         has parameter $args with generic class                  
+         Doctrine\Persistence\Event\LifecycleEventArgs but does  
+         not specify its types: TObjectManager                   
+         🪪  missingType.generics                                
+  :38    Method                                                  
+         App\EventSubscriber\ArticleSeoSubscriber::generateSeoI  
+         fEmpty() has parameter $args with generic class         
+         Doctrine\Persistence\Event\LifecycleEventArgs but does  
+         not specify its types: TObjectManager                   
+         🪪  missingType.generics                                
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Repository/Blog/Article/ArticleRepository.php           
+ ------ -------------------------------------------------------- 
+  :30    Method                                                  
+         App\Repository\Blog\Article\ArticleRepository::getQuer  
+         yPublishedBySearchAndOrder() return type with generic   
+         class Doctrine\ORM\Query does not specify its types:    
+         TKey, TResult                                           
+         🪪  missingType.generics                                
+  :114   Method                                                  
+         App\Repository\Blog\Article\ArticleRepository::getQuer  
+         yAdminOwnArticles() return type with generic class      
+         Doctrine\ORM\Query does not specify its types: TKey,    
+         TResult                                                 
+         🪪  missingType.generics                                
+  :139   Method                                                  
+         App\Repository\Blog\Article\ArticleRepository::getQuer  
+         yNgoArticlesForAdmin() return type with generic class   
+         Doctrine\ORM\Query does not specify its types: TKey,    
+         TResult                                                 
+         🪪  missingType.generics                                
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Repository/EvenementRepository.php                      
+ ------ -------------------------------------------------------- 
+  :40    Method                                                  
+         App\Repository\EvenementRepository::getQuerySearchOrde  
+         redByDate() return type with generic class              
+         Doctrine\ORM\Query does not specify its types: TKey,    
+         TResult                                                 
+         🪪  missingType.generics                                
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Repository/NgoAssignmentRequestRepository.php           
+ ------ -------------------------------------------------------- 
+  :17    Class App\Repository\NgoAssignmentRequestRepository     
+         has PHPDoc tag @method for method findBy() parameter    
+         #1 $criteria with no value type specified in iterable   
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :17    Class App\Repository\NgoAssignmentRequestRepository     
+         has PHPDoc tag @method for method findBy() parameter    
+         #2 $orderBy with no value type specified in iterable    
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :17    Class App\Repository\NgoAssignmentRequestRepository     
+         has PHPDoc tag @method for method findOneBy()           
+         parameter #1 $criteria with no value type specified in  
+         iterable type array.                                    
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :17    Class App\Repository\NgoAssignmentRequestRepository     
+         has PHPDoc tag @method for method findOneBy()           
+         parameter #2 $orderBy with no value type specified in   
+         iterable type array.                                    
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Repository/TicketRepository.php                         
+ ------ -------------------------------------------------------- 
+  :14    Class App\Repository\TicketRepository extends generic   
+         class                                                   
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntit  
+         yRepository but does not specify its types:             
+         TEntityClass                                            
+         🪪  missingType.generics                                
+  :53    Method                                                  
+         App\Repository\TicketRepository::findPendingForAdmin()  
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :88    Method                                                  
+         App\Repository\TicketRepository::findAllForAdmin()      
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :122   Method                                                  
+         App\Repository\TicketRepository::findPublished()        
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :135   Method                                                  
+         App\Repository\TicketRepository::findPendingCompletion  
+         s() return type has no value type specified in          
+         iterable type array.                                    
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :149   Method App\Repository\TicketRepository::findAchieved()  
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Service/AiNgoSuggestionService.php                      
+ ------ -------------------------------------------------------- 
+  :27    Method                                                  
+         App\Service\AiNgoSuggestionService::suggestNgo() has    
+         parameter $ngos with no value type specified in         
+         iterable type array.                                    
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :27    Method                                                  
+         App\Service\AiNgoSuggestionService::suggestNgo()        
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Service/AiSeoService.php                                
+ ------ -------------------------------------------------------- 
+  :26    Method App\Service\AiSeoService::generateSeoElements()  
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+  :92    Method App\Service\AiSeoService::generateTitleIdeas()   
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Service/AiTicketTaskService.php                         
+ ------ -------------------------------------------------------- 
+  :25    Method                                                  
+         App\Service\AiTicketTaskService::generateTasks()        
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+ ------ -------------------------------------------------------- 
+
+ ------ -------------------------------------------------------- 
+  Line   Service/Blog/UnsplashImageService.php                   
+ ------ -------------------------------------------------------- 
+  :60    Method                                                  
+         App\Service\Blog\UnsplashImageService::searchImages()   
+         return type has no value type specified in iterable     
+         type array.                                             
+         🪪  missingType.iterableValue                           
+         💡  See:                                                
+         https://phpstan.org/blog/solving-phpstan-no-value-type  
+         -specified-in-iterable-type                             
+ ------ -------------------------------------------------------- 
+
+ [ERROR] Found 28 errors                                         
+

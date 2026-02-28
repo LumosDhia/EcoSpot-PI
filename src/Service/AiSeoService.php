@@ -22,6 +22,7 @@ class AiSeoService
     /**
      * Generates SEO elements for an article using OpenRouter (Free Models available).
      * Returns an array with 'title', 'description', and 'keywords'.
+     * @return array<string, mixed>
      */
     public function generateSeoElements(Article $article): array
     {
@@ -89,6 +90,7 @@ EOT;
         }
     }
 
+    /** @return array<int, string> */
     public function generateTitleIdeas(Article $article): array
     {
         if (empty($this->openRouterApiKey) || str_contains($this->openRouterApiKey, 'your_')) {
