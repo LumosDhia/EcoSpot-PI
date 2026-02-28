@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Repository\ConsigneRepository;
 use Doctrine\DBAL\Types\Types;
+use App\Entity\Trait\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,6 +14,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Consigne
 {
+    use BlameableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -20,7 +23,7 @@ class Consigne
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'La description de la consigne ne peut pas être vide.')]
-    private ?string $description = null;
+    private string $description;
 
     #[ORM\Column]
     private bool $isCompleted = false;
@@ -30,21 +33,21 @@ class Consigne
 
     #[ORM\ManyToOne(targetEntity: Ticket::class, inversedBy: 'consignes')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Ticket $ticket = null;
+    private Ticket $ticket;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(type: 'string', length: 20, enumType: \App\Enum\TaskDifficulty::class, options: ['default' => 'MEDIUM'])]
-    private \App\Enum\TaskDifficulty $difficulty = \App\Enum\TaskDifficulty::MEDIUM;
+    #[ORM\Column(length: 20, options: ['default' => 'MEDIUM'])]
+    private string $difficulty = 'MEDIUM';
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->difficulty = \App\Enum\TaskDifficulty::MEDIUM;
+        $this->difficulty = 'MEDIUM';
     }
 
     #[ORM\PrePersist]
@@ -64,7 +67,7 @@ class Consigne
         return $this->id;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -100,28 +103,21 @@ class Consigne
         return $this;
     }
 
-    public function getTicket(): ?Ticket
+    public function getTicket(): Ticket
     {
         return $this->ticket;
     }
 
-    public function setTicket(?Ticket $ticket): static
+    public function setTicket(Ticket $ticket): static
     {
         $this->ticket = $ticket;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
@@ -129,21 +125,14 @@ class Consigne
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
     public function getDifficulty(): \App\Enum\TaskDifficulty
     {
-        return $this->difficulty;
+        return \App\Enum\TaskDifficulty::from($this->difficulty);
     }
 
-    public function setDifficulty(\App\Enum\TaskDifficulty $difficulty): static
+    public function setDifficulty(\App\Enum\TaskDifficulty|string $difficulty): static
     {
-        $this->difficulty = $difficulty;
+        $this->difficulty = $difficulty instanceof \App\Enum\TaskDifficulty ? $difficulty->value : $difficulty;
 
         return $this;
     }

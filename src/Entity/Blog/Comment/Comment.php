@@ -24,33 +24,36 @@ class Comment
     #[ORM\Column(length: 100)]
     #[Assert\NotBlank(message: "Author is required.")]
     #[Assert\Length(min: 2, max: 100)]
-    private ?string $author = null;
+    private string $author;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'The comment cannot be empty.')]
     #[Assert\Length(min: 5, max: 2000, minMessage: 'The comment must be at least {{ limit }} characters.', maxMessage: 'The comment cannot exceed {{ limit }} characters.')]
     #[Assert\Regex(pattern: '/(?:.*[a-zA-Z]){5,}/s', message: 'The comment must contain at least 5 letters.')]
-    private ?string $content = null;
+    private string $content;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotNull(message: "Article is required.")]
-    private ?Article $article = null;
+    private Article $article;
 
-    /** Logged-in user who wrote the comment (optional; author string used for display). */
+    /** Logged-in user who wrote the comment. */
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
-    private ?User $authorUser = null;
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private User $authorUser;
 
     #[ORM\Column(type: Types::BOOLEAN, options: ['default' => false])]
     private bool $flagged = false;
 
-    public function __construct()
+    public function __construct(?User $authorUser = null)
     {
         $this->createdAt = new \DateTimeImmutable();
+        if ($authorUser) {
+            $this->authorUser = $authorUser;
+        }
     }
 
     public function getId(): ?int
@@ -58,7 +61,7 @@ class Comment
         return $this->id;
     }
 
-    public function getAuthor(): ?string
+    public function getAuthor(): string
     {
         return $this->author;
     }
@@ -70,7 +73,7 @@ class Comment
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getContent(): string
     {
         return $this->content;
     }
@@ -82,19 +85,12 @@ class Comment
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getArticle(): ?Article
+    public function getArticle(): Article
     {
         return $this->article;
     }
@@ -122,14 +118,9 @@ class Comment
         return $this;
     }
 
-    public function getAuthorUser(): ?User
+    public function getAuthorUser(): User
     {
         return $this->authorUser;
     }
 
-    public function setAuthorUser(?User $authorUser): static
-    {
-        $this->authorUser = $authorUser;
-        return $this;
-    }
 }

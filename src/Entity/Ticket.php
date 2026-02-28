@@ -11,6 +11,7 @@ use App\Repository\TicketRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use App\Entity\Trait\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -22,6 +23,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Ticket
 {
+    use BlameableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -46,32 +49,29 @@ class Ticket
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $image = null;
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $latitude = null;
-
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $longitude = null;
+    #[ORM\Embedded(class: \App\Entity\Embeddable\Coordinates::class, columnPrefix: false)]
+    private \App\Entity\Embeddable\Coordinates $coordinates;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\Column(type: 'string', length: 50, enumType: TicketStatus::class)]
-    private TicketStatus $status = TicketStatus::PENDING;
+    #[ORM\Column(length: 50)]
+    private string $status = 'PENDING';
 
-    #[ORM\Column(type: 'string', length: 50, enumType: TicketPriority::class)]
+    #[ORM\Column(length: 50)]
     #[Assert\NotNull(message: 'Priority is required.')]
-    private ?TicketPriority $priority = null;
+    private string $priority;
 
-    #[ORM\Column(type: 'string', length: 50, enumType: ActionDomain::class)]
+    #[ORM\Column(length: 50)]
     #[Assert\NotNull(message: 'Domain is required.')]
-    private ?ActionDomain $domain = null;
+    private string $domain;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tickets')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?User $user = null;
+    private User $user;
 
     /** Admin note when sending back for modification (or refusal reason). */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -121,12 +121,13 @@ class Ticket
     private Collection $consignes;
 
     #[ORM\Column]
-    private ?bool $isSpam = null;
+    private bool $isSpam = false;
 
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->consignes = new ArrayCollection();
+        $this->coordinates = new \App\Entity\Embeddable\Coordinates();
     }
 
     public function getId(): ?int
@@ -180,35 +181,29 @@ class Ticket
 
     public function getLatitude(): ?float
     {
-        return $this->latitude;
+        return $this->coordinates->getLatitude();
     }
 
     public function setLatitude(?float $latitude): static
     {
-        $this->latitude = $latitude;
+        $this->coordinates->setLatitude($latitude);
         return $this;
     }
 
     public function getLongitude(): ?float
     {
-        return $this->longitude;
+        return $this->coordinates->getLongitude();
     }
 
     public function setLongitude(?float $longitude): static
     {
-        $this->longitude = $longitude;
+        $this->coordinates->setLongitude($longitude);
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
     }
 
     public function getUpdatedAt(): ?\DateTimeImmutable
@@ -216,51 +211,45 @@ class Ticket
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
     public function getStatus(): TicketStatus
     {
-        return $this->status;
+        return TicketStatus::from($this->status);
     }
 
-    public function setStatus(TicketStatus $status): static
+    public function setStatus(TicketStatus|string $status): static
     {
-        $this->status = $status;
+        $this->status = $status instanceof TicketStatus ? $status->value : $status;
         return $this;
     }
 
-    public function getPriority(): ?TicketPriority
+    public function getPriority(): TicketPriority
     {
-        return $this->priority;
+        return TicketPriority::from($this->priority);
     }
 
-    public function setPriority(TicketPriority $priority): static
+    public function setPriority(TicketPriority|string $priority): static
     {
-        $this->priority = $priority;
+        $this->priority = $priority instanceof TicketPriority ? $priority->value : $priority;
         return $this;
     }
 
-    public function getDomain(): ?ActionDomain
+    public function getDomain(): ActionDomain
     {
-        return $this->domain;
+        return ActionDomain::from($this->domain);
     }
 
-    public function setDomain(ActionDomain $domain): static
+    public function setDomain(ActionDomain|string $domain): static
     {
-        $this->domain = $domain;
+        $this->domain = $domain instanceof ActionDomain ? $domain->value : $domain;
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(User $user): static
     {
         $this->user = $user;
         return $this;
@@ -337,21 +326,9 @@ class Ticket
         return $this->completionSubmittedAt;
     }
 
-    public function setCompletionSubmittedAt(?\DateTimeImmutable $completionSubmittedAt): static
-    {
-        $this->completionSubmittedAt = $completionSubmittedAt;
-        return $this;
-    }
-
     public function getAchievedAt(): ?\DateTimeImmutable
     {
         return $this->achievedAt;
-    }
-
-    public function setAchievedAt(?\DateTimeImmutable $achievedAt): static
-    {
-        $this->achievedAt = $achievedAt;
-        return $this;
     }
 
     public function isAchieved(): bool
@@ -394,7 +371,7 @@ class Ticket
         return $this;
     }
 
-    public function isSpam(): ?bool
+    public function isSpam(): bool
     {
         return $this->isSpam;
     }

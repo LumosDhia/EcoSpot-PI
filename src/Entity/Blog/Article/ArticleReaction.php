@@ -23,43 +23,43 @@ class ArticleReaction
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reactions')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?User $user = null;
+    private User $user;
 
     #[ORM\ManyToOne(targetEntity: Article::class, inversedBy: 'reactions')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Article $article = null;
+    private Article $article;
 
     #[ORM\Column(length: 20)]
-    private ?string $type = null;
+    private string $type;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(User $user): static
     {
         $this->user = $user;
         return $this;
     }
 
-    public function getArticle(): ?Article
+    public function getArticle(): Article
     {
         return $this->article;
     }
 
-    public function setArticle(?Article $article): static
+    public function setArticle(Article $article): static
     {
         $this->article = $article;
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return $this->type;
     }

@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Trait\BlameableTrait;
 use App\Entity\Blog\Article\ArticleReaction;
 use App\Entity\Blog\Article\Category;
 use App\Entity\Blog\Article\Tag;
@@ -25,6 +26,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['published_at'])]
 class Article
 {
+    use BlameableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,20 +37,20 @@ class Article
     #[Assert\NotBlank(message: 'Title is required.')]
     #[Assert\Length(min: 5, max: 100, minMessage: 'Title must be at least {{ limit }} characters.', maxMessage: 'Title cannot exceed {{ limit }} characters.')]
     #[Assert\Regex(pattern: '/(?:.*[a-zA-Z]){5,}/s', message: 'The title must contain at least 5 letters.')]
-    private ?string $title = null;
+    private string $title;
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'Content is required.')]
     #[Assert\Length(min: 20, minMessage: 'The article content must be more detailed (at least {{ limit }} characters).')]
     #[Assert\Regex(pattern: '/(?:.*[a-zA-Z]){5,}/s', message: 'The article content must contain at least 5 letters.')]
-    private ?string $content = null;
+    private string $content;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Url(message: 'The image URL is not valid.')]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $publishedAt = null;
@@ -65,7 +68,7 @@ class Article
 
     #[Gedmo\Slug(fields: ['title'])]
     #[ORM\Column(length: 128, unique: true)]
-    private ?string $slug = null;
+    private string $slug;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'articles')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
@@ -112,7 +115,7 @@ class Article
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -124,7 +127,7 @@ class Article
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getContent(): string
     {
         return $this->content;
     }
@@ -148,16 +151,9 @@ class Article
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     public function getWriter(): ?User
@@ -174,12 +170,6 @@ class Article
     public function getPublishedAt(): ?\DateTimeImmutable
     {
         return $this->publishedAt;
-    }
-
-    public function setPublishedAt(?\DateTimeImmutable $publishedAt): static
-    {
-        $this->publishedAt = $publishedAt;
-        return $this;
     }
 
     public function isPublished(): bool
@@ -366,7 +356,7 @@ class Article
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }

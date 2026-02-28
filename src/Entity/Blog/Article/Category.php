@@ -22,7 +22,7 @@ class Category
     #[ORM\Column(length: 100, unique: true)]
     #[Assert\NotBlank(message: 'Category name is required.')]
     #[Assert\Length(min: 2, max: 100)]
-    private ?string $name = null;
+    private string $name;
 
     /**
      * @var Collection<int, Article>
@@ -40,7 +40,7 @@ class Category
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -84,6 +84,6 @@ class Category
 
     public function __toString(): string
     {
-        return (string) $this->getName();
+        return $this->name;
     }
 }

@@ -22,7 +22,7 @@ class Tag
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\NotBlank(message: 'Tag name is required.')]
     #[Assert\Length(min: 2, max: 50)]
-    private ?string $name = null;
+    private string $name;
 
     /**
      * @var Collection<int, Article>
@@ -40,7 +40,7 @@ class Tag
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -81,6 +81,6 @@ class Tag
 
     public function __toString(): string
     {
-        return (string) $this->getName();
+        return $this->name;
     }
 }

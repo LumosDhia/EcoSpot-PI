@@ -111,11 +111,10 @@ class BlogController extends AbstractController
         $article->incrementViews();
         $this->articleRepository->save($article, true);
 
-        $comment = new Comment();
+        $comment = new Comment($this->getUser());
         $comment->setArticle($article);
         if ($this->getUser()) {
             $comment->setAuthor(trim($this->getUser()->getFirstname() . ' ' . $this->getUser()->getLastname()) ?: $this->getUser()->getUserIdentifier());
-            $comment->setAuthorUser($this->getUser());
         }
         $form = $this->createForm(CommentPublicType::class, $comment);
         $form->handleRequest($request);

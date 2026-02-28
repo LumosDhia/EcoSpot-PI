@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Repository\NgoAssignmentRequestRepository;
+use App\Entity\Trait\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: NgoAssignmentRequestRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class NgoAssignmentRequest
 {
+    use BlameableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -18,17 +21,17 @@ class NgoAssignmentRequest
 
     #[ORM\ManyToOne(targetEntity: Ticket::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Ticket $ticket = null;
+    private Ticket $ticket;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?User $ngo = null;
+    private User $ngo;
 
     #[ORM\Column(length: 50)]
     private string $status = 'PENDING';
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue(): void
@@ -43,23 +46,23 @@ class NgoAssignmentRequest
         return $this->id;
     }
 
-    public function getTicket(): ?Ticket
+    public function getTicket(): Ticket
     {
         return $this->ticket;
     }
 
-    public function setTicket(?Ticket $ticket): static
+    public function setTicket(Ticket $ticket): static
     {
         $this->ticket = $ticket;
         return $this;
     }
 
-    public function getNgo(): ?User
+    public function getNgo(): User
     {
         return $this->ngo;
     }
 
-    public function setNgo(?User $ngo): static
+    public function setNgo(User $ngo): static
     {
         $this->ngo = $ngo;
         return $this;
@@ -76,14 +79,8 @@ class NgoAssignmentRequest
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
     }
 }

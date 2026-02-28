@@ -9,25 +9,28 @@ use App\Entity\Blog\Article\ArticleReaction;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use App\Entity\Trait\BlameableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use SensitiveParameter;
+use Symfony\Component\Uid\UuidV7;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\Table(name: 'app_user')]
+#[UniqueEntity(fields: ['emailAddress.email'], message: 'There is already an account with this email')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    use BlameableTrait;
 
-    #[ORM\Column(length: 180, unique: true)]
-    private ?string $email = null;
+    #[ORM\Id]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    private ?UuidV7 $id = null;
+
+    #[ORM\Embedded(class: \App\Entity\Embeddable\Email::class, columnPrefix: false)]
+    private \App\Entity\Embeddable\Email $emailAddress;
 
     /** @var list<string> */
     #[ORM\Column]
@@ -35,13 +38,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[Ignore]
     #[ORM\Column]
-    private ?string $password = null;
+    private string $password;
 
-    #[ORM\Column(length: 100)]
-    private ?string $lastname = null;
-
-    #[ORM\Column(length: 100)]
-    private ?string $firstname = null;
+    #[ORM\Embedded(class: \App\Entity\Embeddable\PersonName::class, columnPrefix: false)]
+    private \App\Entity\Embeddable\PersonName $personName;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $address = null;
@@ -53,10 +53,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $city = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     /** @var \Doctrine\Common\Collections\Collection<int, \App\Entity\Ticket> */
-    #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'user', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'user', orphanRemoval: true, cascade: ['persist', 'remove'])]
     private \Doctrine\Common\Collections\Collection $tickets;
 
     /** @var \Doctrine\Common\Collections\Collection<int, Article> */
@@ -64,7 +64,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private \Doctrine\Common\Collections\Collection $articles;
 
     /** @var \Doctrine\Common\Collections\Collection<int, ArticleReaction> */
-    #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'user', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'user', orphanRemoval: true, cascade: ['persist', 'remove'])]
     private \Doctrine\Common\Collections\Collection $reactions;
 
     #[ORM\Column(nullable: true)]
@@ -77,37 +77,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $ngoDescription = null;
 
     /** @var Collection<int, Notification> */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Notification::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private Collection $notifications;
 
     public function __construct()
     {
+        $this->id = new UuidV7();
         $this->createdAt = new \DateTimeImmutable();
         $this->tickets = new ArrayCollection();
         $this->articles = new ArrayCollection();
         $this->reactions = new ArrayCollection();
         $this->notifications = new ArrayCollection();
+        $this->emailAddress = new \App\Entity\Embeddable\Email();
+        $this->personName = new \App\Entity\Embeddable\PersonName();
     }
 
-    public function getId(): ?int
+    public function getId(): ?UuidV7
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
-        return $this->email;
+        return $this->emailAddress->getEmail();
     }
 
     public function setEmail(string $email): static
     {
-        $this->email = $email;
+        $this->emailAddress->setEmail($email);
         return $this;
     }
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return $this->emailAddress->getEmail();
     }
 
     /** @return list<string> */
@@ -126,7 +129,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[Ignore]
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -141,25 +144,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
     }
 
-    public function getLastname(): ?string
+    public function getLastname(): string
     {
-        return $this->lastname;
+        return $this->personName->getLastname();
     }
 
     public function setLastname(string $lastname): static
     {
-        $this->lastname = $lastname;
+        $this->personName->setLastname($lastname);
         return $this;
     }
 
-    public function getFirstname(): ?string
+    public function getFirstname(): string
     {
-        return $this->firstname;
+        return $this->personName->getFirstname();
     }
 
     public function setFirstname(string $firstname): static
     {
-        $this->firstname = $firstname;
+        $this->personName->setFirstname($firstname);
         return $this;
     }
 
@@ -196,15 +199,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-        return $this;
     }
 
     /** @return \Doctrine\Common\Collections\Collection<int, Ticket> */
@@ -245,12 +242,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getTimeoutUntil(): ?\DateTimeImmutable
     {
         return $this->timeoutUntil;
-    }
-
-    public function setTimeoutUntil(?\DateTimeImmutable $timeoutUntil): static
-    {
-        $this->timeoutUntil = $timeoutUntil;
-        return $this;
     }
 
     public function isTimedOut(): bool

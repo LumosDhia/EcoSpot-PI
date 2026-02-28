@@ -28,25 +28,25 @@ class Evenement
     #[ORM\Column(name: 'name', length: 255, unique: true)]
     #[Assert\NotBlank(message: 'Event name is required.')]
     #[Assert\Length(min: 3, minMessage: 'Name must be at least 3 characters.')]
-    private ?string $nom = null;
+    private string $nom;
 
     #[Gedmo\Slug(fields: ['nom'])]
     #[ORM\Column(length: 128, unique: true)]
-    private ?string $slug = null;
+    private string $slug;
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'Description is required.')]
     #[Assert\Length(min: 10, minMessage: 'Description must be at least 10 characters.')]
-    private ?string $description = null;
+    private string $description;
 
     #[ORM\Column(name: 'capacity')]
     #[Assert\NotNull(message: 'Capacity is required.')]
     #[Assert\Positive(message: 'Capacity must be a positive number.')]
-    private ?int $capacite = null;
+    private int $capacite;
 
     #[ORM\Column(name: 'location', length: 255)]
     #[Assert\NotBlank(message: 'Location is required.')]
-    private ?string $lieu = null;
+    private string $lieu;
 
     #[ORM\Column(name: 'started_at', type: 'datetime', nullable: true)]
     #[Assert\NotBlank(message: 'Start date is required.')]
@@ -77,16 +77,14 @@ class Evenement
     private Collection $participants;
 
 
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $latitude = null;
-
-    #[ORM\Column(type: 'float', nullable: true)]
-    private ?float $longitude = null;
+    #[ORM\Embedded(class: \App\Entity\Embeddable\Coordinates::class, columnPrefix: false)]
+    private \App\Entity\Embeddable\Coordinates $coordinates;
 
     public function __construct()
     {
         $this->sponsors = new ArrayCollection();
         $this->participants = new ArrayCollection();
+        $this->coordinates = new \App\Entity\Embeddable\Coordinates();
     }
 
 
@@ -110,7 +108,7 @@ class Evenement
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getNom(): string
     {
         return $this->nom;
     }
@@ -121,7 +119,7 @@ class Evenement
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -132,7 +130,7 @@ class Evenement
         return $this;
     }
 
-    public function getCapacite(): ?int
+    public function getCapacite(): int
     {
         return $this->capacite;
     }
@@ -143,7 +141,7 @@ class Evenement
         return $this;
     }
 
-    public function getLieu(): ?string
+    public function getLieu(): string
     {
         return $this->lieu;
     }
@@ -159,21 +157,9 @@ class Evenement
         return $this->dateDebut;
     }
 
-    public function setDateDebut(?\DateTimeInterface $dateDebut): static
-    {
-        $this->dateDebut = $dateDebut;
-        return $this;
-    }
-
     public function getDateFin(): ?\DateTimeInterface
     {
         return $this->dateFin;
-    }
-
-    public function setDateFin(?\DateTimeInterface $dateFin): static
-    {
-        $this->dateFin = $dateFin;
-        return $this;
     }
 
     public function getImage(): ?string
@@ -214,27 +200,27 @@ class Evenement
 
     public function getLatitude(): ?float
     {
-        return $this->latitude;
+        return $this->coordinates->getLatitude();
     }
 
     public function setLatitude(?float $latitude): static
     {
-        $this->latitude = $latitude;
+        $this->coordinates->setLatitude($latitude);
         return $this;
     }
 
     public function getLongitude(): ?float
     {
-        return $this->longitude;
+        return $this->coordinates->getLongitude();
     }
 
     public function setLongitude(?float $longitude): static
     {
-        $this->longitude = $longitude;
+        $this->coordinates->setLongitude($longitude);
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }

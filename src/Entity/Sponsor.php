@@ -22,7 +22,7 @@ class Sponsor
 
     #[ORM\Column(name: 'name', length: 255)]
     #[Assert\NotBlank(message: 'Name is required.')]
-    private ?string $nom = null;
+    private string $nom;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
@@ -30,15 +30,15 @@ class Sponsor
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'Description is required.')]
     #[Assert\Length(min: 10)]
-    private ?string $description = null;
+    private string $description;
 
     #[ORM\Column(name: 'sector', length: 150)]
     #[Assert\NotBlank(message: 'Sector is required.')]
-    private ?string $secteur = null;
+    private string $secteur;
 
     #[ORM\Column(name: 'location', length: 150)]
     #[Assert\NotBlank(message: 'Location is required.')]
-    private ?string $localisation = null;
+    private string $localisation;
 
     /**
      * @var Collection<int, Evenement>
@@ -56,7 +56,7 @@ class Sponsor
         return $this->id;
     }
 
-    public function getNom(): ?string
+    public function getNom(): string
     {
         return $this->nom;
     }
@@ -78,7 +78,7 @@ class Sponsor
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -89,7 +89,7 @@ class Sponsor
         return $this;
     }
 
-    public function getSecteur(): ?string
+    public function getSecteur(): string
     {
         return $this->secteur;
     }
@@ -100,7 +100,7 @@ class Sponsor
         return $this;
     }
 
-    public function getLocalisation(): ?string
+    public function getLocalisation(): string
     {
         return $this->localisation;
     }
