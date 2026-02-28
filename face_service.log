@@ -1,9 +1,0 @@
-INFO: --- Face Service Script Loaded ---
-INFO: Python version: 3.9.2 (default, Jan 25 2026, 13:37:52) 
-[GCC 10.2.1 20210110]
-INFO: Working directory: /home/lumosdhia/EcoSpot-PI
-INFO: Starting Uvicorn server on 0.0.0.0...
-INFO:     Started server process [27608]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
