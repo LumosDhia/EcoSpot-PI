@@ -100,6 +100,7 @@
         }
     },
     "require-dev": {
+        "ahmed-bhs/doctrine-doctor": "*",
         "doctrine/doctrine-bundle": "^2.18",
         "doctrine/orm": "^3.6",
         "phpunit/phpunit": "^10.5",

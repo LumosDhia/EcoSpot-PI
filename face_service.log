@@ -1,16 +1,9 @@
-2026-02-24 12:18:48,084 - face_service - INFO - --- Face Service Starting up ---
-2026-02-24 12:19:52,454 - INFO - --- Face Service Script Loaded ---
-2026-02-24 12:19:54,505 - INFO - Starting Uvicorn server...
-2026-02-24 12:24:41,288 - INFO - --- Face Service Script Loaded ---
-2026-02-24 12:24:41,288 - INFO - Python version: 3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]
-2026-02-24 12:24:41,288 - INFO - Working directory: C:\Users\ghass\Desktop\EcoSpot-PI
-2026-02-24 12:24:42,412 - INFO - Starting Uvicorn server...
-2026-02-24 12:29:37,229 - INFO - --- Face Service Script Loaded ---
-2026-02-24 12:29:37,230 - INFO - Python version: 3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]
-2026-02-24 12:29:37,230 - INFO - Working directory: C:\Users\ghass\Desktop\EcoSpot-PI
-2026-02-24 12:39:01,507 - INFO - --- Face Service Script Loaded ---
-2026-02-24 12:39:01,507 - INFO - Python version: 3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]
-2026-02-24 12:39:01,507 - INFO - Working directory: C:\Users\ghass\Desktop\EcoSpot-PI
-2026-02-24 12:39:02,310 - INFO - Starting Uvicorn server on 0.0.0.0...
-2026-02-24 12:39:44,338 - INFO - Enrollment request for user: ghssnbenfraj@gmail.com
-2026-02-24 12:40:01,214 - INFO - Extracting face representation (VGG-Face)...
+INFO: --- Face Service Script Loaded ---
+INFO: Python version: 3.9.2 (default, Jan 25 2026, 13:37:52) 
+[GCC 10.2.1 20210110]
+INFO: Working directory: /home/lumosdhia/EcoSpot-PI
+INFO: Starting Uvicorn server on 0.0.0.0...
+INFO:     Started server process [27608]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)

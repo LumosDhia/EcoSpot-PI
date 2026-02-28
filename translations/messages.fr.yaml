@@ -16,6 +16,7 @@ footer:
     follow_us: "Suivez-nous"
     all_rights: "Tous droits réservés."
 common:
+    skip_to_content: "Passer au contenu"
     loading: "Chargement..."
     back_to_top: "Retour en haut"
     read_more: "Lire la suite"
