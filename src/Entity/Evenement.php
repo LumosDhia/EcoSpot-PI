@@ -157,10 +157,15 @@ class Evenement
         return $this->dateDebut;
     }
 
-    public function setDateDebut(?\DateTimeInterface $dateDebut): static
+    protected function setDateDebut(?\DateTimeInterface $dateDebut): static
     {
         $this->dateDebut = $dateDebut;
         return $this;
+    }
+
+    public function updateDateDebut(?\DateTimeInterface $dateDebut): static
+    {
+        return $this->setDateDebut($dateDebut);
     }
 
     public function getDateFin(): ?\DateTimeInterface
@@ -168,10 +173,15 @@ class Evenement
         return $this->dateFin;
     }
 
-    public function setDateFin(?\DateTimeInterface $dateFin): static
+    protected function setDateFin(?\DateTimeInterface $dateFin): static
     {
         $this->dateFin = $dateFin;
         return $this;
+    }
+
+    public function updateDateFin(?\DateTimeInterface $dateFin): static
+    {
+        return $this->setDateFin($dateFin);
     }
 
     public function getImage(): ?string

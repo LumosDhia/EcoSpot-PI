@@ -21,10 +21,11 @@ class EvenementRepository extends ServiceEntityRepository
     /**
      * @return Evenement[]
      */
-    public function findAllOrderedByDate(): array
+    public function findAllOrderedByDate(int $limit = 50): array
     {
         return $this->createQueryBuilder('e')
             ->orderBy('e.dateDebut', 'DESC')
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }
@@ -32,16 +33,17 @@ class EvenementRepository extends ServiceEntityRepository
     /**
      * @return Evenement[]
      */
-    public function searchOrderedByDate(?string $query): array
+    public function searchOrderedByDate(?string $query, int $limit = 50): array
     {
-        return $this->getQuerySearchOrderedByDate($query)->getResult();
+        return $this->getQuerySearchOrderedByDate($query, $limit)->getResult();
     }
 
     /** @return \Doctrine\ORM\Query<mixed, Evenement> */
-    public function getQuerySearchOrderedByDate(?string $query): \Doctrine\ORM\Query
+    public function getQuerySearchOrderedByDate(?string $query, int $limit = 50): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('e')
-            ->orderBy('e.dateDebut', 'DESC');
+            ->orderBy('e.dateDebut', 'DESC')
+            ->setMaxResults($limit);
 
         if ($query !== null && $query !== '') {
             // Match from start: first letter with first letter (e.g. "Par" matches "Paris")

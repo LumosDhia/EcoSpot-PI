@@ -18,11 +18,11 @@ class ArticleReactionRepository extends ServiceEntityRepository
         parent::__construct($registry, ArticleReaction::class);
     }
 
-    public function findOneByArticleAndUser(int $articleId, \Symfony\Component\Uid\UuidV7 $userId): ?ArticleReaction
+    public function findOneByArticleAndUser(\App\Entity\Blog\Article\Article $article, \App\Entity\User $user): ?ArticleReaction
     {
         return $this->findOneBy([
-            'article' => $articleId,
-            'user' => $userId
+            'article' => $article,
+            'user' => $user
         ]);
     }
 

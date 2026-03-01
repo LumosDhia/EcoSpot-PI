@@ -36,9 +36,9 @@ class NotificationRepository extends ServiceEntityRepository
     /**
      * @return Notification[]
      */
-    public function findUnreadByUser(User $user): array
+    public function findUnreadByUser(User $user, int $limit = 20): array
     {
-        return $this->findBy(['user' => $user, 'isRead' => false], ['createdAt' => 'DESC']);
+        return $this->findBy(['user' => $user, 'isRead' => false], ['createdAt' => 'DESC'], $limit);
     }
 
     public function countUnreadByUser(User $user): int

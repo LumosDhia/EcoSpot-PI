@@ -35,9 +35,9 @@ class NgoDashboardController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_NGO');
 
-        $articlesCount = \count($this->articleRepository->findAll());
-        $commentsCount = \count($this->commentRepository->findAll());
-        $eventsCount = \count($this->evenementRepository->findAll());
+        $articlesCount = $this->articleRepository->count([]);
+        $commentsCount = $this->commentRepository->count([]);
+        $eventsCount = $this->evenementRepository->count([]);
 
         return $this->render('ngo/dashboard.html.twig', [
             'articles_count' => $articlesCount,
@@ -137,7 +137,7 @@ class NgoDashboardController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_NGO');
 
         return $this->render('ngo/comments_index.html.twig', [
-            'comments' => $this->commentRepository->findBy([], ['createdAt' => 'DESC']),
+            'comments' => $this->commentRepository->findBy([], ['createdAt' => 'DESC'], 50),
         ]);
     }
 

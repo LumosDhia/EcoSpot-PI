@@ -44,7 +44,7 @@ class EventsController extends AbstractController
             return $this->redirectToRoute('events_index');
         }
 
-        $allEvents = $this->evenementRepository->findAll();
+        $allEvents = $this->evenementRepository->findBy([], ['dateDebut' => 'DESC'], 500);
         $nearbyEvents = [];
 
         foreach ($allEvents as $event) {
@@ -147,7 +147,7 @@ class EventsController extends AbstractController
             $userCoords = $this->locationService->geocode($address);
             
             if ($userCoords) {
-                $allEvents = $this->evenementRepository->findAll();
+                $allEvents = $this->evenementRepository->findBy([], ['dateDebut' => 'DESC'], 500);
                 foreach ($allEvents as $otherEvent) {
                     if ($otherEvent->getId() !== $event->getId() && $otherEvent->getLatitude() !== null) {
                         $distance = $this->locationService->calculateDistance(

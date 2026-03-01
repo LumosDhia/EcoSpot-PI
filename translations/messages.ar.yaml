@@ -20,6 +20,7 @@ common:
     loading: "جاري التحميل..."
     back_to_top: "العودة للأعلى"
     read_more: "اقرأ المزيد"
+    content: "المحتوى"
     writer: "الكاتب"
     news: "الأخبار"
     view_event: "مشاهدة الفعالية"

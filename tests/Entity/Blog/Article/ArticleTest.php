@@ -78,8 +78,36 @@ class ArticleTest extends TestCase
         
         $article->incrementViews();
         $this->assertEquals(1, $article->getViews());
+    }
+
+    public function testCommentRelationship(): void
+    {
+        $article = new Article();
+        $comment = new \App\Entity\Blog\Comment\Comment();
+        $comment->setContent('Good article!');
+
+        $article->addComment($comment);
+        $this->assertCount(1, $article->getComments());
+        $this->assertSame($article, $comment->getArticle());
+
+        $article->removeComment($comment);
+        $this->assertCount(0, $article->getComments());
+    }
+
+    public function testReactions(): void
+    {
+        $article = new Article();
+        $reaction = new \App\Entity\Blog\Article\ArticleReaction();
+        $user = new User();
+        $reaction->setUser($user);
+        $reaction->setType(\App\Entity\Blog\Article\ArticleReaction::TYPE_LIKE);
+
+        $article->getReactions()->add($reaction);
+        $reaction->setArticle($article);
         
-        $article->incrementViews();
-        $this->assertEquals(2, $article->getViews());
+        $this->assertCount(1, $article->getReactions());
+        $this->assertEquals(1, $article->getLikesCount());
+        $this->assertEquals(0, $article->getDislikesCount());
+        $this->assertSame($reaction, $article->getUserReaction($user));
     }
 }

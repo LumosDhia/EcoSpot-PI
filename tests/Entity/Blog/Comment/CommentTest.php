@@ -14,39 +14,39 @@ class CommentTest extends TestCase
         $user = new User();
         $comment = new Comment($user);
         $this->assertInstanceOf(Comment::class, $comment);
-        $this->assertEquals($user, $comment->getAuthorUser());
+        $this->assertSame($user, $comment->getAuthorUser());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $comment->getCreatedAt());
         $this->assertFalse($comment->isFlagged());
-    }
-
-    public function testSetGetContent(): void
-    {
-        $comment = new Comment(new User());
-        $content = 'Excellent article !';
-        $comment->setContent($content);
-        $this->assertEquals($content, $comment->getContent());
     }
 
     public function testSetGetAuthor(): void
     {
-        $comment = new Comment(new User());
-        $author = 'John Doe';
+        $comment = new Comment();
+        $author = 'Alice';
         $comment->setAuthor($author);
         $this->assertEquals($author, $comment->getAuthor());
     }
 
-    public function testSetGetArticle(): void
+    public function testSetGetContent(): void
     {
-        $comment = new Comment(new User());
-        $article = new Article();
-        $comment->setArticle($article);
-        $this->assertEquals($article, $comment->getArticle());
+        $comment = new Comment();
+        $content = 'Excellent post, thanks for sharing!';
+        $comment->setContent($content);
+        $this->assertEquals($content, $comment->getContent());
     }
 
-    public function testSetGetFlagged(): void
+    public function testSetGetArticle(): void
     {
-        $comment = new Comment(new User());
+        $comment = new Comment();
+        $article = new Article();
+        $comment->setArticle($article);
+        $this->assertSame($article, $comment->getArticle());
+    }
+
+    public function testFlagged(): void
+    {
+        $comment = new Comment();
         $this->assertFalse($comment->isFlagged());
-        
         $comment->setFlagged(true);
         $this->assertTrue($comment->isFlagged());
     }

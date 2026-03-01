@@ -57,6 +57,7 @@ class RegistrationController extends AbstractController
                 $user->setFaceEnrolled(true);
             }
 
+            $user->setCreatedBy($user);
             $entityManager->persist($user);
             $entityManager->flush();
 

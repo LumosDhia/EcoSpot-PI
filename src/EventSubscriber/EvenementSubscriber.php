@@ -7,11 +7,12 @@ namespace App\EventSubscriber;
 use App\Entity\Evenement;
 use App\Service\EventNotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
+use Doctrine\ORM\Events;
 use Symfony\Bundle\SecurityBundle\Security;
 
-#[AsEntityListener(event: 'postPersist', method: 'postPersist', entity: Evenement::class)]
-#[AsEntityListener(event: 'postUpdate', method: 'postUpdate', entity: Evenement::class)]
-#[AsEntityListener(event: 'postRemove', method: 'postRemove', entity: Evenement::class)]
+#[AsEntityListener(event: Events::postPersist, method: 'postPersist', entity: Evenement::class)]
+#[AsEntityListener(event: Events::postUpdate, method: 'postUpdate', entity: Evenement::class)]
+#[AsEntityListener(event: Events::postRemove, method: 'postRemove', entity: Evenement::class)]
 class EvenementSubscriber
 {
     public function __construct(

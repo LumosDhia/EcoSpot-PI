@@ -38,14 +38,14 @@ class TicketRepository extends ServiceEntityRepository
     }
 
     /** @return list<Ticket> */
-    public function findByUser(User $user, ?TicketStatus $status = null): array
+    public function findByUser(User $user, ?TicketStatus $status = null, int $limit = 50): array
     {
         $criteria = ['user' => $user];
         if ($status !== null) {
             $criteria['status'] = $status;
         }
 
-        return $this->findBy($criteria, ['createdAt' => 'DESC']);
+        return $this->findBy($criteria, ['createdAt' => 'DESC'], $limit);
     }
 
     /** 
@@ -127,49 +127,55 @@ class TicketRepository extends ServiceEntityRepository
      * Published tickets for public listing. 
      * @return list<Ticket>
      */
-    public function findPublished(): array
+    public function findPublished(int $limit = 50): array
     {
-        return $this->createQueryBuilder('t')
+        $query = $this->createQueryBuilder('t')
             ->innerJoin('t.user', 'u')
             ->addSelect('u')
             ->where('t.status = :status')
             ->setParameter('status', TicketStatus::PUBLISHED)
             ->orderBy('t.createdAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit)
+            ->getQuery();
+            
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true));
     }
 
     /** 
      * Tickets with completion submitted, waiting for admin to mark as achieved. 
      * @return list<Ticket>
      */
-    public function findPendingCompletions(): array
+    public function findPendingCompletions(int $limit = 50): array
     {
-        return $this->createQueryBuilder('t')
+        $query = $this->createQueryBuilder('t')
             ->innerJoin('t.user', 'u')
             ->leftJoin('t.completedBy', 'cb')
             ->addSelect('u', 'cb')
             ->where('t.completionSubmittedAt IS NOT NULL')
             ->andWhere('t.achievedAt IS NULL')
             ->orderBy('t.completionSubmittedAt', 'ASC')
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit)
+            ->getQuery();
+            
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true));
     }
 
     /** 
      * Achieved tickets (for Achievements page). 
      * @return list<Ticket>
      */
-    public function findAchieved(): array
+    public function findAchieved(int $limit = 50): array
     {
-        return $this->createQueryBuilder('t')
+        $query = $this->createQueryBuilder('t')
             ->innerJoin('t.user', 'u')
             ->leftJoin('t.completedBy', 'cb')
             ->addSelect('u', 'cb')
             ->where('t.achievedAt IS NOT NULL')
             ->orderBy('t.achievedAt', 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit)
+            ->getQuery();
+            
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true));
     }
 
     public function countRecentSpamByUser(User $user, \DateTimeImmutable $since): int

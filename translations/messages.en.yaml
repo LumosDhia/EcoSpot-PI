@@ -20,6 +20,7 @@ common:
     loading: "Loading..."
     back_to_top: "Back to top"
     read_more: "Read more"
+    content: "Content"
     writer: "Writer"
     news: "News"
     view_event: "View event"

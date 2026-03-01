@@ -43,11 +43,17 @@ class EvenementType extends AbstractType
                 'label' => 'Start date',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
+                'setter' => function (Evenement $evenement, ?\DateTimeInterface $value) {
+                    $evenement->updateDateDebut($value);
+                }
             ])
             ->add('dateFin', DateTimeType::class, [
                 'label' => 'End date',
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control'],
+                'setter' => function (Evenement $evenement, ?\DateTimeInterface $value) {
+                    $evenement->updateDateFin($value);
+                }
             ])
             ->add('imageFile', FileType::class, [
                 'label' => 'Event image',

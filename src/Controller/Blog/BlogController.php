@@ -77,7 +77,8 @@ class BlogController extends AbstractController
             $pagination = $this->paginator->paginate(
                 $query,
                 $request->query->getInt('page', 1),
-                8 // Articles per page
+                8, // Articles per page
+                ['wrap-queries' => true, 'fetch_join_collection' => false]
             );
         }
 
@@ -156,14 +157,11 @@ class BlogController extends AbstractController
 
         /** @var \App\Entity\User $user */
         
-        $articleId = $article->getId();
-        $userId = $user->getId();
-        
-        if ($articleId === null || $userId === null) {
-            return $this->json(['error' => 'Invalid article or user.'], Response::HTTP_BAD_REQUEST);
+        if ($article->getId() === null) {
+            return $this->json(['error' => 'Invalid article.'], Response::HTTP_BAD_REQUEST);
         }
 
-        $reaction = $this->reactionRepository->findOneByArticleAndUser($articleId, $userId);
+        $reaction = $this->reactionRepository->findOneByArticleAndUser($article, $user);
 
         if ($reaction) {
             if ($reaction->getType() === $type) {

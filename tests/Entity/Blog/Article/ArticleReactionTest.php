@@ -15,30 +15,36 @@ class ArticleReactionTest extends TestCase
         $this->assertInstanceOf(ArticleReaction::class, $reaction);
     }
 
-    public function testSetGetType(): void
-    {
-        $reaction = new ArticleReaction();
-        $type = 'like';
-        
-        $reaction->setType($type);
-        $this->assertEquals($type, $reaction->getType());
-    }
-
-    public function testSetGetArticle(): void
-    {
-        $reaction = new ArticleReaction();
-        $article = new Article();
-        
-        $reaction->setArticle($article);
-        $this->assertEquals($article, $reaction->getArticle());
-    }
-
-    public function testSetGetUser(): void
+    public function testSetUser(): void
     {
         $reaction = new ArticleReaction();
         $user = new User();
-        
         $reaction->setUser($user);
-        $this->assertEquals($user, $reaction->getUser());
+        $this->assertSame($user, $reaction->getUser());
+    }
+
+    public function testSetArticle(): void
+    {
+        $reaction = new ArticleReaction();
+        $article = new Article();
+        $reaction->setArticle($article);
+        $this->assertSame($article, $reaction->getArticle());
+    }
+
+    public function testSetType(): void
+    {
+        $reaction = new ArticleReaction();
+        $reaction->setType(ArticleReaction::TYPE_LIKE);
+        $this->assertEquals(ArticleReaction::TYPE_LIKE, $reaction->getType());
+
+        $reaction->setType(ArticleReaction::TYPE_DISLIKE);
+        $this->assertEquals(ArticleReaction::TYPE_DISLIKE, $reaction->getType());
+    }
+
+    public function testInvalidType(): void
+    {
+        $reaction = new ArticleReaction();
+        $this->expectException(\InvalidArgumentException::class);
+        $reaction->setType('invalid');
     }
 }

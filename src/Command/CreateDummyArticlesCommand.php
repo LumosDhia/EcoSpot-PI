@@ -81,6 +81,7 @@ class CreateDummyArticlesCommand extends Command
             $article->setContent('This is a dummy article content for "' . $title . '". It contains more than twenty characters to satisfy validation rules and provides useful environmental information for our community to engage with EcoSpot.');
             $article->setCategory($categories[array_rand($categories)]);
             $article->setWriter($index % 2 === 0 ? $admin : $ngo);
+            $article->setCreatedBy($article->getWriter());
             
             // Randomly publish some
             if (rand(0, 1)) {

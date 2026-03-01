@@ -85,10 +85,7 @@ class PublicTicketsController extends AbstractController
 
             /** @var \App\Entity\User $user */
             $user = $this->getUser();
-            $ticket->setCompletedBy($user);
-            $ticket->setCompletionMessage($form->get('message')->getData());
-            $ticket->setCompletionImage($filename);
-            $ticket->setCompletionSubmittedAt(new \DateTimeImmutable());
+            $ticket->submitCompletion($user, $form->get('message')->getData(), $filename);
             $this->ticketRepository->save($ticket);
 
             $this->addFlash('success', 'Your completion has been submitted. An administrator will review it.');

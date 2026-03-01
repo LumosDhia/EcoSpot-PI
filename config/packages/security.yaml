@@ -23,6 +23,10 @@ security:
                 path: app_logout
                 target: home
 
+    role_hierarchy:
+        ROLE_NGO: ROLE_USER
+        ROLE_ADMIN: ROLE_NGO
+
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/ngo, roles: ROLE_NGO }

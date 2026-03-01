@@ -44,7 +44,7 @@ class CompletionSubmissionsController extends AbstractController
             return $this->redirectToRoute('admin_completions_index');
         }
 
-        $ticket->setAchievedAt(new \DateTimeImmutable());
+        $ticket->markAsAchieved();
         $this->ticketRepository->save($ticket);
         $this->addFlash('success', 'Ticket marked as achieved.');
 

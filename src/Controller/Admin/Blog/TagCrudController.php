@@ -24,7 +24,7 @@ class TagCrudController extends AbstractController
     public function index(): Response
     {
         return $this->render('admin/blog/tag/index.html.twig', [
-            'tags' => $this->tagRepository->findAll(),
+            'tags' => $this->tagRepository->findBy([], ['id' => 'DESC'], 500),
         ]);
     }
 

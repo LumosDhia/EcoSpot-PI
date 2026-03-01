@@ -24,7 +24,7 @@ class CommentCrudController extends AbstractController
     public function index(): Response
     {
         return $this->render('admin/blog/comment/index.html.twig', [
-            'comments' => $this->commentRepository->findBy([], ['createdAt' => 'DESC']),
+            'comments' => $this->commentRepository->findBy([], ['createdAt' => 'DESC'], 500),
         ]);
     }
 

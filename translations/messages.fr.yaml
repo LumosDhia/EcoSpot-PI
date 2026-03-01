@@ -20,6 +20,7 @@ common:
     loading: "Chargement..."
     back_to_top: "Retour en haut"
     read_more: "Lire la suite"
+    content: "Contenu"
     writer: "Auteur"
     view_event: "Voir l'événement"
     search: "Rechercher"

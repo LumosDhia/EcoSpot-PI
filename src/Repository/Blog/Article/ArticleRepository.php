@@ -22,21 +22,19 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @return Article[]
      */
-    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): array
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null, int $limit = 50): array
     {
-        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId, $writerId)->getResult();
+        return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId, $writerId, $limit)->getResult();
     }
 
     /** @return \Doctrine\ORM\Query<mixed, Article> */
-    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null): \Doctrine\ORM\Query
+    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null, int $limit = 50): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
-            ->leftJoin('a.writer', 'w')->addSelect('w')
-            ->leftJoin('a.category', 'c')->addSelect('c')
-            ->leftJoin('a.tags', 't')->addSelect('t')
             ->andWhere('a.publishedAt IS NOT NULL')
             ->andWhere('a.publishedAt <= CURRENT_TIMESTAMP()')
-            ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC');
+            ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC')
+            ->setMaxResults($limit);
 
         if ($search !== null && $search !== '') {
             $qb->andWhere('a.title LIKE :search')
@@ -44,21 +42,34 @@ class ArticleRepository extends ServiceEntityRepository
         }
 
         if ($categoryId !== null) {
-            $qb->andWhere('c.id = :categoryId')
-                ->setParameter('categoryId', $categoryId);
+            $qb->leftJoin('a.category', 'c')->addSelect('c')
+               ->andWhere('c.id = :categoryId')
+               ->setParameter('categoryId', $categoryId);
         }
 
         if ($tagId !== null) {
-            $qb->andWhere('t.id = :tagId')
-                ->setParameter('tagId', $tagId);
+            $qb->leftJoin('a.tags', 't')
+               ->andWhere('t.id = :tagId')
+               ->setParameter('tagId', $tagId);
         }
 
         if ($writerId !== null) {
-            $qb->andWhere('w.id = :writerId')
-                ->setParameter('writerId', $writerId);
+            $qb->leftJoin('a.writer', 'w')->addSelect('w')
+               ->andWhere('w.id = :writerId')
+               ->setParameter('writerId', $writerId);
         }
 
-        return $qb->getQuery();
+        $query = $qb->getQuery();
+        if ($categoryId === null) {
+            $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'category', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+        }
+        if ($writerId === null) {
+            $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'writer', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+        }
+        $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'comments', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+        $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'reactions', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+
+        return $query;
     }
 
     public function findOnePublishedById(int $id): ?Article
@@ -91,22 +102,25 @@ class ArticleRepository extends ServiceEntityRepository
      * All articles for admin/NGO (drafts, scheduled, published). Order by createdAt.
      * @return Article[]
      */
-    public function findAllForAdmin(string $order = 'DESC'): array
+    public function findAllForAdmin(string $order = 'DESC', int $limit = 50): array
     {
-        return $this->createQueryBuilder('a')
+        $query = $this->createQueryBuilder('a')
             ->leftJoin('a.writer', 'w')->addSelect('w')
             ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC')
-            ->getQuery()
-            ->getResult();
+            ->setMaxResults($limit)
+            ->getQuery();
+            
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, false));
     }
 
     /**
      * Articles written by admin (or no writer). For admin's own list: full edit/publish/delete.
      * @return Article[]
      */
-    public function findAdminOwnArticles(User $admin, string $order = 'DESC'): array
+    public function findAdminOwnArticles(User $admin, string $order = 'DESC', int $limit = 50): array
     {
-        return $this->getQueryAdminOwnArticles($admin, $order)->getResult();
+        $query = $this->getQueryAdminOwnArticles($admin, null, $order)->setMaxResults($limit);
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, false));
     }
 
     /** @return \Doctrine\ORM\Query<mixed, Article> */
@@ -131,9 +145,10 @@ class ArticleRepository extends ServiceEntityRepository
      * Articles written by NGO users. Admin can only delete or return for revision (no edit/publish).
      * @return Article[]
      */
-    public function findNgoArticlesForAdmin(string $order = 'DESC'): array
+    public function findNgoArticlesForAdmin(string $order = 'DESC', int $limit = 50): array
     {
-        return $this->getQueryNgoArticlesForAdmin($order)->getResult();
+        $query = $this->getQueryNgoArticlesForAdmin(null, $order)->setMaxResults($limit);
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, false));
     }
 
     /** @return \Doctrine\ORM\Query<mixed, Article> */

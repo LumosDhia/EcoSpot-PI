@@ -29,11 +29,11 @@ class AdminDashboardController extends AbstractController
     {
         $pendingTicketsCount = \count($this->ticketRepository->findPendingForAdmin());
         $pendingCompletionsCount = \count($this->ticketRepository->findPendingCompletions());
-        $articlesCount = \count($this->articleRepository->findAll());
-        $commentsCount = \count($this->commentRepository->findAll());
-        $eventsCount = \count($this->evenementRepository->findAll());
-        $usersCount = \count($this->userRepository->findAll());
-        $sponsorsCount = \count($this->sponsorRepository->findAll());
+        $articlesCount = $this->articleRepository->count([]);
+        $commentsCount = $this->commentRepository->count([]);
+        $eventsCount = $this->evenementRepository->count([]);
+        $usersCount = $this->userRepository->count([]);
+        $sponsorsCount = $this->sponsorRepository->count();
 
         return $this->render('admin/dashboard.html.twig', [
             'pending_tickets_count' => $pendingTicketsCount,

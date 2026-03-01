@@ -21,12 +21,13 @@ class CommentRepository extends ServiceEntityRepository
     /**
      * @return Comment[]
      */
-    public function findByArticleOrderByCreatedAt(int $articleId, string $order = 'DESC'): array
+    public function findByArticleOrderByCreatedAt(int $articleId, string $order = 'DESC', int $limit = 50): array
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.article = :articleId')
             ->setParameter('articleId', $articleId)
             ->orderBy('c.createdAt', $order === 'ASC' ? 'ASC' : 'DESC')
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }

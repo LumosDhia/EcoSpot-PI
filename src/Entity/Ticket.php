@@ -294,6 +294,14 @@ class Ticket
         return $this;
     }
 
+    public function submitCompletion(User $user, ?string $message, ?string $image): void
+    {
+        $this->completedBy = $user;
+        $this->completionMessage = $message;
+        $this->completionImage = $image;
+        $this->completionSubmittedAt = new \DateTimeImmutable();
+    }
+
     public function getCompletionMessage(): ?string
     {
         return $this->completionMessage;
@@ -326,10 +334,16 @@ class Ticket
         return $this->achievedAt;
     }
 
-    public function setAchievedAt(?\DateTimeImmutable $achievedAt): static
+    protected function setAchievedAt(?\DateTimeImmutable $achievedAt): static
     {
         $this->achievedAt = $achievedAt;
         return $this;
+    }
+
+    public function markAsAchieved(): void
+    {
+        $this->achievedAt = new \DateTimeImmutable();
+        $this->setStatus(TicketStatus::COMPLETED);
     }
 
     public function isAchieved(): bool
@@ -342,7 +356,7 @@ class Ticket
         return $this->completionSubmittedAt !== null;
     }
 
-    public function setCompletionSubmittedAt(?\DateTimeImmutable $completionSubmittedAt): static
+    protected function setCompletionSubmittedAt(?\DateTimeImmutable $completionSubmittedAt): static
     {
         $this->completionSubmittedAt = $completionSubmittedAt;
         return $this;

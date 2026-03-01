@@ -6,47 +6,30 @@ namespace App\EventSubscriber;
 
 use App\Entity\Blog\Article\Article;
 use App\Service\AiSeoService;
-use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
+use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
-use Doctrine\Persistence\Event\LifecycleEventArgs;
-use Doctrine\Persistence\ObjectManager;
 
-class ArticleSeoSubscriber implements EventSubscriberInterface
+#[AsEntityListener(event: Events::prePersist, method: 'prePersist', entity: Article::class)]
+#[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: Article::class)]
+class ArticleSeoSubscriber
 {
     public function __construct(
         private AiSeoService $aiSeoService
     ) {
     }
 
-    public function getSubscribedEvents(): array
+    public function prePersist(Article $entity): void
     {
-        return [
-            Events::prePersist,
-            Events::preUpdate,
-        ];
+        $this->generateSeoIfEmpty($entity);
     }
 
-    /** @param LifecycleEventArgs<ObjectManager> $args */
-    public function prePersist(LifecycleEventArgs $args): void
+    public function preUpdate(Article $entity): void
     {
-        $this->generateSeoIfEmpty($args);
+        $this->generateSeoIfEmpty($entity);
     }
 
-    /** @param LifecycleEventArgs<ObjectManager> $args */
-    public function preUpdate(LifecycleEventArgs $args): void
+    private function generateSeoIfEmpty(Article $entity): void
     {
-        $this->generateSeoIfEmpty($args);
-    }
-
-    /** @param LifecycleEventArgs<ObjectManager> $args */
-    private function generateSeoIfEmpty(LifecycleEventArgs $args): void
-    {
-        $entity = $args->getObject();
-
-        if (!$entity instanceof Article) {
-            return;
-        }
-
         // Only generate if SEO elements are empty
         if (empty($entity->getSeoDescription()) || empty($entity->getSeoKeywords())) {
             $seoElements = $this->aiSeoService->generateSeoElements($entity);

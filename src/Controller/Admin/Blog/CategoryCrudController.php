@@ -24,7 +24,7 @@ class CategoryCrudController extends AbstractController
     public function index(): Response
     {
         return $this->render('admin/blog/category/index.html.twig', [
-            'categories' => $this->categoryRepository->findAll(),
+            'categories' => $this->categoryRepository->findBy([], ['id' => 'DESC'], 500),
         ]);
     }
 

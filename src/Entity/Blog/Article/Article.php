@@ -84,13 +84,13 @@ class Article
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true, fetch: 'EAGER')]
     private Collection $comments;
 
     /**
      * @var Collection<int, ArticleReaction>
      */
-    #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: ArticleReaction::class, mappedBy: 'article', cascade: ['persist', 'remove'], orphanRemoval: true, fetch: 'EAGER')]
     private Collection $reactions;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -172,7 +172,7 @@ class Article
         return $this->publishedAt;
     }
 
-    public function setPublishedAt(?\DateTimeImmutable $publishedAt): static
+    protected function setPublishedAt(?\DateTimeImmutable $publishedAt): static
     {
         $this->publishedAt = $publishedAt;
         return $this;
