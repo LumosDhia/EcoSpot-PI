@@ -3,118 +3,150 @@
 {% block title %}Events - EcoSpot{% endblock %}
 
 {% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
-    <style>
-        #events-map { 
-            height: 450px; 
-            width: 100%; 
-            border-radius: 15px; 
-            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.05);
-            z-index: 5;
-        }
-        .leaflet-container img { max-width: none !important; }
-        .map-popup-link { color: var(--eco-forest); font-weight: 600; text-decoration: none; }
-        .map-popup-link:hover { text-decoration: underline; }
-    </style>
+{{ parent() }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+<style>
+    #events-map {
+        height: 450px;
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        z-index: 5;
+    }
+
+    .leaflet-container img {
+        max-width: none !important;
+    }
+
+    .map-popup-link {
+        color: var(--eco-forest);
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .map-popup-link:hover {
+        text-decoration: underline;
+    }
+</style>
 {% endblock %}
 
 
 {% block breadcrumb %}
-    <div class="container-fluid bg-breadcrumb">
-        <div class="container text-center py-5" style="max-width: 900px;">
-            <h3 class="text-white display-3 mb-4">{{ 'events.upcoming_past'|trans }}</h3>
-            <p class="fs-5 text-white mb-4">{{ 'events.title'|trans }}</p>
-            <ol class="breadcrumb justify-content-center mb-0">
-                <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
-                <li class="breadcrumb-item active text-white">{{ 'nav.events'|trans }}</li>
-            </ol>
-        </div>
+<div class="container-fluid bg-breadcrumb">
+    <div class="container text-center py-5" style="max-width: 900px;">
+        <h3 class="text-white display-3 mb-4">{{ 'events.upcoming_past'|trans }}</h3>
+        <p class="fs-5 text-white mb-4">{{ 'events.title'|trans }}</p>
+        <ol class="breadcrumb justify-content-center mb-0">
+            <li class="breadcrumb-item"><a href="{{ path('home') }}">{{ 'nav.home'|trans }}</a></li>
+            <li class="breadcrumb-item active text-white">{{ 'nav.events'|trans }}</li>
+        </ol>
     </div>
+</div>
 {% endblock %}
 
 {% block body %}
-    <div class="container-fluid blog py-5">
-        <div class="container py-5">
-            <div class="text-center mx-auto pb-4" style="max-width: 800px;">
-                <h5 class="text-uppercase text-primary">{{ 'events.upcoming_past'|trans }}</h5>
-                <h1 class="mb-4">{{ 'events.title'|trans }}</h1>
-            </div>
+<div class="container-fluid blog py-5">
+    <div class="container py-5">
+        <div class="text-center mx-auto pb-4" style="max-width: 800px;">
+            <h5 class="text-uppercase text-primary">{{ 'events.upcoming_past'|trans }}</h5>
+            <h1 class="mb-4">{{ 'events.title'|trans }}</h1>
+        </div>
 
-            <div id="events-map" class="mb-5"></div>
+        <div id="events-map" class="mb-5"></div>
 
-            <div class="card mb-5">
+        <div class="card mb-5">
 
-                <div class="card-body">
-                    <form method="get" action="{{ path('events_index') }}" class="row g-2 align-items-end" id="events-search-form">
-                        <div class="col-lg-8 mx-auto">
-                            <div class="input-group">
-                                <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
-                                <input type="text" name="q" id="events-search" class="form-control border-start-0 ps-0" value="{{ search }}" placeholder="{{ 'events.search_placeholder'|trans }}">
-                            </div>
+            <div class="card-body">
+                <form method="get" action="{{ path('events_index') }}" class="row g-2 align-items-end"
+                    id="events-search-form">
+                    <div class="col-lg-8 mx-auto d-flex gap-2">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i
+                                    class="fas fa-search text-muted"></i></span>
+                            <input type="text" name="q" id="events-search" class="form-control border-start-0 ps-0"
+                                value="{{ search }}" placeholder="{{ 'events.search_placeholder'|trans }}">
                         </div>
-                        <div class="col-md-3 d-none"> {# Hidden as per new design, search is now dynamic #}
-                            <button type="submit" class="btn btn-primary w-100">{{ 'common.search'|trans }}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div class="row g-4" id="events-list">
-                {% for event in pagination %}
-                    <div class="col-lg-6 col-xl-4">
-                        <div class="blog-item">
-                            <div class="blog-img">
-                                {% if event.image %}
-                                    <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom }}" loading="lazy" style="height: 220px; object-fit: cover;">
-                                {% else %}
-                                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800" class="img-fluid w-100" alt="{{ event.nom }}" style="height: 220px; object-fit: cover;" loading="lazy">
-                                {% endif %}
-                                <div class="blog-info">
-                                    <span><i class="fa fa-calendar"></i> {{ event.dateDebut ? event.dateDebut|date('d M Y') : '—' }}</span>
-                                    <span class="ms-2"><i class="fa fa-map-marker-alt"></i> {{ event.lieu }}</span>
-                                </div>
-                                <div class="search-icon">
-                                    <a href="{{ path('events_show', { slug: event.slug }) }}" class="my-auto" title="{{ 'events.view_event'|trans }}"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a>
-                                </div>
-                            </div>
-                            <div class="text-dark border p-4">
-                                <h4 class="mb-3">{{ event.nom|translate }}</h4>
-                                <p class="mb-3">{{ (event.description|translate)|length > 120 ? (event.description|translate)|slice(0, 120) ~ '...' : (event.description|translate) }}</p>
-                                <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
-                                    <p class="text-muted small mb-0"><i class="fas fa-users me-1"></i> {{ event.capacite }} {{ 'events.capacity'|trans }}</p>
-                                    {% if event.sponsors|length > 0 %}
-                                        <p class="text-muted small mb-0 ms-3"><i class="fas fa-hand-holding-heart me-1"></i> {{ event.sponsors|length }} {{ 'events.sponsors_count'|trans }}</p>
-                                    {% endif %}
-                                </div>
-                                <a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="{{ path('events_show', { slug: event.slug }) }}">{{ 'events.view_event'|trans }}</a>
-                            </div>
-                        </div>
+                        <a href="{{ path('events_nearby') }}"
+                            class="btn btn-outline-primary d-flex align-items-center gap-2 flex-shrink-0"
+                            style="border-radius: 10px;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span class="d-none d-sm-inline">Nearby Me</span>
+                        </a>
                     </div>
-                {% else %}
-                    <div class="col-12">
-                        <div class="text-center py-5 text-muted">
-                            <p class="fs-5">{% if search %}{{ 'events.no_results'|trans({'%search%': search}) }}{% else %}{{ 'events.no_events'|trans }}{% endif %}</p>
-                            {% if search %}
-                                <a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">{{ 'events.clear_search'|trans }}</a>
-                            {% endif %}
-                        </div>
+                    <div class="col-md-3 d-none"> {# Hidden as per new design, search is now dynamic #}
+                        <button type="submit" class="btn btn-primary w-100">{{ 'common.search'|trans }}</button>
                     </div>
-                {% endfor %}
-            </div>
-
-            <div class="mt-5 d-flex justify-content-center pagination-wrapper">
-                {{ knp_pagination_render(pagination) }}
+                </form>
             </div>
         </div>
+
+        <div class="row g-4" id="events-list">
+            {% for event in pagination %}
+            <div class="col-lg-6 col-xl-4">
+                <div class="blog-item">
+                    <div class="blog-img">
+                        {% if event.image %}
+                        <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom }}" loading="lazy"
+                            style="height: 220px; object-fit: cover;">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800"
+                            class="img-fluid w-100" alt="{{ event.nom }}" style="height: 220px; object-fit: cover;"
+                            loading="lazy">
+                        {% endif %}
+                        <div class="blog-info">
+                            <span><i class="fa fa-calendar"></i> {{ event.dateDebut ? event.dateDebut|date('d M Y') :
+                                '—' }}</span>
+                            <span class="ms-2"><i class="fa fa-map-marker-alt"></i> {{ event.lieu }}</span>
+                        </div>
+                        <div class="search-icon">
+                            <a href="{{ path('events_show', { slug: event.slug }) }}" class="my-auto"
+                                title="{{ 'events.view_event'|trans }}"><i
+                                    class="fas fa-search-plus btn-primary text-white p-3"></i></a>
+                        </div>
+                    </div>
+                    <div class="text-dark border p-4">
+                        <h4 class="mb-3">{{ event.nom|translate }}</h4>
+                        <p class="mb-3">{{ (event.description|translate)|length > 120 ?
+                            (event.description|translate)|slice(0, 120) ~ '...' : (event.description|translate) }}</p>
+                        <div class="d-flex flex-wrap gap-2 small text-muted mb-3">
+                            <p class="text-muted small mb-0"><i class="fas fa-users me-1"></i> {{ event.capacite }} {{
+                                'events.capacity'|trans }}</p>
+                            {% if event.sponsors|length > 0 %}
+                            <p class="text-muted small mb-0 ms-3"><i class="fas fa-hand-holding-heart me-1"></i> {{
+                                event.sponsors|length }} {{ 'events.sponsors_count'|trans }}</p>
+                            {% endif %}
+                        </div>
+                        <a class="btn-hover-bg btn btn-primary text-white py-2 px-4"
+                            href="{{ path('events_show', { slug: event.slug }) }}">{{ 'events.view_event'|trans }}</a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <div class="text-center py-5 text-muted">
+                    <p class="fs-5">{% if search %}{{ 'events.no_results'|trans({'%search%': search}) }}{% else %}{{
+                        'events.no_events'|trans }}{% endif %}</p>
+                    {% if search %}
+                    <a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">{{
+                        'events.clear_search'|trans }}</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-5 d-flex justify-content-center pagination-wrapper">
+            {{ knp_pagination_render(pagination) }}
+        </div>
     </div>
+</div>
 
 {% block javascripts %}
-    {{ parent() }}
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script>
-    (function() {
+{{ parent() }}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script>
+    (function () {
         const searchInput = document.getElementById('events-search');
         const listEl = document.getElementById('events-list');
         const searchUrl = '{{ path('events_search') }}';
@@ -124,117 +156,117 @@
         const initialEvents = [
             {% for event in pagination %}
             {
-                nom: '{{ event.nom|escape('js') }}',
-                lieu: '{{ event.lieu|escape('js') }}',
-                latitude: {{ event.latitude|default('null') }},
-                longitude: {{ event.longitude|default('null') }},
-                showUrl: '{{ path('events_show', { slug: event.slug }) }}'
-            }{% if not loop.last %},{% endif %}
-            {% endfor %}
+        nom: '{{ event.nom|escape('js') }}',
+            lieu: '{{ event.lieu|escape('js') }}',
+                latitude: { { event.latitude |default ('null') } },
+        longitude: { { event.longitude |default ('null') } },
+        showUrl: '{{ path('events_show', { slug: event.slug }) }}'
+    } {% if not loop.last %}, {% endif %}
+    {% endfor %}
         ];
 
-        function initMap() {
-            const mapContainer = document.getElementById('events-map');
-            if (!mapContainer) return;
+    function initMap() {
+        const mapContainer = document.getElementById('events-map');
+        if (!mapContainer) return;
 
-            map = L.map('events-map', {
-                center: [33.8869, 9.5375],
-                zoom: 6,
-                scrollWheelZoom: false
-            });
+        map = L.map('events-map', {
+            center: [33.8869, 9.5375],
+            zoom: 6,
+            scrollWheelZoom: false
+        });
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                maxZoom: 19
-            }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 19
+        }).addTo(map);
 
-            markerGroup = L.layerGroup().addTo(map);
-            updateMapMarkers(initialEvents);
+        markerGroup = L.layerGroup().addTo(map);
+        updateMapMarkers(initialEvents);
 
-            // Invalidate size once after initialization
-            setTimeout(() => map.invalidateSize(), 200);
-        }
+        // Invalidate size once after initialization
+        setTimeout(() => map.invalidateSize(), 200);
+    }
 
-        function updateMapMarkers(events) {
-            if (!markerGroup) return;
-            markerGroup.clearLayers();
-            
-            const points = [];
-            events.forEach(e => {
-                if (e.latitude && e.longitude) {
-                    const marker = L.marker([e.latitude, e.longitude])
-                        .bindPopup('<strong>' + e.nom + '</strong><br>' + e.lieu + '<br><a href="' + e.showUrl + '" class="map-popup-link">Details</a>');
-                    markerGroup.addLayer(marker);
-                    points.push([e.latitude, e.longitude]);
-                }
-            });
+    function updateMapMarkers(events) {
+        if (!markerGroup) return;
+        markerGroup.clearLayers();
 
-            if (points.length > 0) {
-                const bounds = L.latLngBounds(points);
-                map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
+        const points = [];
+        events.forEach(e => {
+            if (e.latitude && e.longitude) {
+                const marker = L.marker([e.latitude, e.longitude])
+                    .bindPopup('<strong>' + e.nom + '</strong><br>' + e.lieu + '<br><a href="' + e.showUrl + '" class="map-popup-link">Details</a>');
+                markerGroup.addLayer(marker);
+                points.push([e.latitude, e.longitude]);
             }
+        });
+
+        if (points.length > 0) {
+            const bounds = L.latLngBounds(points);
+            map.fitBounds(bounds, { padding: [50, 50], maxZoom: 13 });
         }
+    }
 
-        const labels = {
-            viewEvent: "{{ 'events.view_event'|trans }}",
-            capacity: "{{ 'events.capacity'|trans }}",
-            sponsors: "{{ 'events.sponsors_count'|trans }}",
-            noResults: "{{ 'events.no_results'|trans({'%search%': 'TERM_HOLDER'}) }}",
-            noEvents: "{{ 'events.no_events'|trans }}",
-            clearSearch: "{{ 'events.clear_search'|trans }}"
-        };
+    const labels = {
+        viewEvent: "{{ 'events.view_event'|trans }}",
+        capacity: "{{ 'events.capacity'|trans }}",
+        sponsors: "{{ 'events.sponsors_count'|trans }}",
+        noResults: "{{ 'events.no_results'|trans({'%search%': 'TERM_HOLDER'}) }}",
+        noEvents: "{{ 'events.no_events'|trans }}",
+        clearSearch: "{{ 'events.clear_search'|trans }}"
+    };
 
-        function imageSrc(path) {
-            if (!path) return defaultImg;
-            return path.startsWith('/') ? path : '/' + path;
-        }
+    function imageSrc(path) {
+        if (!path) return defaultImg;
+        return path.startsWith('/') ? path : '/' + path;
+    }
 
-        function renderEvents(events, searchTerm) {
-            updateMapMarkers(events);
-            if (events.length === 0) {
-                const msg = searchTerm
-                    ? labels.noResults.replace('TERM_HOLDER', searchTerm)
-                    : labels.noEvents;
-                const clearLink = searchTerm
-                    ? '<a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">' + labels.clearSearch + '</a>'
+    function renderEvents(events, searchTerm) {
+        updateMapMarkers(events);
+        if (events.length === 0) {
+            const msg = searchTerm
+                ? labels.noResults.replace('TERM_HOLDER', searchTerm)
+                : labels.noEvents;
+            const clearLink = searchTerm
+                ? '<a href="{{ path('events_index') }}" class="btn btn-outline-primary mt-2">' + labels.clearSearch + '</a>'
                     : '';
-                listEl.innerHTML = '<div class="col-12"><div class="text-center py-5 text-muted"><p class="fs-5">' + msg + '</p>' + clearLink + '</div></div>';
-                return;
-            }
-            listEl.innerHTML = events.map(function(e) {
-                const img = '<img src="' + imageSrc(e.image) + '" class="img-fluid w-100" alt="' + (e.nom || '').replace(/"/g, '&quot;') + '" loading="lazy" style="height: 220px; object-fit: cover;">';
-                const sponsors = e.sponsorsCount > 0 ? '<span><i class="fa fa-hand-holding-heart me-1"></i> ' + e.sponsorsCount + ' ' + labels.sponsors + '</span>' : '';
-                return '<div class="col-lg-6 col-xl-4"><div class="blog-item"><div class="blog-img">' + img +
-                    '<div class="blog-info"><span><i class="fa fa-calendar"></i> ' + (e.dateDebut || '—') + '</span><span class="ms-2"><i class="fa fa-map-marker-alt"></i> ' + (e.lieu || '') + '</span></div>' +
-                    '<div class="search-icon"><a href="' + e.showUrl + '" class="my-auto" title="' + labels.viewEvent + '"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a></div></div>' +
-                    '<div class="text-dark border p-4"><h4 class="mb-3">' + (e.nom || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</h4>' +
-                    '<p class="mb-3">' + (e.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>' +
-                    '<div class="d-flex flex-wrap gap-2 small text-muted mb-3"><span><i class="fa fa-users me-1"></i> ' + (e.capacite ?? '') + ' ' + labels.capacity + '</span>' + sponsors + '</div>' +
-                    '<a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="' + e.showUrl + '">' + labels.viewEvent + '</a></div></div></div>';
-            }).join('');
+            listEl.innerHTML = '<div class="col-12"><div class="text-center py-5 text-muted"><p class="fs-5">' + msg + '</p>' + clearLink + '</div></div>';
+            return;
         }
+        listEl.innerHTML = events.map(function (e) {
+            const img = '<img src="' + imageSrc(e.image) + '" class="img-fluid w-100" alt="' + (e.nom || '').replace(/"/g, '&quot;') + '" loading="lazy" style="height: 220px; object-fit: cover;">';
+            const sponsors = e.sponsorsCount > 0 ? '<span><i class="fa fa-hand-holding-heart me-1"></i> ' + e.sponsorsCount + ' ' + labels.sponsors + '</span>' : '';
+            return '<div class="col-lg-6 col-xl-4"><div class="blog-item"><div class="blog-img">' + img +
+                '<div class="blog-info"><span><i class="fa fa-calendar"></i> ' + (e.dateDebut || '—') + '</span><span class="ms-2"><i class="fa fa-map-marker-alt"></i> ' + (e.lieu || '') + '</span></div>' +
+                '<div class="search-icon"><a href="' + e.showUrl + '" class="my-auto" title="' + labels.viewEvent + '"><i class="fas fa-search-plus btn-primary text-white p-3"></i></a></div></div>' +
+                '<div class="text-dark border p-4"><h4 class="mb-3">' + (e.nom || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</h4>' +
+                '<p class="mb-3">' + (e.description || '').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</p>' +
+                '<div class="d-flex flex-wrap gap-2 small text-muted mb-3"><span><i class="fa fa-users me-1"></i> ' + (e.capacite ?? '') + ' ' + labels.capacity + '</span>' + sponsors + '</div>' +
+                '<a class="btn-hover-bg btn btn-primary text-white py-2 px-4" href="' + e.showUrl + '">' + labels.viewEvent + '</a></div></div></div>';
+        }).join('');
+    }
 
-        let debounceTimer;
-        function doSearch() {
-            const q = searchInput.value.trim();
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(function() {
-                const url = searchUrl + (q ? '?q=' + encodeURIComponent(q) : '');
-                fetch(url, { headers: { 'Accept': 'application/json' } })
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        renderEvents(data.events || [], q);
-                    })
-                    .catch(function() {
-                        renderEvents([], q);
-                    });
-            }, 200);
-        }
+    let debounceTimer;
+    function doSearch() {
+        const q = searchInput.value.trim();
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function () {
+            const url = searchUrl + (q ? '?q=' + encodeURIComponent(q) : '');
+            fetch(url, { headers: { 'Accept': 'application/json' } })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    renderEvents(data.events || [], q);
+                })
+                .catch(function () {
+                    renderEvents([], q);
+                });
+        }, 200);
+    }
 
-        searchInput.addEventListener('input', doSearch);
-        initMap();
-    })();
-    </script>
+    searchInput.addEventListener('input', doSearch);
+    initMap();
+    }) ();
+</script>
 {% endblock %}
 
 

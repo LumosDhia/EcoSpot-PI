@@ -74,6 +74,7 @@ class CreateDummyArticlesCommand extends Command
             'Community Clean-up Success Stories',
         ];
 
+        $article = null;
         foreach ($titles as $index => $title) {
             $article = new Article();
             $article->setTitle($title);
@@ -90,9 +91,7 @@ class CreateDummyArticlesCommand extends Command
         }
 
         // Flush all articles
-        if (isset($article)) {
-            $this->articleRepository->save($article, true);
-        }
+        $this->articleRepository->save($article, true);
 
         $io->success('Dummy articles created successfully!');
 

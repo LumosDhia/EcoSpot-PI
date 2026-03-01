@@ -279,7 +279,6 @@
                         <div class="navbar-nav ms-auto">
                             <a href="{{ path('home') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') == 'home' ? 'active' : '' }}">{{ 'nav.home'|trans }}</a>
                             <a href="{{ path('events_index') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and app.request.attributes.get('_route') == 'events_index' ? 'active' : '' }}">{{ 'nav.events'|trans }}</a>
-                            <a href="{{ path('events_nearby') }}" class="nav-item nav-link {{ app.request.attributes.get('_route') is defined and app.request.attributes.get('_route') == 'events_nearby' ? 'active' : '' }}">Nearby Me</a>
                             <a href="{{ path('public_tickets') }}" class="nav-item nav-link glass-ticket-link {{ app.request.attributes.get('_route') == 'public_tickets' ? 'active' : '' }}">
                                 <i class="fas fa-ticket-alt me-2" style="font-size: 1.1em; line-height: 1;"></i>{{ 'nav.tickets'|trans }}
                             </a>
