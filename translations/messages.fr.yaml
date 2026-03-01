@@ -300,3 +300,6 @@ security:
     zipcode: "Code postal"
     city: "Ville"
     forgot_password: "Mot de passe oublié ?"
+"Describe the task...": "Décrivez la tâche..."
+"Your notes or feedback...": "Vos notes ou commentaires..."
+

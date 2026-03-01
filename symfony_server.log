@@ -4474,3 +4474,59 @@ nohup: ignoring input
 [Sat Feb 28 23:22:32 2026] 127.0.0.1:47974 [200]: GET /blog?search=%D8%A7&order=desc&page=1
 [Sat Feb 28 23:22:32 2026] 127.0.0.1:47974 Closing
 [Sat Feb 28 23:22:32 2026] 127.0.0.1:47982 Accepted
+[Sat Feb 28 23:24:31 2026] 127.0.0.1:32870 Accepted
+[Sat Feb 28 23:24:32 2026] 127.0.0.1:32870 [200]: GET /_profiler/2f6efe?panel=translation
+[Sat Feb 28 23:24:32 2026] 127.0.0.1:32870 Closing
+[Sat Feb 28 23:24:32 2026] 127.0.0.1:32878 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32878 [200]: GET /
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32878 Closing
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32888 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32900 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32910 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32888 [200]: GET /environs/lib/owlcarousel/assets/owl.carousel.min.css
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32888 Closing
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32900 [200]: GET /environs/lib/lightbox/css/lightbox.min.css
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32900 Closing
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32910 [200]: GET /environs/css/style.css
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32922 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32910 Closing
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32930 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32930 [200]: GET /environs/lib/easing/easing.min.js
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32930 Closing
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32922 [200]: GET /environs/css/bootstrap.min.css
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32946 Accepted
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32922 Closing
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32946 [200]: GET /environs/lib/waypoints/waypoints.min.js
+[Sat Feb 28 23:24:35 2026] 127.0.0.1:32946 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32948 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32948 [200]: GET /environs/lib/counterup/counterup.min.js
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32950 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32950 [200]: GET /environs/lib/owlcarousel/owl.carousel.min.js
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32948 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32956 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32950 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32954 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32956 [200]: GET /environs/lib/lightbox/js/lightbox.min.js
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32954 [200]: GET /environs/js/main.js
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32956 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32954 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32976 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33002 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32976 [200]: GET /_wdt/12ae31
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32976 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32992 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33002 [200]: GET /environs/lib/lightbox/images/prev.png
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33016 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32992 [200]: GET /environs/lib/lightbox/images/close.png
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33024 Accepted
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33016 [200]: GET /environs/lib/lightbox/images/next.png
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33002 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33024 [200]: GET /environs/lib/lightbox/images/loading.gif
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:32992 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33016 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33024 Closing
+[Sat Feb 28 23:24:36 2026] 127.0.0.1:33026 Accepted
+[Sat Feb 28 23:24:38 2026] 127.0.0.1:33026 [200]: GET /_profiler/12ae31?panel=doctrine_doctor
+[Sat Feb 28 23:24:38 2026] 127.0.0.1:33026 Closing
+[Sat Feb 28 23:35:12 2026] 127.0.0.1:47982 Closed without sending a request; it was probably just an unused speculative preconnection
+[Sat Feb 28 23:35:12 2026] 127.0.0.1:47982 Closing

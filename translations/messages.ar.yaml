@@ -301,3 +301,6 @@ security:
     zipcode: "الرمز البريدي"
     city: "المدينة"
     forgot_password: "هل نسيت كلمة السر؟"
+"Describe the task...": "صف المهمة..."
+"Your notes or feedback...": "ملاحظاتك أو تعليقاتك..."
+

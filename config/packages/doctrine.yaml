@@ -10,7 +10,7 @@ doctrine:
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
         options:
-            1002: "SET sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE'" # PDO::MYSQL_ATTR_INIT_COMMAND
+            1002: "SET sql_mode = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE', time_zone = 'Africa/Tunis'" # PDO::MYSQL_ATTR_INIT_COMMAND
         default_table_options:
             charset: utf8mb4
             collate: utf8mb4_unicode_ci

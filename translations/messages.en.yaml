@@ -313,3 +313,6 @@ security:
     zipcode: "ZIP code"
     city: "City"
     forgot_password: "Forgot password?"
+"Describe the task...": "Describe the task..."
+"Your notes or feedback...": "Your notes or feedback..."
+
