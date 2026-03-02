@@ -49,5 +49,20 @@ class CommentTest extends TestCase
         $this->assertFalse($comment->isFlagged());
         $comment->setFlagged(true);
         $this->assertTrue($comment->isFlagged());
+        $this->assertTrue($comment->getFlagged());
+    }
+
+    public function testSetAuthorUser(): void
+    {
+        $comment = new Comment();
+        $user = new User();
+        
+        $this->assertInstanceOf(Comment::class, new Comment($user));
+    }
+
+    public function testCreatedAtRead(): void
+    {
+        $comment = new Comment();
+        $this->assertInstanceOf(\DateTimeImmutable::class, $comment->getCreatedAt());
     }
 }

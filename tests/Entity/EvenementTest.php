@@ -84,4 +84,35 @@ class EvenementTest extends TestCase
         $this->assertEquals(45.0, $event->getLatitude());
         $this->assertEquals(5.0, $event->getLongitude());
     }
+
+    public function testSetGetSlug(): void
+    {
+        $event = new Evenement();
+        $slug = 'clean-up-day';
+        $event->setSlug($slug);
+        $this->assertEquals($slug, $event->getSlug());
+    }
+
+    public function testSetGetImage(): void
+    {
+        $event = new Evenement();
+        $image = 'event.jpg';
+        $event->setImage($image);
+        $this->assertEquals($image, $event->getImage());
+    }
+
+    public function testIdIsNullByDefault(): void
+    {
+        $event = new Evenement();
+        $this->assertNull($event->getId());
+    }
+
+    public function testRemoveParticipantNotContains(): void
+    {
+        $event = new Evenement();
+        $user = new User();
+        // Just verify it doesn't crash when removing a user that isn't there
+        $event->removeParticipant($user);
+        $this->assertCount(0, $event->getParticipants());
+    }
 }

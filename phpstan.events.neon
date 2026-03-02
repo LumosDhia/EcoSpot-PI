@@ -8,5 +8,11 @@ parameters:
         - src/Controller/EventsController.php
         - src/Controller/Admin/EvenementCrudController.php
         - src/Controller/Admin/SponsorCrudController.php
+        - src/Form/EvenementType.php
+        - src/Form/SponsorType.php
+        - src/Service/LocationService.php
+        - src/Service/EventNotificationService.php
+        - src/Command/SendEventRemindersCommand.php
+        - src/EventSubscriber/EvenementSubscriber.php
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon

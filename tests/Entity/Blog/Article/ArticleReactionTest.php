@@ -47,4 +47,16 @@ class ArticleReactionTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $reaction->setType('invalid');
     }
+
+    public function testGetIdIsNullByDefault(): void
+    {
+        $reaction = new ArticleReaction();
+        $this->assertNull($reaction->getId());
+    }
+
+    public function testTypeConstants(): void
+    {
+        $this->assertEquals('like', ArticleReaction::TYPE_LIKE);
+        $this->assertEquals('dislike', ArticleReaction::TYPE_DISLIKE);
+    }
 }

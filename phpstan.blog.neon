@@ -5,5 +5,9 @@ parameters:
         - src/Repository/Blog
         - src/Controller/Blog
         - src/Controller/Admin/Blog
+        - src/Form/Blog
+        - src/Service/Blog
+        - src/EventSubscriber/ArticleSeoSubscriber.php
+        - src/Command/CreateDummyArticlesCommand.php
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon

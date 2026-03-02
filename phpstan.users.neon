@@ -5,9 +5,17 @@ parameters:
         - src/Entity/ResetPasswordRequest.php
         - src/Repository/UserRepository.php
         - src/Repository/ResetPasswordRequestRepository.php
+        - src/Security
         - src/Controller/SecurityController.php
         - src/Controller/RegistrationController.php
         - src/Controller/ResetPasswordController.php
+        - src/Controller/FaceIdAuthController.php
         - src/Controller/Admin/UsersController.php
+        - src/Form/AdminUserCreateType.php
+        - src/Form/UserRoleType.php
+        - src/Form/ChangePasswordFormType.php
+        - src/Form/ResetPasswordRequestFormType.php
+        - src/Command/CreateTestUserCommand.php
+        - src/Command/CreateUsersCommand.php
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon

@@ -9,9 +9,18 @@ parameters:
         - src/Repository/NgoAssignmentRequestRepository.php
         - src/Controller/TicketController.php
         - src/Controller/PublicTicketsController.php
+        - src/Controller/Ngo
         - src/Controller/Admin/AdminTicketController.php
         - src/Controller/Admin/PendingTicketsController.php
         - src/Controller/Admin/CompletionSubmissionsController.php
         - src/Controller/Api/TicketAiController.php
+        - src/Form/TicketCompletionType.php
+        - src/Form/TicketType.php
+        - src/Form/ConsigneType.php
+        - src/Service/AiTicketTaskService.php
+        - src/Service/AiNgoSuggestionService.php
+        - src/Enum/TicketStatus.php
+        - src/Enum/TicketPriority.php
+        - src/Twig/TicketNotificationExtension.php
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon

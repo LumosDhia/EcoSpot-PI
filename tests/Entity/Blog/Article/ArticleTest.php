@@ -110,5 +110,70 @@ class ArticleTest extends TestCase
         $this->assertEquals(0, $article->getDislikesCount());
         $this->assertSame($reaction, $article->getUserReaction($user));
     }
+
+    public function testReadingTime(): void
+    {
+        $article = new Article();
+        $article->setContent('One two three four five'); // 5 words
+        // wordCount / 200 = 0.025, ceil = 1
+        $this->assertEquals(1, $article->getReadingTime());
+
+        $longContent = str_repeat('word ', 401);
+        $article->setContent($longContent);
+        // 401 words / 200 = 2.005, ceil = 3
+        $this->assertEquals(3, $article->getReadingTime());
+    }
+
+    public function testPublicationStatus(): void
+    {
+        $article = new Article();
+        $this->assertEquals('draft', $article->getPublicationStatus());
+        $this->assertFalse($article->isPublished());
+
+        $future = new \DateTimeImmutable('+1 day');
+        $article->publishAt($future);
+        $this->assertEquals('scheduled', $article->getPublicationStatus());
+        $this->assertFalse($article->isPublished());
+
+        $past = new \DateTimeImmutable('-1 day');
+        $article->publishAt($past);
+        $this->assertEquals('published', $article->getPublicationStatus());
+        $this->assertTrue($article->isPublished());
+    }
+
+    public function testSeoFields(): void
+    {
+        $article = new Article();
+        $article->setSeoTitle('SEO Title');
+        $article->setSeoDescription('SEO Desc');
+        $article->setSeoKeywords('SEO, Keywords');
+
+        $this->assertEquals('SEO Title', $article->getSeoTitle());
+        $this->assertEquals('SEO Desc', $article->getSeoDescription());
+        $this->assertEquals('SEO, Keywords', $article->getSeoKeywords());
+    }
+
+    public function testIsWrittenByNgo(): void
+    {
+        $article = new Article();
+        $this->assertFalse($article->isWrittenByNgo());
+
+        $user = new User();
+        $user->setRoles(['ROLE_USER']);
+        $article->setWriter($user);
+        $this->assertFalse($article->isWrittenByNgo());
+
+        $ngo = new User();
+        $ngo->setRoles(['ROLE_NGO']);
+        $article->setWriter($ngo);
+        $this->assertTrue($article->isWrittenByNgo());
+    }
+
+    public function testSetViews(): void
+    {
+        $article = new Article();
+        $article->setViews(100);
+        $this->assertEquals(100, $article->getViews());
+    }
 }
 
