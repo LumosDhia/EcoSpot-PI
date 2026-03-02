@@ -50,6 +50,8 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
         return $this->hashedToken;
     }
 
+    
+
     public function getUser(): User
     {
         /** @var User */
