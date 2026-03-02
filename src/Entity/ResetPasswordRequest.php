@@ -59,4 +59,5 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
         /** @var User */
         return $this->user;
     }
+    
 }
