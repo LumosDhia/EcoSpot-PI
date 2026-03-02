@@ -21,7 +21,10 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Optional;
 use Symfony\Component\Validator\Constraints\Regex;
 
+
+
 class RegistrationFormType extends AbstractType
+    
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {

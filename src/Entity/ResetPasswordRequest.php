@@ -14,6 +14,8 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
 {
     use ResetPasswordRequestTrait;
 
+    
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,9 +53,12 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
         return $this->hashedToken;
     }
 
+    
+
     public function getUser(): User
     {
         /** @var User */
         return $this->user;
     }
+    
 }
