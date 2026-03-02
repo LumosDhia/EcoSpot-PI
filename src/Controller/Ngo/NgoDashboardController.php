@@ -111,7 +111,7 @@ class NgoDashboardController extends AbstractController
 
         $token = $request->request->getString('_token');
         if ($this->isCsrfTokenValid('publish' . $article->getId(), $token)) {
-            $article->setPublishedAt(new \DateTimeImmutable());
+            $article->publishAt(new \DateTimeImmutable());
             $this->articleRepository->save($article, true);
             $this->addFlash('success', 'Article published.');
         }
@@ -209,11 +209,11 @@ class NgoDashboardController extends AbstractController
         $scheduledAt = $form->get('scheduledAt')->getData();
 
         if ($mode === 'publish_now') {
-            $article->setPublishedAt(new \DateTimeImmutable());
+            $article->publishAt(new \DateTimeImmutable());
         } elseif ($mode === 'schedule' && $scheduledAt instanceof \DateTimeInterface) {
-            $article->setPublishedAt(\DateTimeImmutable::createFromInterface($scheduledAt));
+            $article->publishAt(\DateTimeImmutable::createFromInterface($scheduledAt));
         } else {
-            $article->setPublishedAt(null);
+            $article->publishAt(null);
         }
     }
 

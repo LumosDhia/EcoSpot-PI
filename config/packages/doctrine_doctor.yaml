@@ -38,7 +38,7 @@ doctrine_doctor:
         # Detect excessive JOINs
         eager_loading:
             enabled: true
-            join_threshold: 4  # Warning with 4+ JOINs
+            join_threshold: 5  # Trigger when 5+ JOINs are detected
             critical_join_threshold: 7  # Critical with 7+ JOINs
 
         # Detect findAll() without limits
@@ -54,7 +54,7 @@ doctrine_doctor:
         # Suggest getReference() for simple ID lookups
         get_reference:
             enabled: true
-            threshold: 2  # Suggest after 2+ simple SELECT by ID
+            threshold: 5  # Suggest after 5+ simple SELECT by ID
 
         # Detect flush() in loops (anti-pattern)
         flush_in_loop:

@@ -111,7 +111,7 @@ class PopulateDatabaseCommand extends Command
                 $event->setNom($data['nom']);
                 $event->setDescription($data['desc']);
                 $event->setLieu($data['lieu']);
-                $event->setDateDebut($data['date']);
+                $event->updateDateDebut($data['date']);
                 $event->setCapacite($data['cap']);
                 $event->setImage($data['img']);
                 $event->setLatitude($data['lat']);

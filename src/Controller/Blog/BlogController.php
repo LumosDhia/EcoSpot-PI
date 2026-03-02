@@ -20,12 +20,10 @@ class BlogController extends AbstractController
     public function __construct(
         private readonly ArticleRepository $articleRepository,
         private readonly CommentRepository $commentRepository,
-        private readonly \App\Repository\Blog\Article\CategoryRepository $categoryRepository,
-        private readonly \App\Repository\Blog\Article\TagRepository $tagRepository,
         private readonly \App\Repository\Blog\Article\ArticleReactionRepository $reactionRepository,
-        private readonly \App\Repository\UserRepository $userRepository,
         private readonly \Knp\Component\Pager\PaginatorInterface $paginator,
-        private readonly \App\Service\TranslationService $translationService
+        private readonly \App\Service\TranslationService $translationService,
+        private readonly \Doctrine\ORM\EntityManagerInterface $entityManager
     ) {
     }
 
@@ -88,9 +86,9 @@ class BlogController extends AbstractController
             ]);
         }
 
-        $selectedCategory = $categoryId ? $this->categoryRepository->find($categoryId) : null;
-        $selectedTag = $tagId ? $this->tagRepository->find($tagId) : null;
-        $selectedWriter = $writerId ? $this->userRepository->find($writerId) : null;
+        $selectedCategory = $categoryId ? $this->entityManager->getReference(\App\Entity\Blog\Article\Category::class, $categoryId) : null;
+        $selectedTag = $tagId ? $this->entityManager->getReference(\App\Entity\Blog\Article\Tag::class, $tagId) : null;
+        $selectedWriter = $writerId ? $this->entityManager->getReference(\App\Entity\User::class, $writerId) : null;
 
         return $this->render('blog/index.html.twig', [
             'pagination' => $pagination,

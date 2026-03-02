@@ -26,8 +26,8 @@
                         {% for event in pagination %}
                             <tr>
                                 <td>{{ event.id }}</td>
-                                <td>{{ event.nom }}</td>
-                                <td>{{ event.lieu }}</td>
+                                <td>{{ event.nom|translate }}</td>
+                                <td>{{ event.lieu|translate }}</td>
                                 <td>{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</td>
                                 <td>{{ event.capacite }}</td>
                                 <td>

@@ -21,10 +21,11 @@ class SponsorRepository extends ServiceEntityRepository
     /**
      * @return Sponsor[]
      */
-    public function findAllOrderedByName(): array
+    public function findAllOrderedByName(int $limit = 100): array
     {
         return $this->createQueryBuilder('s')
             ->orderBy('s.nom', 'ASC')
+            ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
     }

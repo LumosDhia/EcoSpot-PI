@@ -15,7 +15,7 @@
         {% endif %}
         
         <div class="card-body">
-            <h5 class="card-title fw-bold text-dark">{{ ticket.title }}</h5>
+            <h5 class="card-title fw-bold text-dark">{{ ticket.title|translate }}</h5>
             
             {% if isRecommended and ticket.aiRecommendationReason is defined %}
                 <div class="alert alert-warning py-2 small mb-3">
@@ -24,11 +24,11 @@
             {% endif %}
             
             <p class="card-text text-muted small text-truncate" style="max-height: 40px;">
-                {{ ticket.description }}
+                {{ ticket.description|translate }}
             </p>
             
             <ul class="list-unstyled mb-4 small text-secondary">
-                <li class="mb-1"><i class="fas fa-map-marker-alt text-primary me-2"></i> {{ ticket.location }}</li>
+                <li class="mb-1"><i class="fas fa-map-marker-alt text-primary me-2"></i> {{ ticket.location|translate }}</li>
                 <li class="mb-1"><i class="fas fa-calendar me-2"></i> {{ ticket.createdAt|date('M d, Y') }}</li>
                 <li class="mb-1">
                     <span class="badge bg-{{ ticket.priority.getBadgeClass() }}-subtle text-{{ ticket.priority.getBadgeClass() }}">

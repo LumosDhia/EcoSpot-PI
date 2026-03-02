@@ -85,7 +85,7 @@ class CreateDummyArticlesCommand extends Command
             
             // Randomly publish some
             if (rand(0, 1)) {
-                $article->setPublishedAt(new \DateTimeImmutable());
+                $article->publishAt(new \DateTimeImmutable());
             }
 
             $this->articleRepository->save($article);

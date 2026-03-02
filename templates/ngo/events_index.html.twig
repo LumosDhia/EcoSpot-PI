@@ -22,8 +22,8 @@
                     <tbody>
                         {% for event in events %}
                             <tr>
-                                <td>{{ event.nom }}</td>
-                                <td>{{ event.lieu }}</td>
+                                <td>{{ event.nom|translate }}</td>
+                                <td>{{ event.lieu|translate }}</td>
                                 <td>{{ event.dateDebut ? event.dateDebut|date('d/m/Y H:i') : '—' }}</td>
                             </tr>
                         {% else %}

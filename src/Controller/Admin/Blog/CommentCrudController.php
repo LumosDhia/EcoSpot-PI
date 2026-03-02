@@ -10,21 +10,33 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 /** Admin: list comments, view, delete. Commenting is only under articles (any logged-in user). */
 #[Route('/admin/blog/comment')]
 class CommentCrudController extends AbstractController
 {
     public function __construct(
-        private readonly CommentRepository $commentRepository
+        private readonly CommentRepository $commentRepository,
+        private readonly PaginatorInterface $paginator
     ) {
     }
 
     #[Route('', name: 'admin_blog_comment_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = $this->commentRepository->createQueryBuilder('c')
+            ->orderBy('c.createdAt', 'DESC')
+            ->getQuery();
+
+        $pagination = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Comments per page
+        );
+
         return $this->render('admin/blog/comment/index.html.twig', [
-            'comments' => $this->commentRepository->findBy([], ['createdAt' => 'DESC'], 500),
+            'comments' => $pagination,
         ]);
     }
 

@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/admin/users')]
 #[IsGranted('ROLE_ADMIN')]
@@ -24,14 +25,23 @@ class UsersController extends AbstractController
         private readonly UserRepository $userRepository,
         private readonly EntityManagerInterface $entityManager,
         private readonly UserPasswordHasherInterface $passwordHasher,
-        private readonly \App\Service\NotificationService $notificationService
+        private readonly \App\Service\NotificationService $notificationService,
+        private readonly PaginatorInterface $paginator
     ) {
     }
 
     #[Route('', name: 'admin_users_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $users = $this->userRepository->findBy([], ['emailAddress.email' => 'ASC']);
+        $query = $this->userRepository->createQueryBuilder('u')
+            ->orderBy('u.emailAddress.email', 'ASC')
+            ->getQuery();
+
+        $users = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('admin/users/index.html.twig', [
             'users' => $users,
@@ -113,7 +123,7 @@ class UsersController extends AbstractController
         }
 
         if ($this->isCsrfTokenValid('timeout' . $user->getId(), (string) $request->request->get('_token'))) {
-            $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+            $user->updateTimeout(new \DateTimeImmutable('+24 hours'));
             $this->entityManager->flush();
 
             $this->notificationService->notify(
@@ -132,7 +142,7 @@ class UsersController extends AbstractController
     public function removeTimeout(Request $request, User $user): Response
     {
         if ($this->isCsrfTokenValid('remove-timeout' . $user->getId(), (string) $request->request->get('_token'))) {
-            $user->setTimeoutUntil(null);
+            $user->updateTimeout(null);
             $this->entityManager->flush();
 
             $this->notificationService->notify(

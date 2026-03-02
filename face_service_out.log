@@ -1,0 +1,11 @@
+INFO: --- Face Service Script Loaded ---
+INFO: Python version: 3.9.2 (default, Jan 25 2026, 13:37:52) 
+[GCC 10.2.1 20210110]
+INFO: Working directory: /home/lumosdhia/EcoSpot-PI/face_service
+INFO: Starting Uvicorn server on 0.0.0.0...
+INFO:     Started server process [4285]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8001): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.

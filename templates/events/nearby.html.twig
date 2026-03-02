@@ -67,9 +67,9 @@
                         <div class="blog-item">
                             <div class="blog-img">
                                 {% if event.image %}
-                                    <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom }}" loading="lazy" style="height: 220px; object-fit: cover;">
+                                    <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom|translate }}" loading="lazy" style="height: 220px; object-fit: cover;">
                                 {% else %}
-                                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800" class="img-fluid w-100" alt="{{ event.nom }}" style="height: 220px; object-fit: cover;" loading="lazy">
+                                    <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800" class="img-fluid w-100" alt="{{ event.nom|translate }}" style="height: 220px; object-fit: cover;" loading="lazy">
                                 {% endif %}
                                 <div class="blog-info">
                                     <span><i class="fa fa-calendar"></i> {{ event.dateDebut ? event.dateDebut|date('d M Y') : '—' }}</span>
@@ -83,7 +83,7 @@
                                     <div class="distance-badge"><i class="fas fa-route me-1"></i> {{ item.distance }} km away</div>
                                 </div>
                                 <h4 class="mb-3">{{ event.nom|translate }}</h4>
-                                <p class="mb-3 text-muted small"><i class="fas fa-map-pin me-1"></i> {{ event.lieu }}</p>
+                                <p class="mb-3 text-muted small"><i class="fas fa-map-pin me-1"></i> {{ event.lieu|translate }}</p>
                                 <p class="mb-3">{{ (event.description|translate)|length > 100 ? (event.description|translate)|slice(0, 100) ~ '...' : (event.description|translate) }}</p>
                                 <a class="btn-hover-bg btn btn-primary text-white py-2 px-4 w-100" href="{{ path('events_show', { slug: event.slug }) }}">View Event</a>
                             </div>

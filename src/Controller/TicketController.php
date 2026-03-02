@@ -88,7 +88,7 @@ class TicketController extends AbstractController
                     $spamCount = $this->ticketRepository->countRecentSpamByUser($user, $since);
                     
                     if ($spamCount > 3) {
-                        $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                        $user->updateTimeout(new \DateTimeImmutable('+24 hours'));
                         $this->ticketRepository->save($ticket);
                         
                         $this->notificationService->notify(
@@ -161,7 +161,7 @@ class TicketController extends AbstractController
                     $spamCount = $this->ticketRepository->countRecentSpamByUser($user, $since);
                     
                     if ($spamCount > 3) {
-                        $user->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                        $user->updateTimeout(new \DateTimeImmutable('+24 hours'));
                         $this->ticketRepository->save($ticket);
 
                         $this->notificationService->notify(

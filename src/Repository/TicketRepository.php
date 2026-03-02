@@ -40,12 +40,19 @@ class TicketRepository extends ServiceEntityRepository
     /** @return list<Ticket> */
     public function findByUser(User $user, ?TicketStatus $status = null, int $limit = 50): array
     {
-        $criteria = ['user' => $user];
+        $qb = $this->createQueryBuilder('t')
+            ->where('t.user = :user')
+            ->setParameter('user', $user->getId(), 'uuid')
+            ->orderBy('t.createdAt', 'DESC')
+            ->setMaxResults($limit);
+
         if ($status !== null) {
-            $criteria['status'] = $status;
+            $qb->andWhere('t.status = :status')
+               ->setParameter('status', $status);
         }
 
-        return $this->findBy($criteria, ['createdAt' => 'DESC'], $limit);
+        $query = $qb->getQuery();
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true), false);
     }
 
     /** 
@@ -58,11 +65,18 @@ class TicketRepository extends ServiceEntityRepository
             ->innerJoin('t.user', 'u')
             ->addSelect('u')
             ->where('t.status IN (:statuses)')
+            ->andWhere('u.id IS NOT NULL')
             ->setParameter('statuses', [TicketStatus::PENDING, TicketStatus::SENT_BACK]);
 
         if ($query) {
-            $qb->andWhere('t.title LIKE :q OR t.description LIKE :q')
-               ->setParameter('q', '%' . $query . '%');
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('t.title', ':q'),
+                    $qb->expr()->like('t.description', ':q'),
+                    $qb->expr()->like('u.firstname', ':q'),
+                    $qb->expr()->like('u.lastname', ':q')
+                )
+            )->setParameter('q', '%' . $query . '%');
         }
 
         switch ($sortBy) {
@@ -87,18 +101,25 @@ class TicketRepository extends ServiceEntityRepository
     }
 
     /** 
-     * All tickets for admin management with search and sort. 
-     * @return list<Ticket>
+     * All tickets for admin management as a Query. 
+     * @return \Doctrine\ORM\Query<int, Ticket>
      */
-    public function findAllForAdmin(?string $query = null, string $sortBy = 'newest'): array
+    public function getQueryAllForAdmin(?string $query = null, string $sortBy = 'newest'): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('t')
             ->innerJoin('t.user', 'u')
-            ->addSelect('u');
+            ->addSelect('u')
+            ->andWhere('u.id IS NOT NULL');
 
         if ($query) {
-            $qb->andWhere('t.title LIKE :q OR t.description LIKE :q')
-               ->setParameter('q', '%' . $query . '%');
+            $qb->andWhere(
+                $qb->expr()->orX(
+                    $qb->expr()->like('t.title', ':q'),
+                    $qb->expr()->like('t.description', ':q'),
+                    $qb->expr()->like('u.firstname', ':q'),
+                    $qb->expr()->like('u.lastname', ':q')
+                )
+            )->setParameter('q', '%' . $query . '%');
         }
 
         switch ($sortBy) {
@@ -120,7 +141,18 @@ class TicketRepository extends ServiceEntityRepository
                 break;
         }
 
-        return $qb->getQuery()->getResult();
+        /** @var \Doctrine\ORM\Query<int, Ticket> $queryOutput */
+        $queryOutput = $qb->getQuery();
+        return $queryOutput;
+    }
+
+    /** 
+     * All tickets for admin management with search and sort. 
+     * @return list<Ticket>
+     */
+    public function findAllForAdmin(?string $query = null, string $sortBy = 'newest'): array
+    {
+        return array_values($this->getQueryAllForAdmin($query, $sortBy)->getResult());
     }
 
     /** 
@@ -133,12 +165,13 @@ class TicketRepository extends ServiceEntityRepository
             ->innerJoin('t.user', 'u')
             ->addSelect('u')
             ->where('t.status = :status')
+            ->andWhere('u.id IS NOT NULL')
             ->setParameter('status', TicketStatus::PUBLISHED)
             ->orderBy('t.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery();
             
-        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true));
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true), false);
     }
 
     /** 
@@ -153,11 +186,12 @@ class TicketRepository extends ServiceEntityRepository
             ->addSelect('u', 'cb')
             ->where('t.completionSubmittedAt IS NOT NULL')
             ->andWhere('t.achievedAt IS NULL')
+            ->andWhere('u.id IS NOT NULL')
             ->orderBy('t.completionSubmittedAt', 'ASC')
             ->setMaxResults($limit)
             ->getQuery();
             
-        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true));
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true), false);
     }
 
     /** 
@@ -171,11 +205,12 @@ class TicketRepository extends ServiceEntityRepository
             ->leftJoin('t.completedBy', 'cb')
             ->addSelect('u', 'cb')
             ->where('t.achievedAt IS NOT NULL')
+            ->andWhere('u.id IS NOT NULL')
             ->orderBy('t.achievedAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery();
             
-        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true));
+        return iterator_to_array(new \Doctrine\ORM\Tools\Pagination\Paginator($query, true), false);
     }
 
     public function countRecentSpamByUser(User $user, \DateTimeImmutable $since): int

@@ -178,6 +178,11 @@ class Article
         return $this;
     }
 
+    public function publishAt(?\DateTimeImmutable $publishedAt): static
+    {
+        return $this->setPublishedAt($publishedAt);
+    }
+
     public function isPublished(): bool
     {
         if ($this->publishedAt === null) {

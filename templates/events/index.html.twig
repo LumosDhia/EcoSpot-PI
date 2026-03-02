@@ -87,17 +87,17 @@
                 <div class="blog-item">
                     <div class="blog-img">
                         {% if event.image %}
-                        <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom }}" loading="lazy"
+                        <img src="{{ asset(event.image) }}" class="img-fluid w-100" alt="{{ event.nom|translate }}" loading="lazy"
                             style="height: 220px; object-fit: cover;">
                         {% else %}
                         <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800"
-                            class="img-fluid w-100" alt="{{ event.nom }}" style="height: 220px; object-fit: cover;"
+                            class="img-fluid w-100" alt="{{ event.nom|translate }}" style="height: 220px; object-fit: cover;"
                             loading="lazy">
                         {% endif %}
                         <div class="blog-info">
                             <span><i class="fa fa-calendar"></i> {{ event.dateDebut ? event.dateDebut|date('d M Y') :
                                 '—' }}</span>
-                            <span class="ms-2"><i class="fa fa-map-marker-alt"></i> {{ event.lieu }}</span>
+                            <span class="ms-2"><i class="fa fa-map-marker-alt"></i> {{ event.lieu|translate }}</span>
                         </div>
                         <div class="search-icon">
                             <a href="{{ path('events_show', { slug: event.slug }) }}" class="my-auto"
@@ -157,8 +157,8 @@
         const initialEvents = [
             {% for event in pagination %}
             {
-                nom: '{{ event.nom|escape('js') }}',
-                lieu: '{{ event.lieu|escape('js') }}',
+                nom: '{{ event.nom|translate|escape('js') }}',
+                lieu: '{{ event.lieu|translate|escape('js') }}',
                 latitude: {{ event.latitude|default('null') }},
                 longitude: {{ event.longitude|default('null') }},
                 showUrl: '{{ path('events_show', { slug: event.slug }) }}'

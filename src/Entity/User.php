@@ -250,6 +250,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function updateTimeout(?\DateTimeImmutable $timeoutUntil): static
+    {
+        return $this->setTimeoutUntil($timeoutUntil);
+    }
+
     public function isTimedOut(): bool
     {
         return $this->timeoutUntil !== null && $this->timeoutUntil > new \DateTimeImmutable();

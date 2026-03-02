@@ -87,7 +87,7 @@ class PendingTicketsController extends AbstractController
             
             // Optional: Put user in timeout if marked as spam
             if ($request->request->get('spam_timeout')) {
-                $ticket->getUser()->setTimeoutUntil(new \DateTimeImmutable('+24 hours'));
+                $ticket->getUser()->updateTimeout(new \DateTimeImmutable('+24 hours'));
                 
                 $this->notificationService->notify(
                     $ticket->getUser(),

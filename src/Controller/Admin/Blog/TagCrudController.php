@@ -11,20 +11,32 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/admin/blog/tag')]
 class TagCrudController extends AbstractController
 {
     public function __construct(
-        private readonly TagRepository $tagRepository
+        private readonly TagRepository $tagRepository,
+        private readonly PaginatorInterface $paginator
     ) {
     }
 
     #[Route('', name: 'admin_blog_tag_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = $this->tagRepository->createQueryBuilder('t')
+            ->orderBy('t.id', 'DESC')
+            ->getQuery();
+
+        $pagination = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            20 // Tags per page
+        );
+
         return $this->render('admin/blog/tag/index.html.twig', [
-            'tags' => $this->tagRepository->findBy([], ['id' => 'DESC'], 500),
+            'tags' => $pagination,
         ]);
     }
 

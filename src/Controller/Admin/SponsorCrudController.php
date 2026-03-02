@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/admin/sponsors')]
 class SponsorCrudController extends AbstractController
@@ -19,15 +20,26 @@ class SponsorCrudController extends AbstractController
 
     public function __construct(
         private readonly SponsorRepository $sponsorRepository,
+        private readonly PaginatorInterface $paginator,
         private readonly string $projectDir
     ) {
     }
 
     #[Route('', name: 'admin_sponsors_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
+        $query = $this->sponsorRepository->createQueryBuilder('s')
+            ->orderBy('s.nom', 'ASC')
+            ->getQuery();
+
+        $pagination = $this->paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            10 // Sponsors per page
+        );
+
         return $this->render('admin/sponsor/index.html.twig', [
-            'sponsors' => $this->sponsorRepository->findAllOrderedByName(),
+            'sponsors' => $pagination,
         ]);
     }
 

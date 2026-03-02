@@ -9,11 +9,8 @@ use App\Entity\NgoAssignmentRequest;
 use App\Enum\TicketStatus;
 use App\Form\TicketType;
 use App\Repository\TicketRepository;
-use App\Repository\UserRepository;
-use App\Repository\NgoAssignmentRequestRepository;
-use App\Service\AiNgoSuggestionService;
-use App\Service\NotificationService;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,10 +26,7 @@ class AdminTicketController extends AbstractController
     public function __construct(
         private readonly TicketRepository $ticketRepository,
         private readonly EntityManagerInterface $entityManager,
-        private readonly UserRepository $userRepository,
-        private readonly NgoAssignmentRequestRepository $requestRepo,
-        private readonly AiNgoSuggestionService $aiNgoService,
-        private readonly NotificationService $notificationService
+        private readonly PaginatorInterface $paginator
     ) {
     }
 
@@ -43,8 +37,16 @@ class AdminTicketController extends AbstractController
         $query = $query === '' ? null : $query;
         $sortBy = $request->query->getString('sort', 'newest');
 
+        $ticketsQuery = $this->ticketRepository->getQueryAllForAdmin($query, $sortBy);
+        
+        $pagination = $this->paginator->paginate(
+            $ticketsQuery,
+            $request->query->getInt('page', 1),
+            10
+        );
+
         return $this->render('admin/ticket/index.html.twig', [
-            'tickets' => $this->ticketRepository->findAllForAdmin($query, $sortBy),
+            'tickets' => $pagination,
             'currentQuery' => $query,
             'currentSort' => $sortBy,
         ]);

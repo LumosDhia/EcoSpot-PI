@@ -73,6 +73,8 @@ common:
     flagged: "Flagged"
     flag: "Flag"
     action: "Action"
+    tags: "Tags"
+    on: "on"
 dashboard:
     admin_title: "Admin Dashboard"
     ngo_title: "NGO Dashboard"
@@ -316,4 +318,11 @@ security:
     forgot_password: "Forgot password?"
 "Describe the task...": "Describe the task..."
 "Your notes or feedback...": "Your notes or feedback..."
+"e.g. 75001": "e.g. 75001"
+"Search and select below": "Search and select below"
+"Ticket Title": "Ticket Title"
+"Details & Description": "Details & Description"
+"Upload Photo (Optional)": "Upload Photo (Optional)"
+"Priority Level": "Priority Level"
+"Action Domain": "Action Domain"
 
