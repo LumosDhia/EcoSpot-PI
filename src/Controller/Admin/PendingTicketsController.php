@@ -154,6 +154,20 @@ class PendingTicketsController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/delete', name: 'admin_pending_ticket_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(Request $request, Ticket $ticket): Response
+    {
+        if (!$this->isCsrfTokenValid('pending-ticket-delete-' . $ticket->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Invalid security token.');
+            return $this->redirectToRoute('admin_pending_tickets');
+        }
+
+        $this->ticketRepository->remove($ticket);
+        $this->addFlash('success', 'Ticket has been permanently deleted.');
+
+        return $this->redirectToRoute('admin_pending_tickets');
+    }
+
     private function isStatusPendingOrSentBack(Ticket $ticket): bool
     {
         $s = $ticket->getStatus();

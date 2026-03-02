@@ -129,6 +129,15 @@
                                                         <i class="fas fa-times-circle me-2"></i> Refuse
                                                     </a>
                                                 </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <form action="{{ path('admin_pending_ticket_delete', { id: ticket.id }) }}" method="post" onsubmit="return confirm('Permanently delete this ticket? This cannot be undone.');">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('pending-ticket-delete-' ~ ticket.id) }}">
+                                                        <button type="submit" class="dropdown-item text-danger fw-bold">
+                                                            <i class="fas fa-trash-alt me-2"></i> Permanently Delete
+                                                        </button>
+                                                    </form>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>

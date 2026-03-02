@@ -6,6 +6,42 @@ INFO: Starting Uvicorn server on 0.0.0.0...
 INFO:     Started server process [4285]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8001): address already in use
-INFO:     Waiting for application shutdown.
-INFO:     Application shutdown complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.INFO: Enrollment request for user: tunis@local.hi
+INFO: Extracting face representation (VGG-Face)...
+INFO: Successfully enrolled user: tunis@local.hi
+INFO:     127.0.0.1:49662 - "POST /enroll HTTP/1.1" 200 OK
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.6713
+INFO:     127.0.0.1:48504 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.6982
+INFO:     127.0.0.1:48510 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.7257
+INFO:     127.0.0.1:48524 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.9452
+INFO:     127.0.0.1:43924 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.9586
+INFO:     127.0.0.1:43936 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.9908
+INFO:     127.0.0.1:43946 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.6556
+INFO:     127.0.0.1:53212 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Extracting face representation for recognition...
+INFO: No match found. Best distance: 0.6833
+INFO:     127.0.0.1:44356 - "POST /recognize HTTP/1.1" 401 Unauthorized
+INFO: Enrollment request for user: today@hihi.test
+INFO: Extracting face representation (VGG-Face)...
+INFO: Successfully enrolled user: today@hihi.test
+INFO:     127.0.0.1:43120 - "POST /enroll HTTP/1.1" 200 OK
+INFO: Enrollment request for user: today@hihi.test
+INFO: Extracting face representation (VGG-Face)...
+INFO: Successfully enrolled user: today@hihi.test
+INFO:     127.0.0.1:44138 - "POST /enroll HTTP/1.1" 200 OK
+INFO: Extracting face representation for recognition...
+INFO: Match found: tunis@local.hi (dist: 0.4469)
+INFO:     127.0.0.1:58646 - "POST /recognize HTTP/1.1" 200 OK

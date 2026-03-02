@@ -82,6 +82,19 @@ class AdminTicketController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/delete', name: 'admin_ticket_delete', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(Request $request, Ticket $ticket): Response
+    {
+        if ($this->isCsrfTokenValid('delete_ticket_' . $ticket->getId(), $request->request->getString('_token'))) {
+            $this->ticketRepository->remove($ticket);
+            $this->addFlash('success', 'Ticket deleted successfully.');
+        } else {
+            $this->addFlash('error', 'Invalid security token.');
+        }
+
+        return $this->redirectToRoute('admin_ticket_index');
+    }
+
     private function handleTicketImage(FormInterface $form, Ticket $ticket): void
     {
         $file = $form->get('imageFile')->getData();

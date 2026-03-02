@@ -37,7 +37,7 @@ class PublicTicketsController extends AbstractController
     #[Route('/tickets/{id}', name: 'public_ticket_show', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function show(Ticket $ticket): Response
     {
-        if ($ticket->getStatus() !== \App\Enum\TicketStatus::PUBLISHED) {
+        if (!in_array($ticket->getStatus(), [\App\Enum\TicketStatus::PUBLISHED, \App\Enum\TicketStatus::COMPLETED], true)) {
             throw $this->createNotFoundException('Ticket not found.');
         }
 
@@ -59,6 +59,10 @@ class PublicTicketsController extends AbstractController
     public function complete(Request $request, Ticket $ticket): Response
     {
         if ($ticket->getStatus() !== \App\Enum\TicketStatus::PUBLISHED) {
+            if ($ticket->getStatus() === \App\Enum\TicketStatus::COMPLETED) {
+                $this->addFlash('info', 'This ticket has already been completed.');
+                return $this->redirectToRoute('public_ticket_show', ['id' => $ticket->getId()]);
+            }
             throw $this->createNotFoundException('Ticket not found.');
         }
         if ($ticket->hasCompletionSubmitted()) {

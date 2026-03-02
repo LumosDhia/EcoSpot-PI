@@ -1,0 +1,9 @@
+parameters:
+    level: 8
+    paths:
+        - src/Entity/Blog
+        - src/Repository/Blog
+        - src/Controller/Blog
+        - src/Controller/Admin/Blog
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon

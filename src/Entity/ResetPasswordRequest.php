@@ -23,9 +23,10 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    /** @var string */
     #[Ignore]
     #[ORM\Column(type: 'string', length: 100)]
-    protected $hashedToken; /** @phpstan-ignore-line */
+    protected $hashedToken;
 
     public function __construct(User $user, \DateTimeInterface $expiresAt, string $selector, #[SensitiveParameter] string $hashedToken)
     {

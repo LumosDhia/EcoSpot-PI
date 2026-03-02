@@ -32,8 +32,8 @@ doctrine_doctor:
         # Analyze hydration performance
         hydration:
             enabled: true
-            row_threshold: 99  # Warning when hydrating 100+ objects
-            critical_threshold: 999  # Critical when hydrating 1000+ objects
+            row_threshold: 1000  # Warning when hydrating 1000+ objects
+            critical_threshold: 5000  # Critical when hydrating 5000+ objects
 
         # Detect excessive JOINs
         eager_loading:
@@ -44,7 +44,7 @@ doctrine_doctor:
         # Detect findAll() without limits
         find_all:
             enabled: true
-            threshold: 99  # Warning when findAll() returns 100+ rows
+            threshold: 1000  # Warning when findAll() returns 1000+ rows
 
         # Detect batch operations without EntityManager::clear()
         entity_manager_clear:

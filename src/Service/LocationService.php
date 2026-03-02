@@ -61,7 +61,6 @@ class LocationService
                     'q' => $query,
                     'format' => 'json',
                     'limit' => 1,
-                    'countrycodes' => 'tn',
                 ],
                 'headers' => [
                     'User-Agent' => 'EcoSpot/1.0 (Symfony; environmental ticket app)',

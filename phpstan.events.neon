@@ -1,0 +1,12 @@
+parameters:
+    level: 8
+    paths:
+        - src/Entity/Evenement.php
+        - src/Entity/Sponsor.php
+        - src/Repository/EvenementRepository.php
+        - src/Repository/SponsorRepository.php
+        - src/Controller/EventsController.php
+        - src/Controller/Admin/EvenementCrudController.php
+        - src/Controller/Admin/SponsorCrudController.php
+includes:
+    - vendor/phpstan/phpstan-doctrine/extension.neon
