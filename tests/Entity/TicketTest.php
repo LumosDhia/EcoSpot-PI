@@ -122,3 +122,5 @@ class TicketTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $ticket->getAchievedAt());
     }
 }
+
+
