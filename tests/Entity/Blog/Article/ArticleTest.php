@@ -111,3 +111,4 @@ class ArticleTest extends TestCase
         $this->assertSame($reaction, $article->getUserReaction($user));
     }
 }
+
