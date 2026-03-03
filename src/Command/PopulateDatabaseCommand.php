@@ -168,6 +168,56 @@ class PopulateDatabaseCommand extends Command
                 'lon' => 2.2945,
                 'user' => $users['user@ecospot.local']
             ],
+            [
+                'title' => 'Waste in the City Garden',
+                'desc' => 'There is a lot of waste dumped in the city garden near the fountain. It looks very bad.',
+                'status' => TicketStatus::PUBLISHED,
+                'priority' => TicketPriority::MEDIUM,
+                'domain' => ActionDomain::GREEN_SPACES,
+                'lat' => 48.8166,
+                'lon' => 2.3122,
+                'user' => $users['user@ecospot.local']
+            ],
+            [
+                'title' => 'Old tires in the River',
+                'desc' => 'I saw several old tires dumped in the river under the bridge. They are polluting the water.',
+                'status' => TicketStatus::PUBLISHED,
+                'priority' => TicketPriority::HIGH,
+                'domain' => ActionDomain::WATER,
+                'lat' => 48.8266,
+                'lon' => 2.3222,
+                'user' => $users['alice@ecospot.local']
+            ],
+            [
+                'title' => 'Dead Fish in the Pond',
+                'desc' => 'There are dead fish floating in the pond. This is very concerning for the ecosystem.',
+                'status' => TicketStatus::PUBLISHED,
+                'priority' => TicketPriority::URGENT,
+                'domain' => ActionDomain::WATER,
+                'lat' => 48.8366,
+                'lon' => 2.3322,
+                'user' => $users['bob@ecospot.local']
+            ],
+            [
+                'title' => 'Bad smell near Factory',
+                'desc' => 'There is a very bad chemical smell coming from the factory area since yesterday.',
+                'status' => TicketStatus::PUBLISHED,
+                'priority' => TicketPriority::HIGH,
+                'domain' => ActionDomain::AIR,
+                'lat' => 48.8466,
+                'lon' => 2.3422,
+                'user' => $users['user@ecospot.local']
+            ],
+            [
+                'title' => 'Plastic bags on Tree',
+                'desc' => 'Many plastic bags are stuck on the branches of the trees in the local park.',
+                'status' => TicketStatus::PUBLISHED,
+                'priority' => TicketPriority::LOW,
+                'domain' => ActionDomain::GREEN_SPACES,
+                'lat' => 48.8566,
+                'lon' => 2.3522,
+                'user' => $users['alice@ecospot.local']
+            ],
         ];
 
         foreach ($ticketData as $data) {
@@ -180,10 +230,11 @@ class PopulateDatabaseCommand extends Command
                 $ticket->setDescription($data['desc']);
                 $ticket->setStatus($data['status']);
                 $ticket->setPriority($data['priority']);
-                $ticket->setDomain(ActionDomain::WASTE);
+                $ticket->setDomain($data['domain'] ?? ActionDomain::WASTE);
                 $ticket->setUser($data['user']);
                 $ticket->setLatitude($data['lat']);
                 $ticket->setLongitude($data['lon']);
+                $ticket->setLocation('Local Area ' . rand(1, 10)); // Added missing location since entity requires it
                 $ticket->setIsSpam(false);
 
                 $this->entityManager->persist($ticket);
