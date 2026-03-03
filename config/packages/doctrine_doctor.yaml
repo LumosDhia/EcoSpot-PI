@@ -10,6 +10,7 @@ doctrine_doctor:
         show_in_toolbar: true
         show_debug_info: false
 
+
     # Performance Analyzers (all enabled by default with production-ready thresholds)
     analyzers:
         # Detect N+1 query problems (most common performance issue)
@@ -149,3 +150,8 @@ doctrine_doctor:
 
         naming_convention:
             enabled: true  # Check snake_case naming
+
+    analysis:
+        exclude_third_party_entities: true
+        ignored_entities:
+            - 'App\Entity\Blog\Article\ArticleReaction'

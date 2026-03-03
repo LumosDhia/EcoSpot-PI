@@ -73,8 +73,8 @@ class TicketRepository extends ServiceEntityRepository
                 $qb->expr()->orX(
                     $qb->expr()->like('t.title', ':q'),
                     $qb->expr()->like('t.description', ':q'),
-                    $qb->expr()->like('u.firstname', ':q'),
-                    $qb->expr()->like('u.lastname', ':q')
+                    $qb->expr()->like('u.personName.firstname', ':q'),
+                    $qb->expr()->like('u.personName.lastname', ':q')
                 )
             )->setParameter('q', '%' . $query . '%');
         }
@@ -116,8 +116,8 @@ class TicketRepository extends ServiceEntityRepository
                 $qb->expr()->orX(
                     $qb->expr()->like('t.title', ':q'),
                     $qb->expr()->like('t.description', ':q'),
-                    $qb->expr()->like('u.firstname', ':q'),
-                    $qb->expr()->like('u.lastname', ':q')
+                    $qb->expr()->like('u.personName.firstname', ':q'),
+                    $qb->expr()->like('u.personName.lastname', ':q')
                 )
             )->setParameter('q', '%' . $query . '%');
         }

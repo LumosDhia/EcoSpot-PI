@@ -22,19 +22,19 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @return Article[]
      */
-    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null, int $limit = 50): array
+    public function findPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?\Symfony\Component\Uid\AbstractUid $writerId = null, int $limit = 50): array
     {
         return $this->getQueryPublishedBySearchAndOrder($search, $order, $categoryId, $tagId, $writerId, $limit)->getResult();
     }
 
     /** @return \Doctrine\ORM\Query<mixed, Article> */
-    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?int $writerId = null, int $limit = 50): \Doctrine\ORM\Query
+    public function getQueryPublishedBySearchAndOrder(?string $search, string $order = 'DESC', ?int $categoryId = null, ?int $tagId = null, ?\Symfony\Component\Uid\AbstractUid $writerId = null, int $limit = 50): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('a')
             ->andWhere('a.publishedAt IS NOT NULL')
-            ->andWhere('a.publishedAt <= CURRENT_TIMESTAMP()')
-            ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC')
-            ->setMaxResults($limit);
+            ->andWhere('a.publishedAt <= :now')
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('a.publishedAt', $order === 'ASC' ? 'ASC' : 'DESC');
 
         if ($search !== null && $search !== '') {
             $qb->andWhere('a.title LIKE :search')
@@ -42,28 +42,32 @@ class ArticleRepository extends ServiceEntityRepository
         }
 
         if ($categoryId !== null) {
-            $qb->leftJoin('a.category', 'c')->addSelect('c')
+            $qb->innerJoin('a.category', 'c')->addSelect('c')
                ->andWhere('c.id = :categoryId')
                ->setParameter('categoryId', $categoryId);
         }
 
         if ($tagId !== null) {
-            $qb->leftJoin('a.tags', 't')
+            $qb->innerJoin('a.tags', 't')
                ->andWhere('t.id = :tagId')
                ->setParameter('tagId', $tagId);
         }
 
         if ($writerId !== null) {
-            $qb->leftJoin('a.writer', 'w')->addSelect('w')
-               ->andWhere('w.id = :writerId')
-               ->setParameter('writerId', $writerId);
+            $qb->andWhere('a.writer = :writerId')
+               ->setParameter('writerId', $writerId, 'uuid');
         }
 
         $query = $qb->getQuery();
         if ($categoryId === null) {
             $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'category', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
         }
+        
+        // Eager load writer if not filtered by it (if filtered, join/select is better, but a.writer = :id is sufficient for results)
         if ($writerId === null) {
+            $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'writer', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
+        } else {
+            // If filtered, we still want it eager to avoid extra queries in the loop
             $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'writer', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
         }
         $query->setFetchMode(\App\Entity\Blog\Article\Article::class, 'comments', \Doctrine\ORM\Mapping\ClassMetadata::FETCH_EAGER);
@@ -161,7 +165,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->orderBy('a.createdAt', $order === 'ASC' ? 'ASC' : 'DESC');
 
         if (!empty($search)) {
-            $qb->andWhere('a.title LIKE :search OR a.content LIKE :search OR w.firstname LIKE :search OR w.lastname LIKE :search')
+            $qb->andWhere('a.title LIKE :search OR a.content LIKE :search OR w.personName.firstname LIKE :search OR w.personName.lastname LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
 

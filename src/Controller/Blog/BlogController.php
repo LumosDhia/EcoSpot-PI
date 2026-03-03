@@ -39,7 +39,16 @@ class BlogController extends AbstractController
 
         $categoryId = $request->query->get('category') ? (int) $request->query->get('category') : null;
         $tagId = $request->query->get('tag') ? (int) $request->query->get('tag') : null;
-        $writerId = $request->query->get('writer') ? (int) $request->query->get('writer') : null;
+        $writerId = $request->query->get('writer');
+        if ($writerId !== null && $writerId !== '') {
+            try {
+                $writerId = \Symfony\Component\Uid\Uuid::fromString((string) $writerId);
+            } catch (\InvalidArgumentException) {
+                $writerId = null;
+            }
+        } else {
+            $writerId = null;
+        }
 
         // Support translated search: if searching in non-English, try translating search term back to English
         $translatedSearch = null;
@@ -76,7 +85,7 @@ class BlogController extends AbstractController
                 $query,
                 $request->query->getInt('page', 1),
                 8, // Articles per page
-                ['wrap-queries' => true, 'fetch_join_collection' => false]
+                ['wrap-queries' => false, 'fetch_join_collection' => false]
             );
         }
 
