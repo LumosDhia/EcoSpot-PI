@@ -113,6 +113,7 @@ INFO:     127.0.0.1:46502 - "POST /recognize HTTP/1.1" 200 OK
 2026-03-02 19:41:15,070 - INFO - Successfully enrolled user: today@hihi.test
 2026-03-02 19:41:41,264 - INFO - Extracting face representation for recognition...
 2026-03-02 19:41:41,534 - INFO - Match found: tunis@local.hi (dist: 0.4469)
+<<<<<<< HEAD
 2026-03-03 09:56:43,113 - INFO - --- Face Service Script Loaded ---
 2026-03-03 09:56:43,114 - INFO - Python version: 3.9.2 (default, Jan 25 2026, 13:37:52) 
 [GCC 10.2.1 20210110]
@@ -128,3 +129,9 @@ INFO:     127.0.0.1:46502 - "POST /recognize HTTP/1.1" 200 OK
 [GCC 10.2.1 20210110]
 2026-03-03 12:02:29,513 - INFO - Working directory: /home/lumosdhia/EcoSpot-PI/face_service
 2026-03-03 12:02:29,736 - INFO - Starting Uvicorn server on 0.0.0.0...
+=======
+2026-03-03 09:07:42,502 - INFO - --- Face Service Script Loaded ---
+2026-03-03 09:07:42,504 - INFO - Python version: 3.13.5 | packaged by Anaconda, Inc. | (main, Jun 12 2025, 16:37:03) [MSC v.1929 64 bit (AMD64)]
+2026-03-03 09:07:42,504 - INFO - Working directory: C:\Users\ghass\Desktop\EcoSpot-PI
+2026-03-03 09:07:44,269 - INFO - Starting Uvicorn server on 0.0.0.0...
+>>>>>>> d255b30e747decfca4d800695eefc0f8a5edc08b
