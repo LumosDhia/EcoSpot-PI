@@ -153,5 +153,3 @@ doctrine_doctor:
 
     analysis:
         exclude_third_party_entities: true
-        ignored_entities:
-            - 'App\Entity\Blog\Article\ArticleReaction'
